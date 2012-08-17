@@ -4,6 +4,7 @@ from tastypie.authorization import Authorization
 from tastypie.bundle import Bundle
 from tastypie.exceptions import NotFound
 from tastypie.resources import Resource
+from tastypie.exceptions import NotFound, BadRequest
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -58,12 +59,12 @@ class CheckInLogic(object):
         @rtype: str
         """
         _LOG.info("Validate the identity_certificate is signed by the expected CA")
-        _LOG.info("Call out to external service, determine marketing products",
+        _LOG.info("Call out to external service, determine marketing products " +
             "associated to passed in engineering products")
         _LOG.info("Check if consumer identity is allowed to access these products")
         _LOG.info("Record usage")
         _LOG.info("Request entitlement certificate")
-        return "contents of X509 string"
+        return "contents of X509 string for <%s> with products <%s>" % (identity_cert, products)
 
 ###
 #Note:  Adapted an example of how to create a Resource that doesn't use a Model from:
@@ -73,6 +74,13 @@ class Entitlement(object):
     entitlement_certificate = "" # X509 Certificate data stored as a string
     message = "" # Holder for error messages
 
+#
+# TODO: Reconsider if PUT makes sense for 'checkin' call to serve an entitlement certificate
+#    From server perspective, we are creating a new entitlement certificate
+#    From client perspective, we are requesting an entitlement certificate,
+#      I feel like the client is asking for the entitlement certificate,
+#      opposed to saying "create this object with this data"
+#
 class EntitlementResource(Resource):
     entitlement = fields.CharField(attribute='entitlement')
     message = fields.CharField(attribute='message', null=True)
@@ -80,20 +88,22 @@ class EntitlementResource(Resource):
     class Meta:
         resource_name = 'entitlement'
         object_class = Entitlement
-        list_allowed_methods = ["get"]
-        detail_allowed_methods = []  # only allow a GET on '/entitlement/'
+        list_allowed_methods = []
+        detail_allowed_methods = ["put"]
+        always_return_data = True
         authentication = Authentication()
         authorization = Authorization()
 
-    def obj_get_list(self, request = None, **kwargs):
-        # Note: typically this would return a list of values
-        #       we intend to return the single certificate instead
-        #       since this method is not a true 'list' operation
+    def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
+        if not bundle.data.has_key("identity_cert"):
+            raise BadRequest("Missing 'identity_cert'")
+        if not bundle.data.has_key("products"):
+            raise BadRequest("Missing 'products'")
+        identity_cert = bundle.data['identity_cert']
+        products = bundle.data["products"]
         checkin = CheckInLogic()
-        identity_cert = ""
-        products = [""]
         entitlement_cert = checkin.get_entitlement_certificate(identity_cert, products)
-        e = Entitlement()
-        e.entitlement = entitlement_cert
-        return [e]
+        bundle.obj = Entitlement()
+        bundle.obj.entitlement = entitlement_cert
+        return bundle
 

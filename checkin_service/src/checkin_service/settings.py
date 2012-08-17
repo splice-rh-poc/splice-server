@@ -1,4 +1,5 @@
 # Django settings for checkin_service project.
+import os
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -124,6 +125,13 @@ INSTALLED_APPS = (
     'entitlement',
 )
 
+LOG_DIR = "/var/log/splice_server"
+if DEBUG:
+    LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__name__)), "debug_logs")
+    if not os.path.exists(LOG_DIR):
+        os.makedirs(LOG_DIR)
+
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -132,6 +140,14 @@ INSTALLED_APPS = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
@@ -142,13 +158,34 @@ LOGGING = {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler'
-        }
+        },
+        'console':{
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'log_file':{
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOG_DIR, 'django.log'),
+            'maxBytes': '16777216',
+            'formatter': 'verbose'
+        },
     },
     'loggers': {
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        'entitlement': {
+            'handlers': ['log_file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'root': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO'
         },
     }
 }
