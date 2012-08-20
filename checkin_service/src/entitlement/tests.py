@@ -28,6 +28,7 @@ class EntitlementResourceTest(MongoTestCase):
         # self.user = User.objects.create_user(self.username, 'admin@example.com', self.password)
         self.post_data = {
             'identity_cert': "X509 Cert Contents will go here",
+            'consumer_identifier': "52:54:00:15:E7:69",
             'products': ["Product_1", "Product_2"],
         }
 

@@ -6,6 +6,8 @@ from tastypie.exceptions import NotFound
 from tastypie.resources import Resource
 from tastypie.exceptions import NotFound, BadRequest
 
+from checkin import CheckIn
+
 import logging
 _LOG = logging.getLogger(__name__)
 
@@ -14,13 +16,14 @@ _LOG = logging.getLogger(__name__)
 #
 # 1) Consumer checkin API
 #       Consumer request:
-#           GET /entitlement
+#           PUT /entitlement
 #           Params: {
-#               "consumer_identity": "CERT CONTENTS",
+#               "identity_cert": "CERT CONTENTS",
 #               "products": ["PRODUCT_CERT_1", "PRODUCT_CERT_2", ....]
 #           }
 #       Expected Response: {
-#           "entitlement_certificate": "CERT CONTENT"
+#           "entitlement": "CERT CONTENT",
+#           "message": "placeholder to communicate error messages"
 #           }
 #
 # 2) SpliceServer requests identity of a consumer
@@ -40,32 +43,6 @@ _LOG = logging.getLogger(__name__)
 #           }
 #
 
-class CheckInLogic(object):
-    """
-    Placeholder - class will be refactored and moved to a different module after
-    we get basic REST functionality working
-    Logic for recording a consumers usage and returning an entitlement certificate
-    will be implemented here.
-    """
-    def get_entitlement_certificate(self, identity_cert, products):
-        """
-        @param identity_cert: str containing X509 certificate, identify of the consumer
-        @type identity_cert: str
-
-        @param products: a list of X509 certificates, identifying each product installed on the consumer
-        @type products: [str]
-
-        @return: an x509 certificate to be used as an entitlement certificate
-        @rtype: str
-        """
-        _LOG.info("Validate the identity_certificate is signed by the expected CA")
-        _LOG.info("Call out to external service, determine marketing products " +
-            "associated to passed in engineering products")
-        _LOG.info("Check if consumer identity is allowed to access these products")
-        _LOG.info("Record usage")
-        _LOG.info("Request entitlement certificate")
-        return "contents of X509 string for <%s> with products <%s>" % (identity_cert, products)
-
 ###
 #Note:  Adapted an example of how to create a Resource that doesn't use a Model from:
 #       https://gist.github.com/794424
@@ -73,7 +50,6 @@ class CheckInLogic(object):
 class Entitlement(object):
     entitlement_certificate = "" # X509 Certificate data stored as a string
     message = "" # Holder for error messages
-
 #
 # TODO: Reconsider if PUT makes sense for 'checkin' call to serve an entitlement certificate
 #    From server perspective, we are creating a new entitlement certificate
@@ -99,11 +75,17 @@ class EntitlementResource(Resource):
             raise BadRequest("Missing 'identity_cert'")
         if not bundle.data.has_key("products"):
             raise BadRequest("Missing 'products'")
+        if not bundle.data.has_key("consumer_identifier"):
+            raise BadRequest("Missing 'consumer_identifier'")
+
         identity_cert = bundle.data['identity_cert']
         products = bundle.data["products"]
-        checkin = CheckInLogic()
-        entitlement_cert = checkin.get_entitlement_certificate(identity_cert, products)
+        consumer_identifier = bundle.data["consumer_identifier"]
+        checkin = CheckIn()
         bundle.obj = Entitlement()
+        entitlement_cert = checkin.get_entitlement_certificate(identity_cert, consumer_identifier, products)
         bundle.obj.entitlement = entitlement_cert
+        # TODO add support for catching exception and returning appropriate error codes
+        # currently we just return a 500
         return bundle
 
