@@ -31,12 +31,16 @@ sudo ln -s /git/splice-server/srv/splice/webservices.wsgi /srv/splice/webservice
 #        change HOSTNAME
 #   and
 hostname ec2-23-20-221-6.compute-1.amazonaws.com
-# Create a CA and Server cert and edit /etc/httpd/conf.d/ssl.conf
-#  SSLCertificateFile /etc/pki/splice/Splice_server.cert
-#  SSLCertificateKeyFile /etc/pki/splice/Splice_server.key
+
+
+# Below script (playpent/certs/setup.sh) will
+#  - Create a CA and Server cert
+#  - it will also edit /etc/httpd/conf.d/ssl.conf
+#      SSLCertificateFile /etc/pki/splice/Splice_server.cert
+#      SSLCertificateKeyFile /etc/pki/splice/Splice_server.key
 cd /git/splice-server/playpen/certs
 ./setup.sh
-#
+
 
 # HACK needed for now
 sudo mkdir /var/www/debug_logs
@@ -58,4 +62,9 @@ Normal example:
  
 /var/log/httpd/ssl_error_log
    [Tue Aug 21 12:03:03 2012] [warn] RSA server certificate CommonName (CN) `ec2-23-20-221-6.compute-1.amazonaws.com' does NOT match server name!?
+
+
+Try a https fetch
+cd /git/splice-server/playpen/curl_scripts
+./https_client_checkin.sh
 
