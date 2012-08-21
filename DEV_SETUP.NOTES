@@ -1,0 +1,54 @@
+# Disable SELinux 
+setenforce 0  # disable selinux
+vim /etc/selinux/config
+ SELIUX=permissive
+# Install EPEL and get 3rd party deps
+rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
+yum install mod_wsgi mod_ssl python-devel mongodb-server pymongo pymongo-gridfs
+yum install python-pip
+
+pip-python install django
+pip-python install django-tastypie
+pip-python install mongoengine
+
+# Install splice server from git
+mkdir /git
+cd /git
+git clone https://github.com/splice/splice-server.git
+cd /git/splice-server/src
+sudo python setup.py develop
+
+# Config for splice-server to use mod_wsgi
+sudo ln -s /git/splice-server/etc/httpd/conf.d/splice.conf /etc/httpd/conf.d/splice.conf
+mkdir -p /srv/splice
+sudo ln -s /git/splice-server/srv/splice/webservices.wsgi /srv/splice/webservices.wsgi
+# 
+# Install certs
+#  change hostname to external hostname
+#   on EC2 if using an EBS and you want this to persistent.
+#      edit /etc/sysconfig/network
+#        change HOSTNAME
+#   and
+hostname ec2-23-20-221-6.compute-1.amazonaws.com
+# Create a CA and Server cert and edit /etc/httpd/conf.d/ssl.conf
+#  SSLCertificateFile /etc/pki/splice/Splice_server.cert
+#  SSLCertificateKeyFile /etc/pki/splice/Splice_server.key
+cd /git/splice-server/playpen/certs
+./setup.sh
+#
+sudo service httpd restart
+
+Check logs
+less /var/log/httpd/error_log
+Normal example:
+  [Tue Aug 21 12:03:03 2012] [notice] SELinux policy enabled; httpd running as context unconfined_u:system_r:httpd_t:s0
+  [Tue Aug 21 12:03:03 2012] [notice] suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
+  [Tue Aug 21 12:03:03 2012] [notice] Digest: generating secret for digest authentication ...
+  [Tue Aug 21 12:03:03 2012] [notice] Digest: done
+  [Tue Aug 21 12:03:03 2012] [warn] mod_wsgi: Compiled for Python/2.6.2.
+  [Tue Aug 21 12:03:03 2012] [warn] mod_wsgi: Runtime using Python/2.6.6.
+  [Tue Aug 21 12:03:03 2012] [notice] Apache/2.2.15 (Unix) DAV/2 mod_ssl/2.2.15 OpenSSL/1.0.0-fips mod_wsgi/3.2 Python/2.6.6 configured -- resuming normal operations
+ 
+/var/log/httpd/ssl_error_log
+   [Tue Aug 21 12:03:03 2012] [warn] RSA server certificate CommonName (CN) `ec2-23-20-221-6.compute-1.amazonaws.com' does NOT match server name!?
+

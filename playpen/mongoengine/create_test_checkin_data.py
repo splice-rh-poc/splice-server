@@ -10,7 +10,7 @@ MONGO_DATABASE_NAME = 'checkin_service'
 import mongoengine
 mongoengine.connect(MONGO_DATABASE_NAME)
 
-sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), "../../checkin_service/src"))
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), "../../src/splice"))
 
 from entitlement.models import SpliceServer, MarketingProduct, \
     ConsumerIdentity, ReportingItem, ProductUsage

@@ -11,7 +11,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='Splice',
-    version='0.1'
+    version='0.1',
     license='GPLv2+',
     author='Splice Team - Red Hat',
     author_email='splice-devel@redhat.com',
