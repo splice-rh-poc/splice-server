@@ -1,5 +1,6 @@
 from mongoengine import DateTimeField, Document, EmbeddedDocument, \
-    EmbeddedDocumentField, ListField, ReferenceField, StringField, UUIDField
+    EmbeddedDocumentField, ListField, ReferenceField, StringField
+
 ###
 # Overview of what functionality will need to be supported:
 # 1) A splice-consumer will checkin with us and pass us: identifier + installed engineering products
@@ -34,7 +35,7 @@ from mongoengine import DateTimeField, Document, EmbeddedDocument, \
 ###
 
 class SpliceServer(Document):
-    uuid = UUIDField(required=True, unique=True)
+    uuid = StringField(required=True, unique=True)
     description = StringField() # Example what datacenter is this deployed to, i.e. us-east-1
     hostname = StringField(required=True)
 
@@ -44,7 +45,7 @@ class SpliceServerRelationships(Document):
     children = ListField(ReferenceField(SpliceServer))
 
 class MarketingProduct(Document):
-    uuid = UUIDField(required=True, unique=True)
+    uuid = StringField(required=True, unique=True)
     name = StringField(required=True)
     description = StringField()
 
@@ -53,7 +54,7 @@ class MarketingProductSubscription(EmbeddedDocument):
     product = ReferenceField(MarketingProduct, required=True)
 
 class ConsumerIdentity(Document):
-    uuid = UUIDField(required=True, unique=True)  # matches the identifier from the identity certificate
+    uuid = StringField(required=True, unique=True)  # matches the identifier from the identity certificate
     subscriptions = ListField(EmbeddedDocumentField(MarketingProductSubscription))
 
 class ReportingItem(EmbeddedDocument):
@@ -63,8 +64,8 @@ class ReportingItem(EmbeddedDocument):
 class ProductUsage(Document):
     consumer = ReferenceField(ConsumerIdentity)
     splice_server = ReferenceField(SpliceServer, required=True)
-    instance_identifier = StringField(required=True, unique_with=["splice_server"]) # example: MAC Address
-    usage = ListField(EmbeddedDocumentField(ReportingItem))
+    instance_identifier = StringField(required=True, unique_with=["splice_server", "consumer"]) # example: MAC Address
+    product_info = ListField(EmbeddedDocumentField(ReportingItem))
 
     
 

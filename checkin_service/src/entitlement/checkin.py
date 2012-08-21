@@ -1,4 +1,9 @@
-from entitlement.models import ConsumerIdentity, ReportingItem, ProductUsage
+from entitlement.models import ConsumerIdentity, ReportingItem, ProductUsage, \
+    MarketingProduct, MarketingProductSubscription, SpliceServer
+
+from datetime import datetime
+import time
+import uuid
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -17,12 +22,24 @@ class UnallowedProductException(CheckinException):
     def __str__(self):
         return "Unallowed products: %s" % (products)
 
-
 class CheckIn(object):
     """
     Logic for recording a consumers usage and returning an entitlement certificate
     will be implemented here.
     """
+
+    def get_this_server(self):
+        # parse a configuration file and determine our splice server identifier
+        uuid="our splice server uuid"
+        server = SpliceServer.objects(uuid=uuid).first()
+        if not server:
+            server = SpliceServer(uuid=uuid, description="Test data", hostname="somewhere.example.com:8000")
+            try:
+                server.save()
+            except Exception, e:
+                _LOG.exception(e)
+        return server
+
     def get_entitlement_certificate(self, identity_cert, consumer_identifier, installed_products):
         """
         @param identity_cert: str containing X509 certificate, identify of the consumer
@@ -40,18 +57,16 @@ class CheckIn(object):
         if not self.validate_cert(identity_cert):
             raise CertValidationException()
 
-        identity = self.extract_identifier(identity_cert)
+        identity = self.get_identity(identity_cert)
         marketing_products = self.get_marketing_products(identity, installed_products)
 
         allowed_marketing_products, unallowed_marketing_products = \
             self.check_access(identity, marketing_products)
-
         if unallowed_marketing_products:
             raise UnallowedProducts(unallowed_marketing_products)
 
-        self.record_usage(identity, consumer_identifier, allowed_marketing_products)
-
         entitlement_cert = self.request_entitlement(identity, allowed_marketing_products)
+        self.record_usage(identity, consumer_identifier, allowed_marketing_products)
         return entitlement_cert
 
 
@@ -59,20 +74,81 @@ class CheckIn(object):
         _LOG.info("Validate the identity_certificate is signed by the expected CA")
         return True
 
-    def extract_identifier(self, identity_cert):
-        return "Dummy_identifier_value"
+    def get_identity(self, identity_cert):
+        # Convert the string to a X509 certificate
+        # extract the CN from the X509 certificate
+        # Lookup if a Consumer exists with this identifier
+        #   If not found initiate a lookup through parent chain for this ID
+        #         return a retry status code in ~3 minutes.
+        # Return ConsumerIdentity instance
+        uuid = "dummy_identifier value"
+        identity = ConsumerIdentity.objects(uuid=uuid).first()
+        if not identity:
+            identity = ConsumerIdentity(uuid=uuid, subscriptions=[])
+            try:
+                identity.save()
+            except Exception, e:
+                _LOG.exception(e)
+        return identity
 
     def get_marketing_products(self, identity, products):
         _LOG.info("Call out to external service, determine marketing products " +
                   "associated to passed in engineering products")
-        return []
+        mp1_id = "dummy_value_1"
+        mp1_name = "dummy_value_name_1"
+        mp1_description = "dummy_value_description_1"
+        mp2_id = "dummy_value_2"
+        mp2_name = "dummy_value_name_2"
+        mp2_description = "dummy_value_descripion_2"
+
+        mp1 = MarketingProduct.objects(uuid=mp1_id, name=mp1_name, description=mp1_description).first()
+        if not mp1:
+            mp1 = MarketingProduct(uuid=mp1_id, name=mp1_name, description=mp1_description)
+            try:
+                mp1.save()
+            except Exception,e:
+                _LOG.exception(e)
+        mp2 = MarketingProduct.objects(uuid=mp2_id, name=mp2_name, description=mp2_description).first()
+        if not mp2:
+            mp2 = MarketingProduct(uuid=mp2_id, name=mp2_name, description=mp2_description)
+            try:
+                mp2.save()
+            except Exception, e:
+                _LOG.exception(e)
+        return [mp1, mp2]
 
     def check_access(self, identity, marketing_products):
-        _LOG.info("Check if consumer identity is allowed to access these products")
-        return ["allowed_product_1", "allowed_product_2"], []
+        _LOG.info("Check if consumer identity <%s> is allowed to access marketing products: %s" % \
+                  (identity, marketing_products))
+        return marketing_products, []
 
     def record_usage(self, identity, consumer_identifier, marketing_products):
-        _LOG.info("Record usage")
+        """
+        @param identity consumer's identity
+        @type identity: str
+        @param consumer_identifier means of uniquely identifying different instances with same consumer identity
+            an example could be a mac address
+        @type consumer_identifier: str
+        @param marketing_products: list of marketing products
+        @type marketing_products: [entitlement.models.MarketingProduct]
+        """
+        _LOG.info("Record usage for '%s'" % (identity))
+        prod_info = []
+        for mp in marketing_products:
+            prod_info.append(ReportingItem(product=mp, date=datetime.now()))
+
+        prod_usage = ProductUsage.objects(consumer=identity, splice_server=self.get_this_server(),
+            instance_identifier=consumer_identifier).first()
+        if not prod_usage:
+            prod_usage = ProductUsage(consumer=identity, splice_server=self.get_this_server(),
+                instance_identifier=consumer_identifier, product_info=[])
+
+        # Add this checkin's usage info
+        prod_usage.product_info.extend(prod_info)
+        try:
+            prod_usage.save()
+        except Exception, e:
+            _LOG.exception(e)
         return
 
     def request_entitlement(self, identity, allowed_products):
