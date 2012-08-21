@@ -39,10 +39,11 @@ pushd src
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 popd
 mkdir -p %{buildroot}/%{_sysconfdir}/httpd/conf.d/
+mkdir -p %{buildroot}/%{_var}/log/%{name}
 
 # Install WSGI script & httpd conf
 cp -R srv %{buildroot}
-cp etc/httpd/conf.d/%{name}.conf %{_sysconfdir}/httpd/conf.d/
+cp etc/httpd/conf.d/%{name}.conf %{buildroot}/%{_sysconfdir}/httpd/conf.d/
 
 # Remove egg info
 rm -rf %{buildroot}/%{python_sitelib}/*.egg-info
