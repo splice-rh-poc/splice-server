@@ -6,7 +6,7 @@ from tastypie.exceptions import NotFound
 from tastypie.resources import Resource
 from tastypie.exceptions import NotFound, BadRequest
 
-from checkin import CheckIn
+from splice.entitlement.checkin import CheckIn
 
 import logging
 _LOG = logging.getLogger(__name__)

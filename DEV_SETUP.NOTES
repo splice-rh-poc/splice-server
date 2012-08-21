@@ -4,12 +4,13 @@ vim /etc/selinux/config
  SELIUX=permissive
 # Install EPEL and get 3rd party deps
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
-yum install mod_wsgi mod_ssl python-devel mongodb-server pymongo pymongo-gridfs
+yum install mod_wsgi mod_ssl python-devel mongodb-server pymongo pymongo-gridfs git
 yum install python-pip
 
 pip-python install django
 pip-python install django-tastypie
 pip-python install mongoengine
+pip-python install django-tastypie-mongoengine
 
 # Install splice server from git
 mkdir /git
@@ -36,6 +37,12 @@ hostname ec2-23-20-221-6.compute-1.amazonaws.com
 cd /git/splice-server/playpen/certs
 ./setup.sh
 #
+
+# HACK needed for now
+sudo mkdir /var/www/debug_logs
+sudo chown -R apache:apache /var/www/debug_logs
+
+sudo service mongod start
 sudo service httpd restart
 
 Check logs

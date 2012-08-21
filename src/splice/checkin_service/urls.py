@@ -1,6 +1,6 @@
 from django.conf.urls import patterns, include, url
 from tastypie.api import Api
-from entitlement.apis import EntitlementResource
+from splice.entitlement.apis import EntitlementResource
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin

@@ -98,10 +98,10 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'checkin_service.urls'
+ROOT_URLCONF = 'splice.checkin_service.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'checkin_service.wsgi.application'
+WSGI_APPLICATION = 'splice.checkin_service.wsgi.application'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -125,7 +125,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'tastypie',
     'tastypie_mongoengine',
-    'entitlement',
+    'splice.entitlement',
 )
 
 LOG_DIR = "/var/log/splice_server"

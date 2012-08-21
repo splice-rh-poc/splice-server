@@ -1,4 +1,4 @@
-from entitlement.models import ConsumerIdentity, ReportingItem, ProductUsage, \
+from splice.entitlement.models import ConsumerIdentity, ReportingItem, ProductUsage, \
     MarketingProduct, MarketingProductSubscription, SpliceServer
 
 from datetime import datetime
