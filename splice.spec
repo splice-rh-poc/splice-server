@@ -1,5 +1,5 @@
 Name:		splice-server
-Version:	0.1
+Version:	0.2
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -62,6 +62,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Aug 21 2012 John Matthews <jmatthews@redhat.com> 0.2-1
+- new package built with tito
+
 * Tue Aug 21 2012 John Matthews <jmatthews@redhat.com> 0.1-1
 - initial packaging
 
