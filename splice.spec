@@ -1,4 +1,4 @@
-Name:		splice-server
+Name:		splice
 Version:	0.2
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
