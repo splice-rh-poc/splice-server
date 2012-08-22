@@ -48,7 +48,9 @@ _LOG = logging.getLogger(__name__)
 #       https://gist.github.com/794424
 ###
 class Entitlement(object):
-    entitlement_certificate = "" # X509 Certificate data stored as a string
+    product_id = ""
+    product_name = ""
+    certs = []
     message = "" # Holder for error messages
 #
 # TODO: Reconsider if PUT makes sense for 'checkin' call to serve an entitlement certificate
@@ -58,9 +60,11 @@ class Entitlement(object):
 #      opposed to saying "create this object with this data"
 #
 class EntitlementResource(Resource):
-    entitlement = fields.CharField(attribute='entitlement')
+    product_id = fields.CharField(attribute="product_id")
+    product_name = fields.CharField(attribute="product_name")
+    certs = fields.ListField(attribute='certs')
     message = fields.CharField(attribute='message', null=True)
-    
+
     class Meta:
         resource_name = 'entitlement'
         object_class = Entitlement
@@ -83,8 +87,11 @@ class EntitlementResource(Resource):
         consumer_identifier = bundle.data["consumer_identifier"]
         checkin = CheckIn()
         bundle.obj = Entitlement()
-        entitlement_cert = checkin.get_entitlement_certificate(identity_cert, consumer_identifier, products)
-        bundle.obj.entitlement = entitlement_cert
+        cert_info = checkin.get_entitlement_certificate(identity_cert, consumer_identifier, products)
+        # TODO handle multiple items being returned from candlepin
+        bundle.obj.product_name = cert_info[0]["product_name"]
+        bundle.obj.product_id = cert_info[0]["product_id"]
+        bundle.obj.certs = cert_info[0]["certs"]
         # TODO add support for catching exception and returning appropriate error codes
         # currently we just return a 500
         return bundle

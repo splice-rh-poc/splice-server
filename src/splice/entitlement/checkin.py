@@ -2,10 +2,11 @@ from splice.entitlement.models import ConsumerIdentity, ReportingItem, ProductUs
     MarketingProduct, MarketingProductSubscription, SpliceServer
 
 from datetime import datetime
-import time
-import uuid
-
 import logging
+import time
+
+from splice.common import candlepin_client
+
 _LOG = logging.getLogger(__name__)
 
 class CheckinException(Exception):
@@ -65,9 +66,9 @@ class CheckIn(object):
         if unallowed_marketing_products:
             raise UnallowedProducts(unallowed_marketing_products)
 
-        entitlement_cert = self.request_entitlement(identity, allowed_marketing_products)
+        cert_info = self.request_entitlement(identity, allowed_marketing_products)
         self.record_usage(identity, consumer_identifier, allowed_marketing_products)
-        return entitlement_cert
+        return cert_info
 
 
     def validate_cert(self, cert):
@@ -81,7 +82,7 @@ class CheckIn(object):
         #   If not found initiate a lookup through parent chain for this ID
         #         return a retry status code in ~3 minutes.
         # Return ConsumerIdentity instance
-        uuid = "dummy_identifier value"
+        uuid = "admin" # hard coding 'admin' for now since candlepin is configured for this as the RHIC
         identity = ConsumerIdentity.objects(uuid=uuid).first()
         if not identity:
             identity = ConsumerIdentity(uuid=uuid, subscriptions=[])
@@ -152,5 +153,26 @@ class CheckIn(object):
         return
 
     def request_entitlement(self, identity, allowed_products):
-        _LOG.info("Request entitlement certificate from external service")
-        return "contents of X509 string for <%s> with products <%s>" % (identity, allowed_products)
+        cp_config = self.__get_candlepin_config_info()
+        _LOG.info("Request entitlement certificate from external service: %s:%s%s" % \
+                  (cp_config["host"], cp_config["port"], cp_config["url"]))
+        identity=identity.uuid
+        # TODO:  Remove hardcoding of installed_product
+        installed_product="37060!Awesome OS Workstation"
+
+        product_info = candlepin_client.get_entitlement(
+            host=cp_config["host"], port=cp_config["port"],
+            url=cp_config["url"], installed_product=installed_product,
+            identity=identity,
+            username=cp_config["username"], password=cp_config["password"])
+        return product_info
+
+    def __get_candlepin_config_info(self):
+        #TODO: Add config class and parse to determine info for how to connect to candlepin
+        return {
+            "host": "localhost",
+            "port": 8080,
+            "url": "/candlepin/splice/cert",
+            "username": "admin",
+            "password": "password",
+        }

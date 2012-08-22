@@ -67,6 +67,7 @@ class ProductUsage(Document):
     instance_identifier = StringField(required=True, unique_with=["splice_server", "consumer"]) # example: MAC Address
     product_info = ListField(EmbeddedDocumentField(ReportingItem))
 
+
     
 
 
