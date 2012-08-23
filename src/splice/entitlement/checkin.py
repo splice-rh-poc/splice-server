@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 
 from splice.common import candlepin_client
+from splice.common.certs import CertUtils
 from splice.common.config import CONFIG
 
 from splice.entitlement.models import ConsumerIdentity, ReportingItem, ProductUsage,\
@@ -29,6 +30,16 @@ class CheckIn(object):
     Logic for recording a consumers usage and returning an entitlement certificate
     will be implemented here.
     """
+    def __init__(self):
+        self.cert_utils = CertUtils()
+        f = None
+        try:
+            self.root_ca_path = CONFIG.get("security", "root_ca_cert")
+            f = open(self.root_ca_path, "r")
+            self.root_ca_cert_pem = f.read()
+        finally:
+            if f:
+                f.close()
 
     def get_this_server(self):
         # parse a configuration file and determine our splice server identifier
@@ -71,10 +82,16 @@ class CheckIn(object):
         self.record_usage(identity, consumer_identifier, allowed_marketing_products)
         return cert_info
 
+    def validate_cert(self, cert_pem):
+        """
+        @param cert_pem: x509 encoded pem certificate as a string
+        @param cert_pem: str
 
-    def validate_cert(self, cert):
-        _LOG.info("Validate the identity_certificate is signed by the expected CA")
-        return True
+        @return: true if 'cert_pem' was signed by the configured root CA, false otherwise
+        @rtype: bool
+        """
+        _LOG.info("Validate the identity_certificate is signed by the expected CA from '%s'" % (self.root_ca_path))
+        return self.cert_utils.validate_certificate_pem(cert_pem, self.root_ca_cert_pem)
 
     def get_identity(self, identity_cert):
         # Convert the string to a X509 certificate

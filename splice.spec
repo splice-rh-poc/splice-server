@@ -38,8 +38,9 @@ rm -rf %{buildroot}
 pushd src
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 popd
-mkdir -p %{buildroot}/%{_sysconfdir}/splice
 mkdir -p %{buildroot}/%{_sysconfdir}/httpd/conf.d/
+mkdir -p %{buildroot}/%{_sysconfdir}/splice
+mkdir -p %{buildroot}/%{_sysconfdir}/pki/%{name}
 mkdir -p %{buildroot}/%{_var}/log/%{name}
 
 # Install WSGI script & httpd conf
@@ -47,12 +48,14 @@ cp -R srv %{buildroot}
 cp etc/httpd/conf.d/%{name}.conf %{buildroot}/%{_sysconfdir}/httpd/conf.d/
 cp etc/splice %{buildroot}/%{_sysconfdir}/splice
 
+# Copy Cert Data
+cp -R etc/pki/%{name} %{buildroot}/%{_sysconfdir}/pki/%{name}
+
 # Remove egg info
 rm -rf %{buildroot}/%{python_sitelib}/*.egg-info
 
 %clean
 rm -rf %{buildroot}
-
 
 %files
 %defattr(-,root,root,-)
@@ -60,6 +63,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/splice/server.conf
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 %defattr(-,apache,apache,-)
+%dir %{_sysconfdir}/pki/%{name}
 %dir /srv/%{name}
 %dir %{_var}/log/%{name}
 /srv/%{name}/webservices.wsgi

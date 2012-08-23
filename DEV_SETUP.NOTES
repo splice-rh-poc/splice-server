@@ -46,6 +46,14 @@ cd /git/splice-server/playpen/certs
 sudo mkdir /var/www/debug_logs
 sudo chown -R apache:apache /var/www/debug_logs
 
+sudo mkdir /etc/splice
+sudo ln -s /git/splice-server/etc/splice/server.conf /etc/splice/server.conf
+
+# /etc/pki/splice is created by setup.sh for setting up apache certs
+cd /etc/pki/splice
+sudo ln -s /git/splice-server/etc/pki/splice/Splice_testing_root_CA.key
+sudo ln -s /git/splice-server/etc/pki/splice/Splice_testing_root_CA.crt
+
 sudo service mongod start
 sudo service httpd restart
 

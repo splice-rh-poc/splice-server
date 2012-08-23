@@ -7,6 +7,8 @@ from mongoengine import connect
 from django.conf import settings
 
 from splice.common import candlepin_client
+from splice.common.certs import CertUtils
+from splice.entitlement.checkin import CheckIn, CertValidationException
 
 TEST_DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "test_data")
 
@@ -41,6 +43,16 @@ class BaseEntitlementTestCase(MongoTestCase):
         super(BaseEntitlementTestCase, self).setUp()
         self.saved_request_method = candlepin_client._request
         candlepin_client._request = mocked_request_method
+        # Test Certificate Data
+        # invalid cert, signed by a CA other than 'root_ca_pem'
+        self.invalid_identity_cert_pem = os.path.join(TEST_DATA_DIR, "invalid_cert", "invalid.cert")
+        self.invalid_identity_cert_pem = open(self.invalid_identity_cert_pem, "r").read()
+        # a valid cert, signed by the below CA, 'root_ca_pem'
+        self.valid_identity_cert_pem =  os.path.join(TEST_DATA_DIR, "valid_cert", "valid.cert")
+        self.valid_identity_cert_pem = open(self.valid_identity_cert_pem, "r").read()
+        # CA
+        self.root_ca_pem = os.path.join(TEST_DATA_DIR, "valid_cert", "ca.cert")
+        self.root_ca_pem = open(self.root_ca_pem, "r").read()
 
     def tearDown(self):
         super(BaseEntitlementTestCase, self).tearDown()
@@ -54,8 +66,13 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
         self.password = "admin"
         # TODO add auth
         # self.user = User.objects.create_user(self.username, 'admin@example.com', self.password)
-        self.post_data = {
-            'identity_cert': "X509 Cert Contents will go here",
+        self.post_data_invalid_identity = {
+            'identity_cert': self.invalid_identity_cert_pem,
+            'consumer_identifier': "52:54:00:15:E7:69",
+            'products': ["Product_1", "Product_2"],
+            }
+        self.post_data_valid_identity = {
+            'identity_cert': self.valid_identity_cert_pem,
             'consumer_identifier': "52:54:00:15:E7:69",
             'products': ["Product_1", "Product_2"],
         }
@@ -66,10 +83,9 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
     def get_credentials(self):
         return self.create_basic(username=self.username, password=self.password)
 
-    def test_put_entitlement(self):
+    def test_put_entitlement_valid_identity(self):
         resp = self.api_client.put('/api/v1/entitlement/BOGUS_IDENTITY/', format='json',
-            authentication=self.get_credentials(), data=self.post_data)
-
+            authentication=self.get_credentials(), data=self.post_data_valid_identity)
         self.assertHttpAccepted(resp)
         self.assertTrue(resp['Content-Type'].startswith('application/json'))
         self.assertValidJSON(resp.content)
@@ -79,6 +95,16 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
         self.assertEquals(deserialized["product_name"], "Awesome OS with up to 4 virtual guests")
         self.assertEquals(len(deserialized["certs"]), 1)
 
+    def test_put_entitlement_invalid_identity(self):
+        caught = False
+        try:
+            self.api_client.put('/api/v1/entitlement/BOGUS_IDENTITY/',
+                format='json',
+                authentication=self.get_credentials(),
+                data=self.post_data_invalid_identity)
+        except CertValidationException, e:
+            caught = True
+        self.assertTrue(caught)
 
 class CandlepinClientTest(BaseEntitlementTestCase):
 
@@ -98,3 +124,42 @@ class CandlepinClientTest(BaseEntitlementTestCase):
         self.assertEquals(len(cert_info), 1)
         self.assertTrue(cert_info[0].has_key("cert"))
         self.assertTrue(cert_info[0].has_key("key"))
+
+
+class CertUtilsTest(BaseEntitlementTestCase):
+    """
+    Tests to exercise splice.common.certs.CertUtils
+    """
+    def setUp(self):
+        super(CertUtilsTest, self).setUp()
+        self.cert_utils = CertUtils()
+
+    def tearDown(self):
+        super(CertUtilsTest, self).tearDown()
+
+    def test_validate_certificate_pem_valid(self):
+        self.assertTrue(self.cert_utils.validate_certificate_pem(
+            self.valid_identity_cert_pem, self.root_ca_pem))
+
+    def test_validate_certificate_pem_invalid(self):
+        self.assertFalse(self.cert_utils.validate_certificate_pem(
+            self.invalid_identity_cert_pem, self.root_ca_pem))
+
+
+class CheckInTest(BaseEntitlementTestCase):
+    """
+    Tests to exercise splice.entitlement.checkin.CheckIn
+    """
+    def setUp(self):
+        super(CheckInTest, self).setUp()
+        self.checkin = CheckIn()
+
+    def tearDown(self):
+        super(CheckInTest, self).tearDown()
+
+    def test_validate_cert_valid(self):
+        self.assertTrue(self.checkin.validate_cert(self.valid_identity_cert_pem))
+
+    def test_validate_cert_invalid(self):
+        self.assertFalse(self.checkin.validate_cert(self.invalid_identity_cert_pem))
+
