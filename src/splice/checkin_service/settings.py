@@ -1,6 +1,10 @@
 # Django settings for checkin_service project.
 import os
 
+# Initialize Splice Config
+from splice.common import config
+config.init()
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -130,7 +134,7 @@ INSTALLED_APPS = (
 
 LOG_DIR = "/var/log/splice_server"
 if DEBUG:
-    LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__name__)), "debug_logs")
+    LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "debug_logs")
     if not os.path.exists(LOG_DIR):
         os.makedirs(LOG_DIR)
 
@@ -181,9 +185,9 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
-        'entitlement': {
+        'splice': {
             'handlers': ['log_file'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True,
         },
         'root': {

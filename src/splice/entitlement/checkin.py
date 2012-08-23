@@ -1,11 +1,12 @@
-from splice.entitlement.models import ConsumerIdentity, ReportingItem, ProductUsage, \
-    MarketingProduct, MarketingProductSubscription, SpliceServer
-
-from datetime import datetime
 import logging
 import time
+from datetime import datetime
 
 from splice.common import candlepin_client
+from splice.common.config import CONFIG
+
+from splice.entitlement.models import ConsumerIdentity, ReportingItem, ProductUsage,\
+MarketingProduct, MarketingProductSubscription, SpliceServer
 
 _LOG = logging.getLogger(__name__)
 
@@ -161,18 +162,17 @@ class CheckIn(object):
         installed_product="37060!Awesome OS Workstation"
 
         product_info = candlepin_client.get_entitlement(
-            host=cp_config["host"], port=cp_config["port"],
-            url=cp_config["url"], installed_product=installed_product,
+            host=cp_config["host"], port=cp_config["port"], url=cp_config["url"],
+            installed_product=installed_product,
             identity=identity,
             username=cp_config["username"], password=cp_config["password"])
         return product_info
 
     def __get_candlepin_config_info(self):
-        #TODO: Add config class and parse to determine info for how to connect to candlepin
         return {
-            "host": "localhost",
-            "port": 8080,
-            "url": "/candlepin/splice/cert",
-            "username": "admin",
-            "password": "password",
+            "host": CONFIG.get("entitlement", "host"),
+            "port": CONFIG.get("entitlement", "port"),
+            "url": CONFIG.get("entitlement", "url"),
+            "username": CONFIG.get("entitlement", "username"),
+            "password": CONFIG.get("entitlement", "password"),
         }

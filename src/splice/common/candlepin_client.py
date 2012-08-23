@@ -3,8 +3,11 @@
 import base64
 import httplib
 import json
+import logging
 import time
 import urllib
+
+_LOG = logging.getLogger(__name__)
 
 class RequestException(Exception):
     def __init__(self, status, message=""):
@@ -59,6 +62,7 @@ def _request(host, port, url, installed_product,
     }
     data = urllib.urlencode(query_params)
     url = url +"?" + data
+    _LOG.info("Sending HTTP request to: %s:%s%s with headers:%s" % (host, port, url, headers))
     connection.request(method, url, body=None, headers=headers)
 
     response = connection.getresponse()
