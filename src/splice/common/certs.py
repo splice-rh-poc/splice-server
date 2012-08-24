@@ -176,13 +176,10 @@ class CertUtils:
                     LOG.exception("Unable to load CRL file: %s" % (c))
         return crl_stack
 
-    def get_certs_from_string(self, data, log_func=None):
+    def get_certs_from_string(self, data):
         """
         @param data: A single string of concatenated X509 Certificates in PEM format
         @type data: str
-
-        @param log_func: logging function
-        @type log_func: function accepting a single string
 
         @return list of X509 Certificates
         @rtype: [M2Crypto.X509.X509]
@@ -204,8 +201,8 @@ class CertUtils:
                     # This is likely to never occur, a X509Error should always be raised
                     break
                 certs.append(cert)
-                if index == (self.max_num_certs_in_chain - 1) and log_func:
-                    log_func("**WARNING** Pulp reached maximum number of <%s> certs supported in a chain." % (self.max_num_certs_in_chain))
+                if index == (self.max_num_certs_in_chain - 1):
+                    LOG.info("**WARNING** Pulp reached maximum number of <%s> certs supported in a chain." % (self.max_num_certs_in_chain))
 
         except X509.X509Error:
             # This is the normal return path.

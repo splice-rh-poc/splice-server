@@ -163,3 +163,17 @@ class CheckInTest(BaseEntitlementTestCase):
     def test_validate_cert_invalid(self):
         self.assertFalse(self.checkin.validate_cert(self.invalid_identity_cert_pem))
 
+    def test_parse_cert_subject(self):
+        self.assertEquals(self.checkin.parse_cert_subject("/OU=foo/CN=bar", "CN"), "bar")
+        self.assertEquals(self.checkin.parse_cert_subject("/OU=foo/CN=bar/EM=baz", "CN"), "bar")
+        self.assertEquals(self.checkin.parse_cert_subject("/OU=foo/EM=baz", "CN"), None)
+
+    def test_extract_id_from_identity_cert(self):
+        # below is example of subject from test data
+        # $ openssl x509 -subject -in test_data/valid_cert/sample_rhic_valid.pem
+        #        subject=/CN=dbcbc8e1-5b37-4a77-9db1-faf4ef29307d
+        self.assertEquals(
+            self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem),
+            "dbcbc8e1-5b37-4a77-9db1-faf4ef29307d")
+
+

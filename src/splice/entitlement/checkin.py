@@ -91,16 +91,34 @@ class CheckIn(object):
         @rtype: bool
         """
         _LOG.info("Validate the identity_certificate is signed by the expected CA from '%s'" % (self.root_ca_path))
+        _LOG.debug(cert_pem)
         return self.cert_utils.validate_certificate_pem(cert_pem, self.root_ca_cert_pem)
 
+    def parse_cert_subject(self, subject, target):
+        items = subject.split("/")
+        for pair in items:
+            pieces = pair.split("=")
+            if pieces[0].lower() == target.lower():
+                return pieces[1]
+        return None
+
+    def extract_id_from_identity_cert(self, identity_cert):
+        x509_certs = self.cert_utils.get_certs_from_string(identity_cert)
+        # Grab the first cert if it exists
+        if not x509_certs:
+            return None
+        c = x509_certs[0]
+        subject = c.get_subject()
+        if not subject:
+            return None
+        subject = subject.as_text()
+        return self.parse_cert_subject(subject, "CN")
+
     def get_identity(self, identity_cert):
-        # Convert the string to a X509 certificate
-        # extract the CN from the X509 certificate
-        # Lookup if a Consumer exists with this identifier
-        #   If not found initiate a lookup through parent chain for this ID
-        #         return a retry status code in ~3 minutes.
-        # Return ConsumerIdentity instance
+        id_from_cert = self.extract_id_from_identity_cert(identity_cert)
+        _LOG.info("Found ID from identity certificate is '%s' " % (id_from_cert))
         uuid = "admin" # hard coding 'admin' for now since candlepin is configured for this as the RHIC
+        _LOG.warning("** Using hardcoded value of '%s' for certificate ID, until we integrate with updated Candlepin" % (uuid))
         identity = ConsumerIdentity.objects(uuid=uuid).first()
         if not identity:
             identity = ConsumerIdentity(uuid=uuid, subscriptions=[])
