@@ -22,7 +22,8 @@ Requires: mod_wsgi
 #Requires:	django > 1.4
 #Requires: django-tastypie > 1.0
 #Requires: mongoengine > 1.0
-#
+Requires: m2crypto >= 0.21.1.pulp-7
+
 
 %description
 Framework for tracking entitlement consumption
