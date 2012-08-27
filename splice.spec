@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.5
+Version:	0.6
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -74,6 +74,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Aug 27 2012 John Matthews <jmatthews@redhat.com> 0.6-1
+- Adding requires for patched m2crypto from Pulp (jmatthews@redhat.com)
+- Packaging tweaks to get RPM functional (jmatthews@redhat.com)
+
 * Mon Aug 27 2012 John Matthews <jmatthews@redhat.com> 0.5-1
 - RCS is able to grab SSL client cert from request parameters and extract CN,
   also updated to work with latest candlepin API (jmatthews@redhat.com)
