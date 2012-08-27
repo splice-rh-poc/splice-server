@@ -19,11 +19,11 @@ _LOG = logging.getLogger(__name__)
 #       Consumer request:
 #           PUT /entitlement
 #           Params: {
-#               "identity_cert": "CERT CONTENTS",
-#               "products": ["PRODUCT_CERT_1", "PRODUCT_CERT_2", ....]
+#               "products": ["PRODUCT_CERT_1", "PRODUCT_CERT_2", ....],
+#               "consumer_identifier": "MAC_ADDRESS",
 #           }
 #       Expected Response: {
-#           "entitlement": "CERT CONTENT",
+#           "certs": ["CERT CONTENT", "KEY CONTENT"],
 #           "message": "placeholder to communicate error messages"
 #           }
 #
@@ -49,8 +49,6 @@ _LOG = logging.getLogger(__name__)
 #       https://gist.github.com/794424
 ###
 class Entitlement(object):
-    product_id = ""
-    product_name = ""
     certs = []
     message = "" # Holder for error messages
 #
