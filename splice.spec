@@ -8,11 +8,13 @@ License:	GPLv2
 URL:		https://github.com/splice/splice-server
 Source0:	https://github.com/splice/splice-server/zipball/master
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildArch: noarch
 BuildRequires:	python2-devel
 BuildRequires: python-setuptools
 BuildRequires: rpm-python
 Requires: mongodb-server
 Requires: pymongo
+Requires: pymongo-gridfs
 Requires: mod_ssl
 Requires: mod_wsgi
 #
@@ -46,10 +48,10 @@ mkdir -p %{buildroot}/%{_var}/log/%{name}
 # Install WSGI script & httpd conf
 cp -R srv %{buildroot}
 cp etc/httpd/conf.d/%{name}.conf %{buildroot}/%{_sysconfdir}/httpd/conf.d/
-cp etc/splice %{buildroot}/%{_sysconfdir}/splice
+cp -R etc/splice %{buildroot}/%{_sysconfdir}
 
 # Copy Cert Data
-cp -R etc/pki/%{name} %{buildroot}/%{_sysconfdir}/pki/%{name}
+cp -R etc/pki/%{name} %{buildroot}/%{_sysconfdir}/pki/
 
 # Remove egg info
 rm -rf %{buildroot}/%{python_sitelib}/*.egg-info
@@ -64,6 +66,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 %defattr(-,apache,apache,-)
 %dir %{_sysconfdir}/pki/%{name}
+%{_sysconfdir}/pki/%{name}
 %dir /srv/%{name}
 %dir %{_var}/log/%{name}
 /srv/%{name}/webservices.wsgi

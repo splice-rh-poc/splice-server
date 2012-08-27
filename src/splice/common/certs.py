@@ -16,6 +16,7 @@ import time
 import os
 
 from glob import glob
+import M2Crypto
 from M2Crypto import X509, BIO
 
 LOG = logging.getLogger(__name__)
@@ -24,7 +25,7 @@ try:
     M2CRYPTO_HAS_CRL_SUPPORT = True
 except:
     M2CRYPTO_HAS_CRL_SUPPORT = False
-    LOG.warning("**M2Crypto<%s> lacks patch for using Certificate Revocation Lists**")
+    LOG.warning("**M2Crypto<%s> lacks patch for using Certificate Revocation Lists**" % (M2Crypto.version))
 
 from splice.common.config import CONFIG
 

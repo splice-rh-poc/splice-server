@@ -144,7 +144,7 @@ INSTALLED_APPS = (
 
 LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "debug_logs")
 if DEPLOYED:
-    LOG_DIR = "/var/log/splice_server"
+    LOG_DIR = "/var/log/splice"
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 
