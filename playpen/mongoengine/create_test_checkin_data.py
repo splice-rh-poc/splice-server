@@ -5,6 +5,7 @@ import sys
 import time
 
 from datetime import datetime
+from mongoengine.document import Document
 
 MONGO_DATABASE_NAME = 'checkin_service'
 import mongoengine
@@ -42,28 +43,27 @@ def create_consumer_identity():
     return identity
 
 def create_marketing_products():
-    mp1_id = "dummy_value_1"
-    mp1_name = "dummy_value_name_1"
-    mp1_description = "dummy_value_description_1"
-    mp2_id = "dummy_value_2"
-    mp2_name = "dummy_value_name_2"
-    mp2_description = "dummy_value_descripion_2"
+    # sample produts
+# [(sku, product name), ...]
 
-    mp1 = MarketingProduct.objects(uuid=mp1_id, name=mp1_name, description=mp1_description).first()
-    if not mp1:
-        mp1 = MarketingProduct(uuid=mp1_id, name=mp1_name, description=mp1_description)
-        try:
-            mp1.save()
-        except Exception,e:
-            _LOG.exception(e)
-    mp2 = MarketingProduct.objects(uuid=mp2_id, name=mp2_name, description=mp2_description).first()
-    if not mp2:
-        mp2 = MarketingProduct(uuid=mp2_id, name=mp2_name, description=mp2_description)
-        try:
-            mp2.save()
-        except Exception, e:
-            _LOG.exception(e)
-    return [mp1, mp2]
+    p = [
+    ('RH00001', 'Red Hat Enterprise Linux'),
+    ('RH00002', 'Red Hat Enterprise Linux for Academia'),
+    ('RH00003', 'Red Hat Enterprise Linux for Developers'),
+    ('RH00004', 'Red Hat Enterprise MRG'),
+    ('RH00005', 'Red Hat Enterprise High Availability'),
+    ('RH00006', 'Red Hat Enterprise Load Balancing'),
+    ('RH00007', 'Red Hat JBoss AS'),
+    ('RH00008', 'Red Hat JBoss WS'),
+    ('RH00009', 'Red Hat Database'),
+    ('RH000010', 'Red Hat Cloudforms'),
+    ]
+
+    mps_list = []
+    for i in p:
+        mp = MarketingProduct(uuid=i[0], name=i[1], description=i[1])
+        mp.tags = ['mongodb', 'mongoengine']
+        mp.save()
 
 def record_usage(server, identity, consumer_identifier, marketing_products):
     prod_info = []
@@ -89,10 +89,22 @@ if __name__ == "__main__":
     server = create_splice_server()
     identity = create_consumer_identity()
     print "Created consumer identity: %s  <%s>" % (identity.uuid, identity)
-    marketing_products = create_marketing_products()
-    print "Created marketing products: %s" % (marketing_products)
+    create_marketing_products()
+    linux_marketing_products = MarketingProduct.objects(name__contains='Linux')
+    jboss_marketing_products = MarketingProduct.objects(name__contains='JBoss')
+    mrg_marketing_products = MarketingProduct.objects(name__contains='MRG')
+    cf_marketing_products = MarketingProduct.objects(name__contains='Cloud')
+    print "Created marketing products: %s" % (linux_marketing_products)
+    print "Created marketing products: %s" % (jboss_marketing_products)
 
+    for index in range(0,9):
+        record_usage(server, identity, "MAC_ADDR_1", linux_marketing_products)
+    for index in range(0,7):
+        record_usage(server, identity, "MAC_ADDR_2", linux_marketing_products)
     for index in range(0,5):
-        record_usage(server, identity, "MAC_ADDR_1", marketing_products)
-        record_usage(server, identity, "MAC_ADDR_2", marketing_products)
+        record_usage(server, identity, "MAC_ADDR_1", jboss_marketing_products)
+    for index in range(0,3):
+        record_usage(server, identity, "MAC_ADDR_2", mrg_marketing_products)
+    for index in range(0,1):
+        record_usage(server, identity, "MAC_ADDR_2", cf_marketing_products)
     print "Product Usage data has been written to mongo database '%s'" % (MONGO_DATABASE_NAME)
