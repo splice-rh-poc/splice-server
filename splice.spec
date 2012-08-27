@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.4
+Version:	0.5
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -70,6 +70,14 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Aug 27 2012 John Matthews <jmatthews@redhat.com> 0.5-1
+- RCS is able to grab SSL client cert from request parameters and extract CN,
+  also updated to work with latest candlepin API (jmatthews@redhat.com)
+- Add ability to validate passed in identity certificate against configured
+  root CA (jmatthews@redhat.com)
+- Added ability to call out to candlepin to fetch entitlement certs
+  (jmatthews@redhat.com)
+
 * Tue Aug 21 2012 John Matthews <jmatthews@redhat.com> 0.4-1
 - More spec updates (jmatthews@redhat.com)
 
