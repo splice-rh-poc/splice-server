@@ -1,12 +1,19 @@
 # Django settings for checkin_service project.
 import os
+import pwd
 
 # Initialize Splice Config
 from splice.common import config
 config.init()
 
+def get_username():
+    return pwd.getpwuid( os.getuid() )[ 0 ]
 # Set DEPLOYED to True if this is running under apache with mod_wsgi
-DEPLOYED=True
+# We will attempt to detect this automatically and change
+DEPLOYED=False
+if get_username().lower() == "apache":
+    DEPLOYED=True
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
