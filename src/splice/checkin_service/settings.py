@@ -5,6 +5,9 @@ import os
 from splice.common import config
 config.init()
 
+# Set DEPLOYED to True if this is running under apache with mod_wsgi
+DEPLOYED=True
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -132,11 +135,11 @@ INSTALLED_APPS = (
     'splice.entitlement',
 )
 
-LOG_DIR = "/var/log/splice_server"
-if DEBUG:
-    LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "debug_logs")
-    if not os.path.exists(LOG_DIR):
-        os.makedirs(LOG_DIR)
+LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "debug_logs")
+if DEPLOYED:
+    LOG_DIR = "/var/log/splice_server"
+if not os.path.exists(LOG_DIR):
+    os.makedirs(LOG_DIR)
 
 
 # A sample logging configuration. The only tangible logging

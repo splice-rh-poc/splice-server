@@ -19,30 +19,22 @@ class RequestException(Exception):
         return "Exception: request yielded status code: '%s' with body '%s'" \
         % (self.status, self.message)
 
-def get_entitlement(host, port, url, installed_product, identity,
+def get_entitlement(host, port, url, installed_products, identity,
                     username, password, debug=False):
-    status, data = _request(host, port, url, installed_product, identity,
+    status, data = _request(host, port, url, installed_products, identity,
         username, password, debug)
     if status == 200:
         return parse_data(data)
     raise RequestException(status, data)
 
 def parse_data(data):
-    ret_value = []
-    for item in data:
-        product_info = {}
-        product_info["certs"] = []
-        for d in item["certificates"]:
-            c = {}
-            c["cert"] = d["cert"]
-            c["key"] = d["key"]
-            product_info["certs"].append(c)
-        product_info["product_id"] = item["pool"]["productId"]
-        product_info["product_name"] = item["pool"]["productName"]
-        ret_value.append(product_info)
-    return ret_value
+    certs = []
+    for d in data["certificates"]:
+        item = (d["cert"], d["key"])
+        certs.append(item)
+    return certs
 
-def _request(host, port, url, installed_product,
+def _request(host, port, url, installed_products,
                 identity, username, password, debug=False):
     connection = httplib.HTTPConnection(host, port)
     if debug:
@@ -57,7 +49,7 @@ def _request(host, port, url, installed_product,
     headers['Authorization'] = 'Basic ' + encoded
 
     query_params = {
-        "installed": installed_product,
+        "productId": installed_products,
         "rhic": identity,
     }
     data = urllib.urlencode(query_params)
@@ -79,7 +71,7 @@ def _request(host, port, url, installed_product,
     return response.status, response_body
 
 if __name__ == "__main__":
-    print get_entitlement(host="localhost", port=8080, url="/candlepin/splice/cert",
-        installed_product="37060!Awesome OS Workstation",
-        identity="admin",
+    print get_entitlement(host="ec2-50-16-45-21.compute-1.amazonaws.com", port=8080, url="/candlepin/splice/cert",
+        installed_products=["37060","37061"],
+        identity="1234",
         username="admin", password="admin", debug=True)

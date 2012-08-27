@@ -64,8 +64,9 @@ class CheckIn(object):
         @param installed_products: a list of X509 certificates, identifying each product installed on the consumer
         @type products: [str]
 
-        @return: an x509 certificate to be used as an entitlement certificate
-        @rtype: str
+        @return:    a list of tuples, first entry is a string of the x509 certificate in PEM format,
+                    second entry is the associated private key in string format
+        @rtype: [(str,str)]
         """
         if not self.validate_cert(identity_cert):
             raise CertValidationException()
@@ -117,7 +118,7 @@ class CheckIn(object):
     def get_identity(self, identity_cert):
         id_from_cert = self.extract_id_from_identity_cert(identity_cert)
         _LOG.info("Found ID from identity certificate is '%s' " % (id_from_cert))
-        uuid = "admin" # hard coding 'admin' for now since candlepin is configured for this as the RHIC
+        uuid = "1234" # hard coding 'admin' for now since candlepin is configured for this as the RHIC
         _LOG.warning("** Using hardcoded value of '%s' for certificate ID, until we integrate with updated Candlepin" % (uuid))
         identity = ConsumerIdentity.objects(uuid=uuid).first()
         if not identity:
@@ -194,14 +195,14 @@ class CheckIn(object):
                   (cp_config["host"], cp_config["port"], cp_config["url"]))
         identity=identity.uuid
         # TODO:  Remove hardcoding of installed_product
-        installed_product="37060!Awesome OS Workstation"
+        installed_products=["37060"]
 
-        product_info = candlepin_client.get_entitlement(
+        cert_info = candlepin_client.get_entitlement(
             host=cp_config["host"], port=cp_config["port"], url=cp_config["url"],
-            installed_product=installed_product,
+            installed_products=installed_products,
             identity=identity,
             username=cp_config["username"], password=cp_config["password"])
-        return product_info
+        return cert_info
 
     def __get_candlepin_config_info(self):
         return {

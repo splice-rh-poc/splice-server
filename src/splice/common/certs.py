@@ -28,6 +28,21 @@ except:
 
 from splice.common.config import CONFIG
 
+def get_client_cert_from_request(request):
+    """
+    @param request
+    @type django.http.HttpRequest
+
+    @return certificate as a string or None if no cert data was found
+            looks for request.META["SSL_CLIENT_CERT"] which is inserted by mod_wsgi
+    @rtype: str
+    """
+    if request.META.has_key("SSL_CLIENT_CERT"):
+        cert_string = request.META["SSL_CLIENT_CERT"]
+        return cert_string
+        #utils = CertUtils()
+        #return utils.get_certs_from_string(cert_string)
+    return None
 
 class CertUtils:
 
