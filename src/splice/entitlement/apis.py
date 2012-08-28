@@ -7,6 +7,7 @@ from tastypie.resources import Resource
 from tastypie.exceptions import NotFound, BadRequest
 
 from splice.entitlement.checkin import CheckIn
+from splice.common import certs
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -18,11 +19,11 @@ _LOG = logging.getLogger(__name__)
 #       Consumer request:
 #           PUT /entitlement
 #           Params: {
-#               "identity_cert": "CERT CONTENTS",
-#               "products": ["PRODUCT_CERT_1", "PRODUCT_CERT_2", ....]
+#               "products": ["PRODUCT_CERT_1", "PRODUCT_CERT_2", ....],
+#               "consumer_identifier": "MAC_ADDRESS",
 #           }
 #       Expected Response: {
-#           "entitlement": "CERT CONTENT",
+#           "certs": ["CERT CONTENT", "KEY CONTENT"],
 #           "message": "placeholder to communicate error messages"
 #           }
 #
@@ -48,8 +49,6 @@ _LOG = logging.getLogger(__name__)
 #       https://gist.github.com/794424
 ###
 class Entitlement(object):
-    product_id = ""
-    product_name = ""
     certs = []
     message = "" # Holder for error messages
 #
@@ -60,8 +59,6 @@ class Entitlement(object):
 #      opposed to saying "create this object with this data"
 #
 class EntitlementResource(Resource):
-    product_id = fields.CharField(attribute="product_id")
-    product_name = fields.CharField(attribute="product_name")
     certs = fields.ListField(attribute='certs')
     message = fields.CharField(attribute='message', null=True)
 
@@ -75,23 +72,20 @@ class EntitlementResource(Resource):
         authorization = Authorization()
 
     def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
-        if not bundle.data.has_key("identity_cert"):
-            raise BadRequest("Missing 'identity_cert'")
         if not bundle.data.has_key("products"):
             raise BadRequest("Missing 'products'")
         if not bundle.data.has_key("consumer_identifier"):
             raise BadRequest("Missing 'consumer_identifier'")
 
-        identity_cert = bundle.data['identity_cert']
+        # Read the SSL identity certificate from the SSL request environment variables
+        identity_cert = certs.get_client_cert_from_request(request)
+        _LOG.info("Using 'identity_cert': %s" % (identity_cert))
         products = bundle.data["products"]
         consumer_identifier = bundle.data["consumer_identifier"]
         checkin = CheckIn()
         bundle.obj = Entitlement()
         cert_info = checkin.get_entitlement_certificate(identity_cert, consumer_identifier, products)
-        # TODO handle multiple items being returned from candlepin
-        bundle.obj.product_name = cert_info[0]["product_name"]
-        bundle.obj.product_id = cert_info[0]["product_id"]
-        bundle.obj.certs = cert_info[0]["certs"]
+        bundle.obj.certs = cert_info
         # TODO add support for catching exception and returning appropriate error codes
         # currently we just return a 500
         return bundle

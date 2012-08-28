@@ -16,6 +16,7 @@ import time
 import os
 
 from glob import glob
+import M2Crypto
 from M2Crypto import X509, BIO
 
 LOG = logging.getLogger(__name__)
@@ -24,10 +25,25 @@ try:
     M2CRYPTO_HAS_CRL_SUPPORT = True
 except:
     M2CRYPTO_HAS_CRL_SUPPORT = False
-    LOG.warning("**M2Crypto<%s> lacks patch for using Certificate Revocation Lists**")
+    LOG.warning("**M2Crypto<%s> lacks patch for using Certificate Revocation Lists**" % (M2Crypto.version))
 
 from splice.common.config import CONFIG
 
+def get_client_cert_from_request(request):
+    """
+    @param request
+    @type django.http.HttpRequest
+
+    @return certificate as a string or None if no cert data was found
+            looks for request.META["SSL_CLIENT_CERT"] which is inserted by mod_wsgi
+    @rtype: str
+    """
+    if request.META.has_key("SSL_CLIENT_CERT"):
+        cert_string = request.META["SSL_CLIENT_CERT"]
+        return cert_string
+        #utils = CertUtils()
+        #return utils.get_certs_from_string(cert_string)
+    return None
 
 class CertUtils:
 

@@ -53,6 +53,9 @@ class BaseEntitlementTestCase(MongoTestCase):
         # CA
         self.root_ca_pem = os.path.join(TEST_DATA_DIR, "valid_cert", "ca.cert")
         self.root_ca_pem = open(self.root_ca_pem, "r").read()
+        # Expected data from an example session communicating with Candlepin
+        self.expected_cert = "-----BEGIN CERTIFICATE-----\nMIID3zCCA0igAwIBAgICBNIwDQYJKoZIhvcNAQEFBQAwODEXMBUGA1UEAwwOaXAt\nMTAtNi05NC0xNDExCzAJBgNVBAYTAlVTMRAwDgYDVQQHDAdSYWxlaWdoMB4XDTEy\nMDgyNzE5NTc1NVoXDTEyMDgyNzIwNTc1NVowFzEVMBMGA1UEAxMMdGVzdHRlc3R0\nZXN0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsKDEY3dK0uc0ImSt\nSlQMfQzuR/iQgC3mHLapYPdqHRvX6w4PXx8uOKz1yMjuLj0/0GHtCod97VfAtL/h\nJ/FH9mMsR18y6qezcgbWKU4M4lffH3auQoCFUiJNlEi94d0qxH6iKyWqKRHveRa3\nerILvhMQG6np6XDt3gWirpRwZzi21qr5ZYh83brsuxzU6HfYB51jBYs0uJybxIfm\nDrpRa3YQiyPtE72v8IIcvqYDoXq9QzOVqAMOiw5BLpc0pKQVN6KeB8BYXEa5sfr/\nuQr+GhvlXWS/YWRZiqj6aW56vAKK+arvEbRKFkybJbnSNrfCt8ZKLrB7mZGbxySd\n1xvu7wIDAQABo4IBkzCCAY8wEQYJYIZIAYb4QgEBBAQDAgWgMAsGA1UdDwQEAwIE\nsDBoBgNVHSMEYTBfgBSl9RwXEephltcl32HNuZwR7ZAm16E8pDowODEXMBUGA1UE\nAwwOaXAtMTAtNi05NC0xNDExCzAJBgNVBAYTAlVTMRAwDgYDVQQHDAdSYWxlaWdo\nggkA0hXeS2SIlPMwHQYDVR0OBBYEFL6EQZpQ/Nm3DLW7ZM9UqMxv8VNpMBMGA1Ud\nJQQMMAoGCCsGAQUFBwMCMBwGCisGAQQBkggJBAEEDgwMUkhJQyBQcm9kdWN0MBYG\nCisGAQQBkggJBAIECAwGU1VCLUlEMBQGCisGAQQBkggJBAMEBgwEcmhpYzARBgor\nBgEEAZIICQQFBAMMATEwJAYKKwYBBAGSCAkEBgQWDBQyMDEyLTA4LTI3VDE5OjU3\nOjU1WjAkBgorBgEEAZIICQQHBBYMFDIwMTItMDgtMjdUMjA6NTc6NTVaMBEGCisG\nAQQBkggJBAwEAwwBMDARBgorBgEEAZIICQQOBAMMATAwDQYJKoZIhvcNAQEFBQAD\ngYEALdvvPEU3ozYse4NCSz+B3VrSrZ9Dv6vD+9yRqpXF/AWeYUgO4uyVc5fKzQDZ\nQTRXfqnvyJ773JOTUxJlYHt7uK2wGHbRefsRktGzLnwo3KZOhHWUXtMdt9bNzHw2\nt1rG3Jeubsw5v1s/Dhp5wHR0RvzrHnkxTVI/XFXbqnPvDJ0=\n-----END CERTIFICATE-----\n"
+        self.expected_key = "-----BEGIN RSA PRIVATE KEY-----\nMIIEowIBAAKCAQEAsKDEY3dK0uc0ImStSlQMfQzuR/iQgC3mHLapYPdqHRvX6w4P\nXx8uOKz1yMjuLj0/0GHtCod97VfAtL/hJ/FH9mMsR18y6qezcgbWKU4M4lffH3au\nQoCFUiJNlEi94d0qxH6iKyWqKRHveRa3erILvhMQG6np6XDt3gWirpRwZzi21qr5\nZYh83brsuxzU6HfYB51jBYs0uJybxIfmDrpRa3YQiyPtE72v8IIcvqYDoXq9QzOV\nqAMOiw5BLpc0pKQVN6KeB8BYXEa5sfr/uQr+GhvlXWS/YWRZiqj6aW56vAKK+arv\nEbRKFkybJbnSNrfCt8ZKLrB7mZGbxySd1xvu7wIDAQABAoIBAGp7oaotguh/Bokt\nlONYpGbHYuf0zHjaMv5giOCyiECgRp2ozk+UZrM4Yrz3ldA+kLg6MUPFx39NBhpy\nC3WfGrlJtKoalIGvNJmr0XT5Xv8d5p/7Vrc08CtCDu80o3UFdwEbLv1AKcO00mB3\n94l6yWV/7Jgg6aoYsO7HCvqg9tri76Lc/ALblMfJ04oEvjHo3bo3OcQ5WQT/fhM+\nI1eIqulA1aPP79Wjta/KkeQ/WmKmvqz+eh9ukHdQQNdL1Hxa3sL0HgKbKknBQm2i\nKdPHLJGmc8yqv/0oJL8VZYYvtEOl/XOBZujJqI7WryA4YC9AJc0xjXP6DxrxrLOJ\n4MBChPECgYEA22RTQdjrmEWY/wRiqv0yPMJ0X81qUcpWFnwKQuZJf6811bi0hfej\n6o0h8H4x5PjVSWOTOirX6oI9mHUr5xERlt2YCuoTd/YDeXTSY68o1hKUwQm0RsV6\nN1mIoJ6D/qyuRp5BGKhhOJa5qB3Jbiwb7XEwg/181OXKi3VBG4lAkrMCgYEAzhm2\nuY8T4ep37VoYpQKJ91xm6qctfLxhiFzSWEjTFSJhYqp8cQn2HOovD692jUmczPDQ\nr6634ueSPF2+oRGFv3UlMtqKmEqCDD4dHl11+Xnry8kXjb7Pxq6oJDlRBjRMf2Mu\n4rHxDXpX9hv9S4nzwFoDr6JSYd8ygcqvtgWGoNUCgYEAwCYrQVWyaigyqs/1dtrR\ngCOzdyDbCI2VPpYfCp7VKq6TEP93pInTF5/KZO6x1mAVtfQvQ1e4ydyOBBRDgloR\ntLeZ7Z07tepS+rJVfhcwReX6QOO17/IPa6DQKBUNeCVXceQzEVyP4dco/dQw0nxx\nbVGgc0m1ZmVoMyJcBrj8RD8CgYBgtXAoYhrSR1M+7Kfjxe03RQSF1yxg+4RImEWb\nZ5Ckuh04TwdVg3cY2kp68bqPUZtiDx3dUf63WjIkYVix+6bmz/FEi4e9LjkXxY2k\nUfapuawLU7DZsk+Myyfa14pNfvzmSYQWm6igyme79CZG69SUzagtId3GTxVEEfeh\nUbZ6gQKBgERwlTIEZ6th8elckNl/Zso1g262xPy7GwX8IFlDCvY9ZAfoRz+aBWHK\nK4UbqPZmwXMsQJO7WVOdHoSl7pRPuS0196TEyYw3gu2rVAFernojX1EM0Q0eakYn\nPO75QiHsxdlIsfg1eNEXKqflCivXd3fDXuBtT/Q2MJBmE2ZkxTOB\n-----END RSA PRIVATE KEY-----\n"
 
     def tearDown(self):
         super(BaseEntitlementTestCase, self).tearDown()
@@ -66,16 +69,10 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
         self.password = "admin"
         # TODO add auth
         # self.user = User.objects.create_user(self.username, 'admin@example.com', self.password)
-        self.post_data_invalid_identity = {
-            'identity_cert': self.invalid_identity_cert_pem,
+        self.post_data = {
             'consumer_identifier': "52:54:00:15:E7:69",
             'products': ["Product_1", "Product_2"],
             }
-        self.post_data_valid_identity = {
-            'identity_cert': self.valid_identity_cert_pem,
-            'consumer_identifier': "52:54:00:15:E7:69",
-            'products': ["Product_1", "Product_2"],
-        }
 
     def tearDown(self):
         super(EntitlementResourceTest, self).tearDown()
@@ -85,15 +82,16 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
 
     def test_put_entitlement_valid_identity(self):
         resp = self.api_client.put('/api/v1/entitlement/BOGUS_IDENTITY/', format='json',
-            authentication=self.get_credentials(), data=self.post_data_valid_identity)
+            authentication=self.get_credentials(), data=self.post_data,
+            SSL_CLIENT_CERT=self.valid_identity_cert_pem)
         self.assertHttpAccepted(resp)
         self.assertTrue(resp['Content-Type'].startswith('application/json'))
         self.assertValidJSON(resp.content)
 
         deserialized = self.deserialize(resp)
-        self.assertEquals(deserialized["product_id"], "awesomeos-virt-4")
-        self.assertEquals(deserialized["product_name"], "Awesome OS with up to 4 virtual guests")
         self.assertEquals(len(deserialized["certs"]), 1)
+        self.assertEquals(deserialized["certs"][0][0], self.expected_cert)
+        self.assertEquals(deserialized["certs"][0][1], self.expected_key)
 
     def test_put_entitlement_invalid_identity(self):
         caught = False
@@ -101,7 +99,8 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
             self.api_client.put('/api/v1/entitlement/BOGUS_IDENTITY/',
                 format='json',
                 authentication=self.get_credentials(),
-                data=self.post_data_invalid_identity)
+                data=self.post_data,
+                SSL_CLIENT_CERT=self.invalid_identity_cert_pem)
         except CertValidationException, e:
             caught = True
         self.assertTrue(caught)
@@ -115,15 +114,11 @@ class CandlepinClientTest(BaseEntitlementTestCase):
         super(CandlepinClientTest, self).tearDown()
 
     def test_get_entitlement(self):
-        product_info = candlepin_client.get_entitlement(host="localhost", port=0, url="mocked",
-            installed_product=[4], identity="dummy identity", username="", password="")
-        self.assertEquals(len(product_info), 1)
-        self.assertEquals(product_info[0]["product_id"], u"awesomeos-virt-4")
-        self.assertEquals(product_info[0]["product_name"], u'Awesome OS with up to 4 virtual guests')
-        cert_info = product_info[0]["certs"]
+        cert_info = candlepin_client.get_entitlement(host="localhost", port=0, url="mocked",
+            installed_products=[4], identity="dummy identity", username="", password="")
         self.assertEquals(len(cert_info), 1)
-        self.assertTrue(cert_info[0].has_key("cert"))
-        self.assertTrue(cert_info[0].has_key("key"))
+        self.assertEquals(cert_info[0][0], self.expected_cert)
+        self.assertEquals(cert_info[0][1], self.expected_key)
 
 
 class CertUtilsTest(BaseEntitlementTestCase):

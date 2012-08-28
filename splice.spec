@@ -1,18 +1,21 @@
 Name:		splice
-Version:	0.4
+Version:	0.8
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
 Group:		Development/Languages
 License:	GPLv2
 URL:		https://github.com/splice/splice-server
-Source0:	https://github.com/splice/splice-server/zipball/master
+# Source0:	https://github.com/splice/splice-server/zipball/master/
+Source0: %{name}-%{version}.tar.gz
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildArch: noarch
 BuildRequires:	python2-devel
 BuildRequires: python-setuptools
 BuildRequires: rpm-python
 Requires: mongodb-server
 Requires: pymongo
+Requires: pymongo-gridfs
 Requires: mod_ssl
 Requires: mod_wsgi
 #
@@ -20,7 +23,8 @@ Requires: mod_wsgi
 #Requires:	django > 1.4
 #Requires: django-tastypie > 1.0
 #Requires: mongoengine > 1.0
-#
+Requires: m2crypto >= 0.21.1.pulp-7
+
 
 %description
 Framework for tracking entitlement consumption
@@ -46,10 +50,10 @@ mkdir -p %{buildroot}/%{_var}/log/%{name}
 # Install WSGI script & httpd conf
 cp -R srv %{buildroot}
 cp etc/httpd/conf.d/%{name}.conf %{buildroot}/%{_sysconfdir}/httpd/conf.d/
-cp etc/splice %{buildroot}/%{_sysconfdir}/splice
+cp -R etc/splice %{buildroot}/%{_sysconfdir}
 
 # Copy Cert Data
-cp -R etc/pki/%{name} %{buildroot}/%{_sysconfdir}/pki/%{name}
+cp -R etc/pki/%{name} %{buildroot}/%{_sysconfdir}/pki/
 
 # Remove egg info
 rm -rf %{buildroot}/%{python_sitelib}/*.egg-info
@@ -64,12 +68,32 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 %defattr(-,apache,apache,-)
 %dir %{_sysconfdir}/pki/%{name}
+%{_sysconfdir}/pki/%{name}
 %dir /srv/%{name}
 %dir %{_var}/log/%{name}
 /srv/%{name}/webservices.wsgi
 %doc
 
 %changelog
+* Tue Aug 28 2012 John Matthews <jmatthews@redhat.com> 0.8-1
+- Spec update to allow building tagged version from tito, needed to update
+  Source0 (jmatthews@redhat.com)
+
+* Tue Aug 28 2012 John Matthews <jmatthews@redhat.com> 0.7-1
+- Cleanup (jmatthews@redhat.com)
+
+* Mon Aug 27 2012 John Matthews <jmatthews@redhat.com> 0.6-1
+- Adding requires for patched m2crypto from Pulp (jmatthews@redhat.com)
+- Packaging tweaks to get RPM functional (jmatthews@redhat.com)
+
+* Mon Aug 27 2012 John Matthews <jmatthews@redhat.com> 0.5-1
+- RCS is able to grab SSL client cert from request parameters and extract CN,
+  also updated to work with latest candlepin API (jmatthews@redhat.com)
+- Add ability to validate passed in identity certificate against configured
+  root CA (jmatthews@redhat.com)
+- Added ability to call out to candlepin to fetch entitlement certs
+  (jmatthews@redhat.com)
+
 * Tue Aug 21 2012 John Matthews <jmatthews@redhat.com> 0.4-1
 - More spec updates (jmatthews@redhat.com)
 
