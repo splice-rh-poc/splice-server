@@ -73,15 +73,14 @@ class CheckIn(object):
             raise CertValidationException()
 
         identity = self.get_identity(identity_cert)
-        marketing_products = self.get_marketing_products(identity, installed_products)
 
-        allowed_marketing_products, unallowed_marketing_products = \
-            self.check_access(identity, marketing_products)
-        if unallowed_marketing_products:
-            raise UnallowedProducts(unallowed_marketing_products)
+        allowed_products, unallowed_products = self.check_access(identity, installed_products)
+        if unallowed_products:
+            raise UnallowedProducts(unallowed_products)
 
-        cert_info = self.request_entitlement(identity, allowed_marketing_products)
-        self.record_usage(identity, consumer_identifier, allowed_marketing_products)
+        cert_info = self.request_entitlement(identity, allowed_products)
+        # TODO:  Must add system facts to reporting data
+        self.record_usage(identity, consumer_identifier, allowed_products)
         return cert_info
 
     def validate_cert(self, cert_pem):
@@ -119,47 +118,29 @@ class CheckIn(object):
     def get_identity(self, identity_cert):
         id_from_cert = self.extract_id_from_identity_cert(identity_cert)
         _LOG.info("Found ID from identity certificate is '%s' " % (id_from_cert))
-        uuid = "1234" # hard coding 'admin' for now since candlepin is configured for this as the RHIC
-        _LOG.warning("** Using hardcoded value of '%s' for certificate ID, until we integrate with updated Candlepin" % (uuid))
-        identity = ConsumerIdentity.objects(uuid=uuid).first()
+        identity = ConsumerIdentity.objects(uuid=id_from_cert).first()
         if not identity:
-            identity = ConsumerIdentity(uuid=uuid, subscriptions=[])
+            identity = ConsumerIdentity(uuid=id_from_cert, subscriptions=[])
             try:
                 identity.save()
             except Exception, e:
                 _LOG.exception(e)
         return identity
 
-    def get_marketing_products(self, identity, products):
-        _LOG.info("Call out to external service, determine marketing products " +
-                  "associated to passed in engineering products")
-        mp1_id = "dummy_value_1"
-        mp1_name = "dummy_value_name_1"
-        mp1_description = "dummy_value_description_1"
-        mp2_id = "dummy_value_2"
-        mp2_name = "dummy_value_name_2"
-        mp2_description = "dummy_value_descripion_2"
+    def check_access(self, identity, installed_products):
+        """
+        @param identity the consumers identity
+        @type identity: splice.common.models.ConsumerIdentity
 
-        mp1 = MarketingProduct.objects(uuid=mp1_id, name=mp1_name, description=mp1_description).first()
-        if not mp1:
-            mp1 = MarketingProduct(uuid=mp1_id, name=mp1_name, description=mp1_description)
-            try:
-                mp1.save()
-            except Exception,e:
-                _LOG.exception(e)
-        mp2 = MarketingProduct.objects(uuid=mp2_id, name=mp2_name, description=mp2_description).first()
-        if not mp2:
-            mp2 = MarketingProduct(uuid=mp2_id, name=mp2_name, description=mp2_description)
-            try:
-                mp2.save()
-            except Exception, e:
-                _LOG.exception(e)
-        return [mp1, mp2]
+        @param installed_products list of product ids representing the installed engineering products
+        @type installed_products: [str, str]]
 
-    def check_access(self, identity, marketing_products):
-        _LOG.info("Check if consumer identity <%s> is allowed to access marketing products: %s" % \
-                  (identity, marketing_products))
-        return marketing_products, []
+        @return tuple of list of allowed products and list of unallowed products
+        @rtype [],[]
+        """
+        _LOG.info("Check if consumer identity <%s> is allowed to access products: %s" % \
+                  (identity, installed_products))
+        return installed_products, []
 
     def record_usage(self, identity, consumer_identifier, marketing_products):
         """
@@ -168,8 +149,8 @@ class CheckIn(object):
         @param consumer_identifier means of uniquely identifying different instances with same consumer identity
             an example could be a mac address
         @type consumer_identifier: str
-        @param marketing_products: list of marketing products
-        @type marketing_products: [entitlement.models.MarketingProduct]
+        @param products: list of product ids
+        @type products: [entitlement.models.Product]
         """
         _LOG.info("Record usage for '%s'" % (identity))
         prod_info = []
@@ -192,16 +173,14 @@ class CheckIn(object):
 
     def request_entitlement(self, identity, allowed_products):
         cp_config = self.__get_candlepin_config_info()
-        _LOG.info("Request entitlement certificate from external service: %s:%s%s" % \
-                  (cp_config["host"], cp_config["port"], cp_config["url"]))
-        identity=identity.uuid
-        # TODO:  Remove hardcoding of installed_product
-        installed_products=["37060"]
+        installed_products=allowed_products
+        _LOG.info("Request entitlement certificate from external service: %s:%s%s for RHIC <%s> with products <%s>" % \
+                  (cp_config["host"], cp_config["port"], cp_config["url"], identity.uuid, installed_products))
 
         cert_info = candlepin_client.get_entitlement(
             host=cp_config["host"], port=cp_config["port"], url=cp_config["url"],
             installed_products=installed_products,
-            identity=identity,
+            identity=identity.uuid,
             username=cp_config["username"], password=cp_config["password"])
         return cert_info
 

@@ -50,7 +50,7 @@ def _request(host, port, url, installed_products,
 
     query_params = {
         "productId": installed_products,
-        "rhic": identity,
+        "rhicUUID": identity,
     }
     data = urllib.urlencode(query_params)
     url = url +"?" + data
