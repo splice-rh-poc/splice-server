@@ -23,7 +23,7 @@ def get_entitlement(host, port, url, installed_products, identity,
 def parse_data(data):
     certs = []
     for d in data["certificates"]:
-        item = (d["cert"], d["key"])
+        item = (d["cert"], d["key"], d["serial"]["serial"])
         certs.append(item)
     return certs
 
@@ -42,7 +42,7 @@ def _request(host, port, url, installed_products,
     headers['Authorization'] = 'Basic ' + encoded
 
     query_params = {
-        "productId": installed_products,
+        "productIDs": installed_products,
         "rhicUUID": identity,
     }
     data = urllib.urlencode(query_params)
