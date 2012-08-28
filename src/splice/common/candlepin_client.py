@@ -7,17 +7,10 @@ import logging
 import time
 import urllib
 
+from splice.common import config
+from splice.common.exceptions import RequestException
+
 _LOG = logging.getLogger(__name__)
-
-class RequestException(Exception):
-    def __init__(self, status, message=""):
-        super(RequestException, self).__init__()
-        self.status = status
-        self.message = message
-
-    def __str__(self):
-        return "Exception: request yielded status code: '%s' with body '%s'" \
-        % (self.status, self.message)
 
 def get_entitlement(host, port, url, installed_products, identity,
                     username, password, debug=False):
@@ -70,8 +63,12 @@ def _request(host, port, url, installed_products,
             output.close()
     return response.status, response_body
 
+
 if __name__ == "__main__":
-    print get_entitlement(host="ec2-50-16-45-21.compute-1.amazonaws.com", port=8080, url="/candlepin/splice/cert",
+    config.init()
+    cfg = config.get_candlepin_config_info()
+
+    print get_entitlement(host=cfg["host"], port=cfg["port"], url=cfg["url"],
         installed_products=["37060","37061"],
         identity="1234",
-        username="admin", password="admin", debug=True)
+        username=cfg["username"], password=cfg["password"], debug=True)

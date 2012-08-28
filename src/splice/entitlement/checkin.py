@@ -4,26 +4,12 @@ from datetime import datetime
 
 from splice.common import candlepin_client
 from splice.common.certs import CertUtils
-from splice.common.config import CONFIG
-
-from splice.entitlement.models import ConsumerIdentity, ReportingItem, ProductUsage,\
-MarketingProduct, MarketingProductSubscription, SpliceServer
+from splice.common.config import CONFIG, get_candlepin_config_info
+from splice.common.exceptions import CheckinException, CertValidationException, UnallowedProductException, \
+    UnknownConsumerIdentity
+from splice.entitlement.models import ConsumerIdentity, ProductUsage, SpliceServer
 
 _LOG = logging.getLogger(__name__)
-
-class CheckinException(Exception):
-    pass
-
-class CertValidationException(CheckinException):
-    pass
-
-class UnallowedProductException(CheckinException):
-    def __init__(self, products):
-        super(UnallowedProductException, self).__init__(self)
-        self.products = products
-
-    def __str__(self):
-        return "Unallowed products: %s" % (products)
 
 class CheckIn(object):
     """
@@ -54,13 +40,16 @@ class CheckIn(object):
                 _LOG.exception(e)
         return server
 
-    def get_entitlement_certificate(self, identity_cert, consumer_identifier, installed_products):
+    def get_entitlement_certificate(self, identity_cert, consumer_identifier, facts, installed_products):
         """
         @param identity_cert: str containing X509 certificate, identify of the consumer
         @type identity_cert: str
 
         @param consumer_identifier: a str to help uniquely identify consumers in a given network, could be MAC address
         @type consumer_identifier: str
+
+        @param facts info about the hardware from the consumer, memory, cpu, etc
+        @type facts: {}
 
         @param installed_products: a list of X509 certificates, identifying each product installed on the consumer
         @type products: [str]
@@ -76,11 +65,11 @@ class CheckIn(object):
 
         allowed_products, unallowed_products = self.check_access(identity, installed_products)
         if unallowed_products:
-            raise UnallowedProducts(unallowed_products)
+            raise UnallowedProductException(unallowed_products)
 
         cert_info = self.request_entitlement(identity, allowed_products)
         # TODO:  Must add system facts to reporting data
-        self.record_usage(identity, consumer_identifier, allowed_products)
+        self.record_usage(identity, consumer_identifier, facts, allowed_products)
         return cert_info
 
     def validate_cert(self, cert_pem):
@@ -120,11 +109,7 @@ class CheckIn(object):
         _LOG.info("Found ID from identity certificate is '%s' " % (id_from_cert))
         identity = ConsumerIdentity.objects(uuid=id_from_cert).first()
         if not identity:
-            identity = ConsumerIdentity(uuid=id_from_cert, subscriptions=[])
-            try:
-                identity.save()
-            except Exception, e:
-                _LOG.exception(e)
+            raise UnknownConsumerIdentity(id_from_cert)
         return identity
 
     def check_access(self, identity, installed_products):
@@ -140,39 +125,43 @@ class CheckIn(object):
         """
         _LOG.info("Check if consumer identity <%s> is allowed to access products: %s" % \
                   (identity, installed_products))
-        return installed_products, []
+        allowed_products = []
+        unallowed_products = []
+        for prod in installed_products:
+            if prod not in identity.products:
+                unallowed_products.append(prod)
+            else:
+                allowed_products.append(prod)
+        return allowed_products, unallowed_products
 
-    def record_usage(self, identity, consumer_identifier, marketing_products):
+    def record_usage(self, identity, consumer_identifier, facts, products):
         """
         @param identity consumer's identity
         @type identity: str
+
         @param consumer_identifier means of uniquely identifying different instances with same consumer identity
             an example could be a mac address
         @type consumer_identifier: str
+
+        @param facts system facts
+        @type facts: {}
+
         @param products: list of product ids
         @type products: [entitlement.models.Product]
         """
-        _LOG.info("Record usage for '%s'" % (identity))
-        prod_info = []
-        for mp in marketing_products:
-            prod_info.append(ReportingItem(product=mp, date=datetime.now()))
-
-        prod_usage = ProductUsage.objects(consumer=identity, splice_server=self.get_this_server(),
-            instance_identifier=consumer_identifier).first()
-        if not prod_usage:
-            prod_usage = ProductUsage(consumer=identity, splice_server=self.get_this_server(),
-                instance_identifier=consumer_identifier, product_info=[])
-
-        # Add this checkin's usage info
-        prod_usage.product_info.extend(prod_info)
+        _LOG.info("Record usage for '%s' with products '%s' on instance with identifier '%s'" % \
+                  (identity, products, consumer_identifier))
         try:
+            prod_usage = ProductUsage(consumer=identity.uuid, splice_server=self.get_this_server(),
+                instance_identifier=consumer_identifier, product_info=products, facts=facts,
+                date=datetime.now())
             prod_usage.save()
         except Exception, e:
             _LOG.exception(e)
         return
 
     def request_entitlement(self, identity, allowed_products):
-        cp_config = self.__get_candlepin_config_info()
+        cp_config = get_candlepin_config_info()
         installed_products=allowed_products
         _LOG.info("Request entitlement certificate from external service: %s:%s%s for RHIC <%s> with products <%s>" % \
                   (cp_config["host"], cp_config["port"], cp_config["url"], identity.uuid, installed_products))
@@ -184,11 +173,4 @@ class CheckIn(object):
             username=cp_config["username"], password=cp_config["password"])
         return cert_info
 
-    def __get_candlepin_config_info(self):
-        return {
-            "host": CONFIG.get("entitlement", "host"),
-            "port": CONFIG.get("entitlement", "port"),
-            "url": CONFIG.get("entitlement", "url"),
-            "username": CONFIG.get("entitlement", "username"),
-            "password": CONFIG.get("entitlement", "password"),
-        }
+

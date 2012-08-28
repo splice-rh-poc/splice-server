@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, include, url
 from tastypie.api import Api
+from splice.common import identity
 from splice.entitlement.apis import EntitlementResource
 
 # Uncomment the next two lines to enable the admin:
@@ -21,3 +22,6 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     (r'^api/', include(v1_api.urls)),
 )
+
+# Synchronize our data with rhic_serve
+identity.sync_from_rhic_serve()

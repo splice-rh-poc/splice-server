@@ -76,15 +76,18 @@ class EntitlementResource(Resource):
             raise BadRequest("Missing 'products'")
         if not bundle.data.has_key("consumer_identifier"):
             raise BadRequest("Missing 'consumer_identifier'")
+        if not bundle.data.has_key("system_facts"):
+            raise BadRequest("Missing 'system_facts'")
 
         # Read the SSL identity certificate from the SSL request environment variables
         identity_cert = certs.get_client_cert_from_request(request)
         _LOG.info("Using 'identity_cert': %s" % (identity_cert))
         products = bundle.data["products"]
         consumer_identifier = bundle.data["consumer_identifier"]
+        system_facts = bundle.data["system_facts"]
         checkin = CheckIn()
         bundle.obj = Entitlement()
-        cert_info = checkin.get_entitlement_certificate(identity_cert, consumer_identifier, products)
+        cert_info = checkin.get_entitlement_certificate(identity_cert, consumer_identifier, system_facts, products)
         bundle.obj.certs = cert_info
         # TODO add support for catching exception and returning appropriate error codes
         # currently we just return a 500

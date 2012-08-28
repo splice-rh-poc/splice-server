@@ -1,5 +1,4 @@
-from mongoengine import DateTimeField, Document, EmbeddedDocument, \
-    EmbeddedDocumentField, ListField, ReferenceField, StringField, IntField
+from mongoengine import DateTimeField, Document, ListField, ReferenceField, StringField, DictField
 
 ###
 # Overview of what functionality will need to be supported:
@@ -44,31 +43,23 @@ class SpliceServerRelationships(Document):
     parent = ReferenceField(SpliceServer)
     children = ListField(ReferenceField(SpliceServer))
 
-class MarketingProduct(Document):
-    uuid = StringField(required=True, unique=True)
-    name = StringField(required=True)
-    engineering_id = IntField(required=True)
-    description = StringField()
-
-class MarketingProductSubscription(EmbeddedDocument):
-    expires = DateTimeField(required=True)
-    product = ReferenceField(MarketingProduct, required=True)
-
 class ConsumerIdentity(Document):
     uuid = StringField(required=True, unique=True)  # matches the identifier from the identity certificate
-    subscriptions = ListField(EmbeddedDocumentField(MarketingProductSubscription))
+    products = ListField(StringField())
 
-class ReportingItem(EmbeddedDocument):
-    product = ReferenceField(MarketingProduct, required=True)
-    date = DateTimeField(required=True)
+    def __str__(self):
+        return "Consumer Identity '%s' with products '%s'" % (self.uuid, self.products)
 
 class ProductUsage(Document):
-    consumer = ReferenceField(ConsumerIdentity)
+    consumer = StringField(required=True)
     splice_server = ReferenceField(SpliceServer, required=True)
-    instance_identifier = StringField(required=True, unique_with=["splice_server", "consumer"]) # example: MAC Address
-    product_info = ListField(EmbeddedDocumentField(ReportingItem))
+    instance_identifier = StringField(required=True) # example: MAC Address
+    product_info = ListField(StringField())
+    facts = DictField()
+    date = DateTimeField(required=True)
 
-
-    
+    def __str__(self):
+        return "Consumer '%s' on Splice Server '%s' from instance '%s' using products '%s' at '%s'" % \
+               (self.consumer, self.splice_server, self.instance_identifier, self.product_info, self.date)
 
 
