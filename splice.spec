@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.10
+Version:	0.11
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -75,6 +75,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Aug 28 2012 John Matthews <jmatthews@redhat.com> 0.11-1
+- Fixed how we encoded array query params to candlepin & update unit test with
+  expected data (jmatthews@redhat.com)
+
 * Tue Aug 28 2012 John Matthews <jmatthews@redhat.com> 0.10-1
 - candlepin client change for productIDs and return the serial number of each
   certificate from json data (jmatthews@redhat.com)
