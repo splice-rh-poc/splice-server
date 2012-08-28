@@ -6,7 +6,7 @@ Summary:	Framework for tracking entitlement consumption
 Group:		Development/Languages
 License:	GPLv2
 URL:		https://github.com/splice/splice-server
-Source0:	https://github.com/splice/splice-server/zipball/master
+Source0:	https://github.com/splice/splice-server/zipball/master/
 BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
 BuildRequires:	python2-devel

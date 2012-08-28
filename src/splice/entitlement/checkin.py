@@ -43,6 +43,7 @@ class CheckIn(object):
 
     def get_this_server(self):
         # parse a configuration file and determine our splice server identifier
+        # OR...read in a SSL cert that identifies our splice server.
         uuid="our splice server uuid"
         server = SpliceServer.objects(uuid=uuid).first()
         if not server:
