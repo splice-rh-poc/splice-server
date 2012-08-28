@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.8
+Version:	0.9
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -75,6 +75,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Aug 28 2012 John Matthews <jmatthews@redhat.com> 0.9-1
+- Update call to candlepin to use rhicUUID param, and remove hard coding of
+  RHIC uuid and Product id (jmatthews@redhat.com)
+
 * Tue Aug 28 2012 John Matthews <jmatthews@redhat.com> 0.8-1
 - Spec update to allow building tagged version from tito, needed to update
   Source0 (jmatthews@redhat.com)
