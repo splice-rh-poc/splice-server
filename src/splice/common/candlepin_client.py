@@ -45,13 +45,15 @@ def _request(host, port, url, installed_products,
         "productIDs": installed_products,
         "rhicUUID": identity,
     }
-    data = urllib.urlencode(query_params)
+    data = urllib.urlencode(query_params, True)
     url = url +"?" + data
     _LOG.info("Sending HTTP request to: %s:%s%s with headers:%s" % (host, port, url, headers))
     connection.request(method, url, body=None, headers=headers)
 
     response = connection.getresponse()
     response_body = response.read()
+    if response.status != 200:
+        _LOG.info("Response status '%s', '%s', '%s'" % (response.status, response.reason, response_body))
     if response.status == 200:
         response_body_raw = response_body
         response_body = json.loads(response_body_raw)
@@ -69,6 +71,6 @@ if __name__ == "__main__":
     cfg = config.get_candlepin_config_info()
 
     print get_entitlement(host=cfg["host"], port=cfg["port"], url=cfg["url"],
-        installed_products=["37060","37061"],
+        installed_products=["69","83"],
         identity="1234",
         username=cfg["username"], password=cfg["password"], debug=True)
