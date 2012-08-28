@@ -6,6 +6,8 @@ import time
 
 from datetime import datetime
 from mongoengine.document import Document
+import pycurl, cStringIO, json
+
 
 MONGO_DATABASE_NAME = 'checkin_service'
 import mongoengine
@@ -32,6 +34,30 @@ def create_splice_server():
 
 
 def create_consumer_identity():
+    
+    buf = cStringIO.StringIO()
+    URL = 'http://ec2-184-72-159-16.compute-1.amazonaws.com:8000/api/account/'
+    USER = 'shadowman@redhat.com'
+    PASS = 'shadowman@redhat.com'
+    conn = pycurl.Curl()
+    conn.setopt(pycurl.USERPWD, "%s:%s" % (USER, PASS))
+    conn.setopt(pycurl.URL, URL)
+    conn.setopt(pycurl.WRITEFUNCTION, buf.write)
+    conn.perform()
+    
+    data = json.loads(buf.getvalue())
+    #consumer = data[0]['account_id'].encode('ascii')
+    consumer =  data[0]['resource_uri'].encode('ascii').split('/')[-2]
+    
+    
+    identity = ConsumerIdentity(uuid=consumer, subscriptions=[])
+    try:
+        identity.save()
+    except Exception, e:
+        _LOG.exception(e)
+    return identity
+    
+    '''
     uuid = "dummy_identifier value_%s" % (time.time())
     identity = ConsumerIdentity.objects(uuid=uuid).first()
     if not identity:
@@ -41,27 +67,24 @@ def create_consumer_identity():
         except Exception, e:
             _LOG.exception(e)
     return identity
-
+    '''
+    
 def create_marketing_products():
     # sample produts
 # [(sku, product name), ...]
 
     p = [
-    ('RH00001', 'Red Hat Enterprise Linux'),
-    ('RH00002', 'Red Hat Enterprise Linux for Academia'),
-    ('RH00003', 'Red Hat Enterprise Linux for Developers'),
-    ('RH00004', 'Red Hat Enterprise MRG'),
-    ('RH00005', 'Red Hat Enterprise High Availability'),
-    ('RH00006', 'Red Hat Enterprise Load Balancing'),
-    ('RH00007', 'Red Hat JBoss AS'),
-    ('RH00008', 'Red Hat JBoss WS'),
-    ('RH00009', 'Red Hat Database'),
-    ('RH000010', 'Red Hat Cloudforms'),
+    ('RH00001', 69, 'RHEL Server'),
+    ('RH00002', 83,  'RHEL HA'),
+    ('RH00003', 70, 'RHEL EUS'),
+    ('RH00004', 85, 'RHEL LB'),
+    ('RH00005', 183,  'JBoss EAP'),
+    ('RH00006', 69, 'RHEL Server for Education'),
     ]
 
     mps_list = []
     for i in p:
-        mp = MarketingProduct(uuid=i[0], name=i[1], description=i[1])
+        mp = MarketingProduct(uuid=i[0], engineering_id = i[1], name=i[2], description=i[2])
         mp.tags = ['mongodb', 'mongoengine']
         mp.save()
 
@@ -90,10 +113,10 @@ if __name__ == "__main__":
     identity = create_consumer_identity()
     print "Created consumer identity: %s  <%s>" % (identity.uuid, identity)
     create_marketing_products()
-    linux_marketing_products = MarketingProduct.objects(name__contains='Linux')
+    linux_marketing_products = MarketingProduct.objects(name__contains='RHEL')
     jboss_marketing_products = MarketingProduct.objects(name__contains='JBoss')
-    mrg_marketing_products = MarketingProduct.objects(name__contains='MRG')
-    cf_marketing_products = MarketingProduct.objects(name__contains='Cloud')
+    mrg_marketing_products = MarketingProduct.objects(name__contains='EUS')
+    cf_marketing_products = MarketingProduct.objects(name__contains='HA')
     print "Created marketing products: %s" % (linux_marketing_products)
     print "Created marketing products: %s" % (jboss_marketing_products)
 

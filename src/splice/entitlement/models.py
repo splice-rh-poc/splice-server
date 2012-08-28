@@ -1,5 +1,5 @@
 from mongoengine import DateTimeField, Document, EmbeddedDocument, \
-    EmbeddedDocumentField, ListField, ReferenceField, StringField
+    EmbeddedDocumentField, ListField, ReferenceField, StringField, IntField
 
 ###
 # Overview of what functionality will need to be supported:
@@ -47,6 +47,7 @@ class SpliceServerRelationships(Document):
 class MarketingProduct(Document):
     uuid = StringField(required=True, unique=True)
     name = StringField(required=True)
+    engineering_id = IntField(required=True)
     description = StringField()
 
 class MarketingProductSubscription(EmbeddedDocument):
