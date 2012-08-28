@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.6
+Version:	0.7
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -74,6 +74,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Aug 28 2012 John Matthews <jmatthews@redhat.com> 0.7-1
+- Cleanup (jmatthews@redhat.com)
+
 * Mon Aug 27 2012 John Matthews <jmatthews@redhat.com> 0.6-1
 - Adding requires for patched m2crypto from Pulp (jmatthews@redhat.com)
 - Packaging tweaks to get RPM functional (jmatthews@redhat.com)
