@@ -1,5 +1,7 @@
 import json
 import os
+import time
+
 
 from tastypie.test import ResourceTestCase
 
@@ -7,12 +9,15 @@ from mongoengine.connection import connect, disconnect
 from django.conf import settings
 
 from splice.common import candlepin_client
+from splice.common import rhic_serve_client
 from splice.common.certs import CertUtils
-from splice.common.identity import create_new_consumer_identity
+from splice.common.identity import create_new_consumer_identity, sync_from_rhic_serve, sync_from_rhic_serve_blocking
 from splice.entitlement.checkin import CheckIn, CertValidationException
 from splice.entitlement.models import ConsumerIdentity
 
 TEST_DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "test_data")
+
+#TODO Break these tests out to separate files and allow to run from nosetests outside of 'python manage.py test entitlement'
 
 # Adapted From:
 # https://github.com/vandersonmota/mongoengine_django_tests/blob/master/mongotest.py
@@ -30,9 +35,24 @@ class MongoTestCase(ResourceTestCase):
         super(MongoTestCase, self)._post_teardown()
         self.db.drop_database(self.db_name)
 
-def mocked_request_method(host, port, url, installed_product,
+    def drop_database_and_reconnect(self):
+        disconnect()
+        self.db.drop_database(self.db_name)
+        self.db = connect(self.db_name)
+
+def mocked_candlepin_client_request_method(host, port, url, installed_product,
                           identity, username, password, debug=False):
     example_data = os.path.join(TEST_DATA_DIR, "example_candlepin_data.json")
+    f = open(example_data, "r")
+    try:
+        data = f.read()
+    finally:
+        f.close()
+    response_body = json.loads(data)
+    return 200, response_body
+
+def mocked_rhic_serve_client_request_method(host, port, url, debug=False):
+    example_data = os.path.join(TEST_DATA_DIR, "example_rhic_serve_data.json")
     f = open(example_data, "r")
     try:
         data = f.read()
@@ -44,8 +64,10 @@ def mocked_request_method(host, port, url, installed_product,
 class BaseEntitlementTestCase(MongoTestCase):
     def setUp(self):
         super(BaseEntitlementTestCase, self).setUp()
-        self.saved_request_method = candlepin_client._request
-        candlepin_client._request = mocked_request_method
+        self.saved_candlepin_client_request_method = candlepin_client._request
+        self.saved_rhic_serve_client_request_method = rhic_serve_client._request
+        candlepin_client._request = mocked_candlepin_client_request_method
+        rhic_serve_client._request = mocked_rhic_serve_client_request_method
         # Test Certificate Data
         # invalid cert, signed by a CA other than 'root_ca_pem'
         self.invalid_identity_cert_pem = os.path.join(TEST_DATA_DIR, "invalid_cert", "invalid.cert")
@@ -70,7 +92,8 @@ class BaseEntitlementTestCase(MongoTestCase):
 
     def tearDown(self):
         super(BaseEntitlementTestCase, self).tearDown()
-        candlepin_client._request = self.saved_request_method
+        candlepin_client._request = self.saved_candlepin_client_request_method
+        rhic_serve_client._request = self.saved_rhic_serve_client_request_method
 
 class EntitlementResourceTest(BaseEntitlementTestCase):
 
@@ -153,6 +176,61 @@ class CertUtilsTest(BaseEntitlementTestCase):
         self.assertFalse(self.cert_utils.validate_certificate_pem(
             self.invalid_identity_cert_pem, self.root_ca_pem))
 
+class IdentityTest(BaseEntitlementTestCase):
+    def setUp(self):
+        super(IdentityTest, self).setUp()
+
+    def tearDown(self):
+        super(IdentityTest, self).tearDown()
+
+    def test_get_all_rhics(self):
+        rhics = rhic_serve_client.get_all_rhics(host="localhost", port=0, url="mocked")
+        self.assertEquals(len(rhics), 3)
+
+    def test_sync_from_rhic_serve_blocking(self):
+        self.drop_database_and_reconnect()
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 0)
+        sync_from_rhic_serve_blocking()
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 3)
+        expected_rhics = ["480ed55f-c3fb-4249-ac4c-52e440cd9304",
+                          "c921d17e-cf82-4738-bfbb-36a83dc45c03",
+                          "98e6aa41-a25d-4d60-976b-d70518382683"]
+        for r in rhics:
+            self.assertTrue(r.uuid in expected_rhics)
+
+    def test_sync_from_rhic_serve_threaded(self):
+        self.drop_database_and_reconnect()
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 0)
+        sync_thread = sync_from_rhic_serve()
+        for index in range(0,60):
+            if not sync_thread.finished:
+                time.sleep(.05)
+        self.assertTrue(sync_thread.finished)
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 3)
+        expected_rhics = ["480ed55f-c3fb-4249-ac4c-52e440cd9304",
+                          "c921d17e-cf82-4738-bfbb-36a83dc45c03",
+                          "98e6aa41-a25d-4d60-976b-d70518382683"]
+        for r in rhics:
+            self.assertTrue(r.uuid in expected_rhics)
+
+    def test_sync_that_removes_old_rhics(self):
+        self.drop_database_and_reconnect()
+        # Create one dummy RHIC which our sync should remove
+        create_new_consumer_identity("old rhic uuid to be removed", ["1","2"])
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 1)
+        sync_from_rhic_serve_blocking()
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 3)
+        expected_rhics = ["480ed55f-c3fb-4249-ac4c-52e440cd9304",
+                          "c921d17e-cf82-4738-bfbb-36a83dc45c03",
+                          "98e6aa41-a25d-4d60-976b-d70518382683"]
+        for r in rhics:
+            self.assertTrue(r.uuid in expected_rhics)
 
 class CheckInTest(BaseEntitlementTestCase):
     """

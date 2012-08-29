@@ -7,6 +7,7 @@ from splice.common.certs import CertUtils
 from splice.common.config import CONFIG, get_candlepin_config_info
 from splice.common.exceptions import CheckinException, CertValidationException, UnallowedProductException, \
     UnknownConsumerIdentity
+from splice.common.identity import sync_from_rhic_serve
 from splice.entitlement.models import ConsumerIdentity, ProductUsage, SpliceServer
 
 _LOG = logging.getLogger(__name__)
@@ -109,6 +110,8 @@ class CheckIn(object):
         _LOG.info("Found ID from identity certificate is '%s' " % (id_from_cert))
         identity = ConsumerIdentity.objects(uuid=id_from_cert).first()
         if not identity:
+            _LOG.info("Couldn't find RHIC with ID '%s' initiating a sync from RHIC_Serve" % (identity_cert))
+            sync_from_rhic_serve()
             raise UnknownConsumerIdentity(id_from_cert)
         return identity
 
