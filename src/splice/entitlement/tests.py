@@ -181,7 +181,7 @@ class CheckInTest(BaseEntitlementTestCase):
         #        subject=/CN=dbcbc8e1-5b37-4a77-9db1-faf4ef29307d
         self.assertEquals(
             self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem),
-            "dbcbc8e1-5b37-4a77-9db1-faf4ef29307d")
+            "98e6aa41-a25d-4d60-976b-d70518382683")
 
     def test_check_access_allowed(self):
         identity = ConsumerIdentity.objects(uuid=self.valid_identity_uuid).first()
