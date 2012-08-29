@@ -130,16 +130,13 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
         self.assertEquals(deserialized["certs"][0][2], self.expected_serial)
 
     def test_put_entitlement_invalid_identity(self):
-        caught = False
-        try:
-            self.api_client.put('/api/v1/entitlement/BOGUS_IDENTITY/',
-                format='json',
-                authentication=self.get_credentials(),
-                data=self.post_data,
-                SSL_CLIENT_CERT=self.invalid_identity_cert_pem)
-        except CertValidationException, e:
-            caught = True
-        self.assertTrue(caught)
+        resp = self.api_client.put('/api/v1/entitlement/BOGUS_IDENTITY/',
+            format='json',
+            authentication=self.get_credentials(),
+            data=self.post_data,
+            SSL_CLIENT_CERT=self.invalid_identity_cert_pem)
+        self.assertHttpForbidden(resp)
+        self.assertEqual("Unable to verify consumer's identity certificate was signed by configured CA", resp.content)
 
 class CandlepinClientTest(BaseEntitlementTestCase):
 

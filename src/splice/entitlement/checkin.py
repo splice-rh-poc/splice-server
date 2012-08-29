@@ -110,7 +110,7 @@ class CheckIn(object):
         _LOG.info("Found ID from identity certificate is '%s' " % (id_from_cert))
         identity = ConsumerIdentity.objects(uuid=id_from_cert).first()
         if not identity:
-            _LOG.info("Couldn't find RHIC with ID '%s' initiating a sync from RHIC_Serve" % (identity_cert))
+            _LOG.info("Couldn't find RHIC with ID '%s' initiating a sync from RHIC_Serve" % (id_from_cert))
             sync_from_rhic_serve()
             raise UnknownConsumerIdentity(id_from_cert)
         return identity

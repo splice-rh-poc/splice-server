@@ -72,6 +72,13 @@ class EntitlementResource(Resource):
         authorization = Authorization()
 
     def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
+        try:
+            return self.process_checkin(bundle, request, skip_errors, **kwargs)
+        except Exception, e:
+            _LOG.exception(e)
+            raise
+
+    def process_checkin(self, bundle, request, skip_errors, **kwargs):
         if not bundle.data.has_key("products"):
             raise BadRequest("Missing 'products'")
         if not bundle.data.has_key("consumer_identifier"):
@@ -92,4 +99,3 @@ class EntitlementResource(Resource):
         # TODO add support for catching exception and returning appropriate error codes
         # currently we just return a 500
         return bundle
-
