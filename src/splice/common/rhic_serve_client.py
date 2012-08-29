@@ -17,7 +17,7 @@ def get_all_rhics(host, port, url, debug=False):
     raise RequestException(status, data)
 
 def _request(host, port, url, debug=False):
-    connection = httplib.HTTPConnection(host, port)
+    connection = httplib.HTTPSConnection(host, port)
     if debug:
         connection.set_debuglevel(100)
     method = 'GET'
