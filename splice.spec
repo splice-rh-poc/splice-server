@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.15
+Version:	0.16
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -75,6 +75,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Wed Aug 29 2012 John Matthews <jmatthews@redhat.com> 0.16-1
+- Cleaned up raised exceptions so tastypie will return a better response
+  reflecting the issue (jmatthews@redhat.com)
+
 * Wed Aug 29 2012 John Matthews <jmatthews@redhat.com> 0.15-1
 - Added non-blocking sync of RHIC data, tied this to trigger when we can't find
   a RHIC's uuid, plus added unit tests for rhic_serve_client functionality
