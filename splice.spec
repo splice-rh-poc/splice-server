@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.13
+Version:	0.14
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -75,6 +75,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Wed Aug 29 2012 John Matthews <jmatthews@redhat.com> 0.14-1
+- Update unit tests for new CA change (jmatthews@redhat.com)
+
 * Wed Aug 29 2012 John Matthews <jmatthews@redhat.com> 0.13-1
 - Update Splice testing CA certificate (jmatthews@redhat.com)
 
