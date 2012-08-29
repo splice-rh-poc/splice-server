@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.11
+Version:	0.12
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -75,6 +75,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Wed Aug 29 2012 John Matthews <jmatthews@redhat.com> 0.12-1
+- Update for rhic_serve change to 'https' (jmatthews@redhat.com)
+
 * Tue Aug 28 2012 John Matthews <jmatthews@redhat.com> 0.11-1
 - Fixed how we encoded array query params to candlepin & update unit test with
   expected data (jmatthews@redhat.com)
