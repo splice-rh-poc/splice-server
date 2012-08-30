@@ -10,6 +10,7 @@ from django.conf import settings
 
 from splice.common import candlepin_client
 from splice.common import rhic_serve_client
+from splice.common import utils
 from splice.common.certs import CertUtils
 from splice.common.identity import create_new_consumer_identity, sync_from_rhic_serve, sync_from_rhic_serve_blocking
 from splice.entitlement.checkin import CheckIn, CertValidationException
@@ -278,3 +279,27 @@ class CheckInTest(BaseEntitlementTestCase):
         self.assertTrue("101" in unallowed_products)
         self.assertEquals(len(allowed_products), 1)
         self.assertEquals(len(unallowed_products), 1)
+
+class UtilsTest(BaseEntitlementTestCase):
+    """
+    Tests to exercise splice.common.utils
+    """
+    def setUp(self):
+        super(UtilsTest, self).setUp()
+
+    def tearDown(self):
+        super(UtilsTest, self).tearDown()
+
+    def test_sanitize_dict_for_mongo(self):
+        bad_dot_key = "bad.value.with.dots"
+        fixed_bad_dot_key = "bad_dot_value_dot_with_dot_dots"
+        bad_dollar_key = "dolla$dolla$"
+        fixed_bad_dollar_key = "dolla_dollarsign_dolla_dollarsign_"
+        a = {bad_dot_key: "1",
+             bad_dollar_key: "2"}
+        sanitized = utils.sanitize_dict_for_mongo(a)
+        self.assertEquals(len(sanitized), 2)
+        self.assertTrue(sanitized.has_key(fixed_bad_dot_key))
+        self.assertTrue(sanitized.has_key(fixed_bad_dollar_key))
+        self.assertEquals(sanitized[fixed_bad_dot_key], a[bad_dot_key])
+        self.assertEquals(sanitized[fixed_bad_dollar_key], a[bad_dollar_key])

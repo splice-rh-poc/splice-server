@@ -2,7 +2,7 @@ import logging
 import time
 from datetime import datetime
 
-from splice.common import candlepin_client
+from splice.common import candlepin_client, utils
 from splice.common.certs import CertUtils
 from splice.common.config import CONFIG, get_candlepin_config_info
 from splice.common.exceptions import CheckinException, CertValidationException, UnallowedProductException, \
@@ -138,11 +138,12 @@ class CheckIn(object):
         @param products: list of product ids
         @type products: [entitlement.models.Product]
         """
-        _LOG.info("Record usage for '%s' with products '%s' on instance with identifier '%s' and facts <%s>" % \
-                  (identity, products, consumer_identifier, facts))
         try:
+            sanitized_facts = utils.sanitize_dict_for_mongo(facts)
+            _LOG.info("Record usage for '%s' with products '%s' on instance with identifier '%s' and facts <%s>" %\
+                (identity, products, consumer_identifier, sanitized_facts))
             prod_usage = ProductUsage(consumer=identity.uuid, splice_server=self.get_this_server(),
-                instance_identifier=consumer_identifier, product_info=products, facts=facts,
+                instance_identifier=consumer_identifier, product_info=products, facts=sanitized_facts,
                 date=datetime.now())
             prod_usage.save()
         except Exception, e:
@@ -161,5 +162,4 @@ class CheckIn(object):
             identity=identity.uuid,
             username=cp_config["username"], password=cp_config["password"])
         return cert_info
-
 
