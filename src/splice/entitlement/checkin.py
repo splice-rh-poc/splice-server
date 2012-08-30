@@ -138,8 +138,8 @@ class CheckIn(object):
         @param products: list of product ids
         @type products: [entitlement.models.Product]
         """
-        _LOG.info("Record usage for '%s' with products '%s' on instance with identifier '%s'" % \
-                  (identity, products, consumer_identifier))
+        _LOG.info("Record usage for '%s' with products '%s' on instance with identifier '%s' and facts <%s>" % \
+                  (identity, products, consumer_identifier, facts))
         try:
             prod_usage = ProductUsage(consumer=identity.uuid, splice_server=self.get_this_server(),
                 instance_identifier=consumer_identifier, product_info=products, facts=facts,
