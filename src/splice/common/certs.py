@@ -225,6 +225,30 @@ class CertUtils:
             return certs
         return certs
 
+    def get_subject_pieces(self, cert_str):
+        """
+        @param cert_str a x509 certificate as a string
+        @type cert_str: str
+
+        @return a dictionary of broken out items in the certs subject. example {"CN":"hostname",...}
+        @rtype: {}
+        """
+        x509_certs = self.get_certs_from_string(cert_str)
+        # Grab the first cert if it exists
+        if not x509_certs:
+            return None
+        c = x509_certs[0]
+        subject = c.get_subject()
+        if not subject:
+            return None
+        subject = subject.as_text()
+        items = subject.split("/")
+        info = {}
+        for pair in items:
+            pieces = pair.split("=")
+            info[pieces[0]] = pieces[1]
+        return info
+
     def get_debug_info_certs(self, cert, ca_certs, crl_stack):
         """
         Debug method to display information certificates.  Typically used to print info after a verification failed.

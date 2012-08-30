@@ -85,25 +85,11 @@ class CheckIn(object):
         _LOG.debug(cert_pem)
         return self.cert_utils.validate_certificate_pem(cert_pem, self.root_ca_cert_pem)
 
-    def parse_cert_subject(self, subject, target):
-        items = subject.split("/")
-        for pair in items:
-            pieces = pair.split("=")
-            if pieces[0].lower() == target.lower():
-                return pieces[1]
-        return None
-
     def extract_id_from_identity_cert(self, identity_cert):
-        x509_certs = self.cert_utils.get_certs_from_string(identity_cert)
-        # Grab the first cert if it exists
-        if not x509_certs:
-            return None
-        c = x509_certs[0]
-        subject = c.get_subject()
-        if not subject:
-            return None
-        subject = subject.as_text()
-        return self.parse_cert_subject(subject, "CN")
+        subj_pieces = self.cert_utils.get_subject_pieces(identity_cert)
+        if subj_pieces and subj_pieces.has_key("CN"):
+            return subj_pieces["CN"]
+        return None
 
     def get_identity(self, identity_cert):
         id_from_cert = self.extract_id_from_identity_cert(identity_cert)

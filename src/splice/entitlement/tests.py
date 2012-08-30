@@ -85,6 +85,7 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.checkin = CheckIn()
         self.valid_products = ["40", "41"]
         self.valid_identity_uuid = self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem)
+        self.expected_valid_identity_uuid = "98e6aa41-a25d-4d60-976b-d70518382683"
         self.load_rhic_data()
 
     def load_rhic_data(self):
@@ -173,6 +174,11 @@ class CertUtilsTest(BaseEntitlementTestCase):
         self.assertFalse(self.cert_utils.validate_certificate_pem(
             self.invalid_identity_cert_pem, self.root_ca_pem))
 
+    def test_get_subject_pieces(self):
+        pieces = self.cert_utils.get_subject_pieces(self.valid_identity_cert_pem)
+        self.assertEquals(len(pieces), 1)
+        self.assertEquals(pieces["CN"], self.expected_valid_identity_uuid)
+
 class IdentityTest(BaseEntitlementTestCase):
     def setUp(self):
         super(IdentityTest, self).setUp()
@@ -244,11 +250,6 @@ class CheckInTest(BaseEntitlementTestCase):
 
     def test_validate_cert_invalid(self):
         self.assertFalse(self.checkin.validate_cert(self.invalid_identity_cert_pem))
-
-    def test_parse_cert_subject(self):
-        self.assertEquals(self.checkin.parse_cert_subject("/OU=foo/CN=bar", "CN"), "bar")
-        self.assertEquals(self.checkin.parse_cert_subject("/OU=foo/CN=bar/EM=baz", "CN"), "bar")
-        self.assertEquals(self.checkin.parse_cert_subject("/OU=foo/EM=baz", "CN"), None)
 
     def test_extract_id_from_identity_cert(self):
         # below is example of subject from test data
