@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.16
+Version:	0.17
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -75,6 +75,12 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Aug 30 2012 John Matthews <jmatthews@redhat.com> 0.17-1
+- Fixed bug in saving system facts from rhsm, mongo didn't like '.' and '$' in
+  key values (jmatthews@redhat.com)
+- Debugging issue with storing facts (jmatthews@redhat.com)
+- Move logic for extracting CN from cert to CertUtils (jmatthews@redhat.com)
+
 * Wed Aug 29 2012 John Matthews <jmatthews@redhat.com> 0.16-1
 - Cleaned up raised exceptions so tastypie will return a better response
   reflecting the issue (jmatthews@redhat.com)
