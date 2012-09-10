@@ -110,6 +110,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     'splice.common.middleware.ProfileMiddleware',
 )
 
 ROOT_URLCONF = 'splice.checkin_service.urls'
