@@ -8,7 +8,7 @@
 
 Name:           python-%{srcname}
 Version:        2.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        AMQP Messaging Framework for Python
 
 Group:          Development/Languages
@@ -136,6 +136,9 @@ popd
 
 
 %changelog
+* Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 2.4.3-2
+- new package built with tito
+
 * Sun Aug 26 2012 Matthias Runge <mrunge@matthias-runge.de> - 2.4.3-1
 - update to new upstream version 2.4.3
 
