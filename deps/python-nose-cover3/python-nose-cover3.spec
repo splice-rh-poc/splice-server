@@ -9,7 +9,7 @@
 
 Name:           python-%{pypi_name}
 Version:        0.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Coverage 3.x support for Nose
 
 License:        LGPLv2+
@@ -80,6 +80,9 @@ popd
 
 
 %changelog
+* Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 0.1.0-5
+- new package built with tito
+
 * Sat Aug 04 2012 David Malcolm <dmalcolm@redhat.com> - 0.1.0-4
 - rebuild for https://fedoraproject.org/wiki/Features/Python_3.3
 
