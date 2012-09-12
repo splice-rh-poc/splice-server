@@ -6,7 +6,7 @@
 
 Name:           python-celery
 Version:        3.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Distributed Task Queue
 
 Group:          Development/Languages
@@ -148,6 +148,9 @@ popd
 
 
 %changelog
+* Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 3.0.9-2
+- new package built with tito
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> - 3.0.9-1
 - update to version 3.0.9
 
