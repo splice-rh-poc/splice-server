@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.17
+Version:	0.18
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -75,6 +75,16 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 0.18-1
+- Added 'minutes' to checkin request, this is converted to start/end dates for
+  certificate request when talking to candlepin (jmatthews@redhat.com)
+- Update checkin entitlement call to accept a 'POST' or a 'PUT', recommended
+  approach will be 'POST', updated test scripts to reflect this
+  (jmatthews@redhat.com)
+- Fixed an exception being formed incorrectly (jmatthews@redhat.com)
+- Added a profiler middleware based on blogpost: http://gun.io/blog/fast-as-
+  fuck-django-part-1-using-a-profiler/ (jmatthews@redhat.com)
+
 * Thu Aug 30 2012 John Matthews <jmatthews@redhat.com> 0.17-1
 - Fixed bug in saving system facts from rhsm, mongo didn't like '.' and '$' in
   key values (jmatthews@redhat.com)
