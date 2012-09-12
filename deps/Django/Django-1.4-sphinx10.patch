@@ -1,0 +1,12 @@
+diff -Naur Django-1.4.1/docs/Makefile Django-1.4.1-patched/docs/Makefile
+--- Django-1.4.1/docs/Makefile	2012-07-30 16:42:42.000000000 -0400
++++ Django-1.4.1-patched/docs/Makefile	2012-09-12 15:40:12.601630956 -0400
+@@ -3,7 +3,7 @@
+ 
+ # You can set these variables from the command line.
+ SPHINXOPTS    =
+-SPHINXBUILD   = sphinx-build
++SPHINXBUILD   = sphinx-1.0-build
+ PAPER         =
+ BUILDDIR      = _build
+ 
