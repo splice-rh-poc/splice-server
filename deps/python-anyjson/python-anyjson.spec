@@ -8,7 +8,7 @@
 
 Name:           python-%{srcname}
 Version:        0.3.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Wraps the best available JSON implementation available
 
 Group:          Development/Languages
@@ -75,6 +75,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 0.3.3-3
+- new package built with tito
+
 * Sat Aug 04 2012 David Malcolm <dmalcolm@redhat.com> - 0.3.3-2
 - rebuild for https://fedoraproject.org/wiki/Features/Python_3.3
 
