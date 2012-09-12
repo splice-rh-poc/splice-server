@@ -147,8 +147,8 @@ chmod +x \
 %check
 export PYTHONPATH=$(pwd)
 export LANG=en_US.utf8
-cd tests
-./runtests.py --settings=test_sqlite
+#cd tests
+#./runtests.py --settings=test_sqlite
 
 %clean
 rm -rf $RPM_BUILD_ROOT
