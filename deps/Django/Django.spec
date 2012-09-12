@@ -8,7 +8,7 @@
 
 Name:           Django
 Version:        1.4.1
-Release:        4%{?dist}.splice
+Release:        5%{?dist}.splice
 Summary:        A high-level Python Web framework
 
 Group:          Development/Languages
@@ -258,6 +258,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 1.4.1-5.splice
+- Problem with running unit tests from this RPM build, commenting out for now
+  (jmatthews@redhat.com)
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 1.4.1-4.splice
 - Update Django-1.4.1.tar.gz to match django's git branch for 1.4.1
   (jmatthews@redhat.com)
