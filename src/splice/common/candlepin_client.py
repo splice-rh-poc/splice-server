@@ -95,10 +95,11 @@ def _request(host, port, url, installed_products,
 
 if __name__ == "__main__":
     import datetime
+    import pytz
     config.init()
     cfg = config.get_candlepin_config_info()
 
-    start_date = datetime.datetime.now()
+    start_date = datetime.datetime.now(tz=pytz.utc)
     end_date = (start_date + datetime.timedelta(minutes=15))
     print "Start Date: %s" % (start_date.isoformat())
     print "End Date: %s" % (end_date.isoformat())

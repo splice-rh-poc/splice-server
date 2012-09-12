@@ -1,5 +1,7 @@
 import logging
 import time
+import pytz
+
 from datetime import datetime, timedelta
 
 from splice.common import candlepin_client, utils
@@ -157,7 +159,7 @@ class CheckIn(object):
         start_date=None
         end_date=None
         if cert_length_in_min:
-            start_date = datetime.now()
+            start_date = datetime.now(tz=pytz.utc)
             end_date = start_date + timedelta(minutes=cert_length_in_min)
             start_date = start_date.isoformat()
             end_date = end_date.isoformat()
