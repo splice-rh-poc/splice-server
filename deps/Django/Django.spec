@@ -8,7 +8,7 @@
 
 Name:           Django
 Version:        1.4.1
-Release:        2%{?dist}.splice
+Release:        3%{?dist}.splice
 Summary:        A high-level Python Web framework
 
 Group:          Development/Languages
@@ -258,6 +258,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 1.4.1-3.splice
+- new package built with tito
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 1.4.1-2
 - update for rhel6, build requires python-sphinx10
 
