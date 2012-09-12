@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.18
+Version:	0.19
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -75,6 +75,12 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 0.19-1
+- Update for timezones when request explict start/end expiration dates from
+  candlepin (jmatthews@redhat.com)
+- Moving celery playpen scripts to diff dir so we can experiment with rabbitmq
+  (jmatthews@redhat.com)
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 0.18-1
 - Added 'minutes' to checkin request, this is converted to start/end dates for
   certificate request when talking to candlepin (jmatthews@redhat.com)
