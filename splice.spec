@@ -18,11 +18,14 @@ Requires: pymongo
 Requires: pymongo-gridfs
 Requires: mod_ssl
 Requires: mod_wsgi
+Requires: rabbitmq-server
+Requires: librabbitmq
 #
 # We need a newer django packaged, along with django-tastypie and mongoengin
 #Requires:	django > 1.4
 #Requires: django-tastypie > 1.0
 #Requires: mongoengine > 1.0
+#Requires: celery > 3.0
 Requires: m2crypto >= 0.21.1.pulp-7
 
 
