@@ -91,6 +91,15 @@ class EntitlementResource(Resource):
         if not bundle.data.has_key("system_facts"):
             raise BadRequest("Missing 'system_facts'")
 
+        minutes = None
+        if bundle.data.has_key("minutes"):
+            try:
+                minutes = int(bundle.data["minutes"])
+                if minutes < 1:
+                    raise BadRequest("'minutes' with value of '%s' is less than 1" % (minutes))
+            except:
+                raise BadRequest("Unable to convert 'minutes' with value of '%s' to an integer" % (bundle.data["minutes"]))
+
         # Read the SSL identity certificate from the SSL request environment variables
         identity_cert = certs.get_client_cert_from_request(request)
         _LOG.info("Using 'identity_cert': %s" % (identity_cert))
@@ -99,7 +108,8 @@ class EntitlementResource(Resource):
         system_facts = bundle.data["system_facts"]
         checkin = CheckIn()
         bundle.obj = Entitlement()
-        cert_info = checkin.get_entitlement_certificate(identity_cert, consumer_identifier, system_facts, products)
+        cert_info = checkin.get_entitlement_certificate(identity_cert, consumer_identifier, system_facts, products,
+            cert_length_in_min=minutes)
         bundle.obj.certs = cert_info
         # TODO add support for catching exception and returning appropriate error codes
         # currently we just return a 500

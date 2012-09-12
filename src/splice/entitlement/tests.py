@@ -42,7 +42,8 @@ class MongoTestCase(ResourceTestCase):
         self.db = connect(self.db_name)
 
 def mocked_candlepin_client_request_method(host, port, url, installed_product,
-                          identity, username, password, debug=False):
+                          identity, username, password,
+                          start_date=None, end_date=None, debug=False):
     example_data = os.path.join(TEST_DATA_DIR, "example_candlepin_data.json")
     f = open(example_data, "r")
     try:

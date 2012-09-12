@@ -1,6 +1,6 @@
 import logging
 import time
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from splice.common import candlepin_client, utils
 from splice.common.certs import CertUtils
@@ -41,7 +41,8 @@ class CheckIn(object):
                 _LOG.exception(e)
         return server
 
-    def get_entitlement_certificate(self, identity_cert, consumer_identifier, facts, installed_products):
+    def get_entitlement_certificate(self, identity_cert, consumer_identifier,
+                                    facts, installed_products, cert_length_in_min=None):
         """
         @param identity_cert: str containing X509 certificate, identify of the consumer
         @type identity_cert: str
@@ -68,7 +69,7 @@ class CheckIn(object):
         if unallowed_products:
             raise UnallowedProductException(consumer_identifier, unallowed_products)
 
-        cert_info = self.request_entitlement(identity, allowed_products)
+        cert_info = self.request_entitlement(identity, allowed_products, cert_length_in_min)
         # TODO:  Must add system facts to reporting data
         self.record_usage(identity, consumer_identifier, facts, allowed_products)
         return cert_info
@@ -150,16 +151,25 @@ class CheckIn(object):
             _LOG.exception(e)
         return
 
-    def request_entitlement(self, identity, allowed_products):
+    def request_entitlement(self, identity, allowed_products, cert_length_in_min=None):
         cp_config = get_candlepin_config_info()
         installed_products=allowed_products
-        _LOG.info("Request entitlement certificate from external service: %s:%s%s for RHIC <%s> with products <%s>" % \
-                  (cp_config["host"], cp_config["port"], cp_config["url"], identity.uuid, installed_products))
+        start_date=None
+        end_date=None
+        if cert_length_in_min:
+            start_date = datetime.now()
+            end_date = start_date + timedelta(minutes=cert_length_in_min)
+            start_date = start_date.isoformat()
+            end_date = end_date.isoformat()
+
+        _LOG.info("Request entitlement certificate from external service: %s:%s%s for RHIC <%s> with products <%s>" %\
+                    (cp_config["host"], cp_config["port"], cp_config["url"], identity.uuid, installed_products))
 
         cert_info = candlepin_client.get_entitlement(
             host=cp_config["host"], port=cp_config["port"], url=cp_config["url"],
             installed_products=installed_products,
             identity=identity.uuid,
-            username=cp_config["username"], password=cp_config["password"])
+            username=cp_config["username"], password=cp_config["password"],
+            start_date=start_date, end_date=end_date)
         return cert_info
 
