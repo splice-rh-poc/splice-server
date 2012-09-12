@@ -117,8 +117,8 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
     def get_credentials(self):
         return self.create_basic(username=self.username, password=self.password)
 
-    def test_put_entitlement_valid_identity(self):
-        resp = self.api_client.put('/api/v1/entitlement/BOGUS_IDENTITY/', format='json',
+    def test_post_entitlement_valid_identity(self):
+        resp = self.api_client.post('/api/v1/entitlement/BOGUS_IDENTITY/', format='json',
             authentication=self.get_credentials(), data=self.post_data,
             SSL_CLIENT_CERT=self.valid_identity_cert_pem)
         self.assertHttpAccepted(resp)
@@ -131,8 +131,8 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
         self.assertEquals(deserialized["certs"][0][1], self.expected_key)
         self.assertEquals(deserialized["certs"][0][2], self.expected_serial)
 
-    def test_put_entitlement_invalid_identity(self):
-        resp = self.api_client.put('/api/v1/entitlement/BOGUS_IDENTITY/',
+    def test_post_entitlement_invalid_identity(self):
+        resp = self.api_client.post('/api/v1/entitlement/BOGUS_IDENTITY/',
             format='json',
             authentication=self.get_credentials(),
             data=self.post_data,

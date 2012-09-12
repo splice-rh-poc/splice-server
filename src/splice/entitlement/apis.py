@@ -17,7 +17,7 @@ _LOG = logging.getLogger(__name__)
 #
 # 1) Consumer checkin API
 #       Consumer request:
-#           PUT /entitlement
+#           POST /entitlement
 #           Params: {
 #               "products": ["PRODUCT_CERT_1", "PRODUCT_CERT_2", ....],
 #               "consumer_identifier": "MAC_ADDRESS",
@@ -66,10 +66,15 @@ class EntitlementResource(Resource):
         resource_name = 'entitlement'
         object_class = Entitlement
         list_allowed_methods = []
-        detail_allowed_methods = ["put"]
+        detail_allowed_methods = ["post", "put"]
         always_return_data = True
         authentication = Authentication()
         authorization = Authorization()
+
+    # To support a 'POST' on a 'detail', we need to override the tastypies 'post_detail' implementation
+    # 'tastypie' by default does not implement a post_detail, so we fallback to behavior of a put
+    def post_detail(self, request, **kwargs):
+        return self.put_detail(request, **kwargs)
 
     def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
         try:
