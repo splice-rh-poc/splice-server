@@ -4,7 +4,7 @@
 
 Name:           python-mongoengine
 Version:        0.6.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Python Document-Object Mapper for working with MongoDB
 
 Group:          Development/Libraries
@@ -49,5 +49,8 @@ rm -rf $RPM_BUILD_ROOT
 # %{python_sitearch}/*
 
 %changelog
+* Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 0.6.20-2
+- new package built with tito
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 0.6.20-1
 - Initial Build, minor tweaks to .spec from mongoengine source
