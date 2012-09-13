@@ -6,7 +6,7 @@
 
 Name:           python-celery
 Version:        3.0.9
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Distributed Task Queue
 
 Group:          Development/Languages
@@ -173,6 +173,10 @@ getent passwd celery >/dev/null || \
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 3.0.9-6
+- Creating a new/default user/group 'celery' for worker tasks in .spec
+  (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 3.0.9-5
 - Modify python-celery spec so it will install a daemon script for celeryd &
   celerybeat (jmatthews@redhat.com)
