@@ -7,8 +7,8 @@
 %global srcname kombu
 
 Name:           python-%{srcname}
-Version:        2.4.3
-Release:        2%{?dist}
+Version:        2.4.6
+Release:        1%{?dist}
 Summary:        AMQP Messaging Framework for Python
 
 Group:          Development/Languages
