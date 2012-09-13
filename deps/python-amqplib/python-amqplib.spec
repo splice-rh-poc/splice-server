@@ -8,7 +8,7 @@
 
 Name:           python-%{srcname}
 Version:        1.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Client library for AMQP
 
 Group:          Development/Languages
@@ -98,6 +98,9 @@ popd
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 1.0.2-2
+- Forget tito.props for release tagger (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 1.0.3-1
 - new package built with tito
 
