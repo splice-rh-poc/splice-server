@@ -25,7 +25,7 @@ Requires: librabbitmq
 # We have the source stored in our git repo under 'deps'
 #
 Requires: Django >= 1.4.1
-Requires: django-tastypie >= 0.9.11
+Requires: python-django-tastypie >= 0.9.12pre
 Requires: python-mongoengine > 0.6.20
 Requires: python-celery >= 3.0
 Requires: m2crypto >= 0.21.1.pulp-7
