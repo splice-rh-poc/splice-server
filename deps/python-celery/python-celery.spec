@@ -6,7 +6,7 @@
 
 Name:           python-celery
 Version:        3.0.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Distributed Task Queue
 
 Group:          Development/Languages
@@ -162,6 +162,10 @@ cp extra/generic-init.d/celerybeat $RPM_BUILD_ROOT/%{_sysconfdir}/rc.d/init.d/
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 3.0.9-5
+- Modify python-celery spec so it will install a daemon script for celeryd &
+  celerybeat (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 3.0.9-4
 - Added missing runtime requires for python-celery (jmatthews@redhat.com)
 
