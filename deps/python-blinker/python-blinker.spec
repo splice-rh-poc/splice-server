@@ -2,7 +2,7 @@
 
 Name:           python-blinker
 Version:        1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fast, simple object-to-object and broadcast signaling
 
 Group:          Development/Libraries
@@ -37,6 +37,9 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/%{mod_name}
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 1.1-2
+- Tagged python-blinker incorrectly (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 1.2-1
 - new package built with tito
 
