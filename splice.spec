@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.19
+Version:	0.20
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -79,6 +79,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.20-1
+- Update spec to account newly built RPMs for Django, tastypie, mongoengine,
+  celery (jmatthews@redhat.com)
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 0.19-1
 - Update for timezones when request explict start/end expiration dates from
   candlepin (jmatthews@redhat.com)
