@@ -2,7 +2,7 @@
 
 Name:           python-%{srcname}
 Version:        2.7.3.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Multiprocessing Pool Extensions
 
 Group:          Development/Languages
@@ -33,6 +33,10 @@ rm -rf %{buildroot}
 %{python_sitearch}/%{srcname}*.egg-info
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 2.7.3.12-2
+- Fix for incorrect tito tag, bumped version instead of release
+  (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 2.7.3.13-1
 - new package built with tito
 
