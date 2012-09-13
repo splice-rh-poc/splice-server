@@ -82,7 +82,6 @@ cp -p LICENSE README.rst AUTHORS -t $RPM_BUILD_ROOT%{docdir}
 
 %files doc
 %doc %{docdir}
-%exclude %{docdir}/html/.buildinfo
 
 
 %changelog
