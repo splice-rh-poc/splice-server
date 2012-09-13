@@ -49,12 +49,14 @@ popd
 mkdir -p %{buildroot}/%{_sysconfdir}/httpd/conf.d/
 mkdir -p %{buildroot}/%{_sysconfdir}/splice
 mkdir -p %{buildroot}/%{_sysconfdir}/pki/%{name}
+mkdir -p %{buildroot}/%{_sysconfdir}/rc.d/init.d
 mkdir -p %{buildroot}/%{_var}/log/%{name}
 
 # Install WSGI script & httpd conf
 cp -R srv %{buildroot}
 cp etc/httpd/conf.d/%{name}.conf %{buildroot}/%{_sysconfdir}/httpd/conf.d/
 cp -R etc/splice %{buildroot}/%{_sysconfdir}
+cp -R etc/rc.d/init.d %{buildroot}/%{_sysconfdir}/rc.d
 
 # Copy Cert Data
 cp -R etc/pki/%{name} %{buildroot}/%{_sysconfdir}/pki/
@@ -68,8 +70,15 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/%{name}
-%config(noreplace) %{_sysconfdir}/splice/server.conf
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
+%config(noreplace) %{_sysconfdir}/splice/server.conf
+%config(noreplace) %{_sysconfdir}/splice/celery/celerybeat
+%config(noreplace) %{_sysconfdir}/splice/celery/celeryd
+%config(noreplace) %{_sysconfdir}/splice/celery/celeryconfig.*
+%config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celerybeat
+%config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celeryd
+
+
 %defattr(-,apache,apache,-)
 %dir %{_sysconfdir}/pki/%{name}
 %{_sysconfdir}/pki/%{name}
