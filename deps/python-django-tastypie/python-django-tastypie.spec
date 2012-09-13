@@ -3,7 +3,7 @@
 
 Name:           python-django-tastypie
 Version:        0.9.12pre
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A flexible and capable API layer for Django
 
 Group:          Development/Languages
@@ -84,6 +84,9 @@ cp -p LICENSE README.rst AUTHORS -t $RPM_BUILD_ROOT%{docdir}
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.9.12pre-4
+- Spec updates to build python-django-tastypie (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.9.12pre-3
 - Spec update for python-django-tastypie (jmatthews@redhat.com)
 
