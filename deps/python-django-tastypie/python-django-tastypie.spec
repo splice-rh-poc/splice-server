@@ -9,7 +9,7 @@ Summary:        A flexible and capable API layer for Django
 Group:          Development/Languages
 License:        BSD
 URL:            http://pypi.python.org/pypi/django-tastypie
-Source0:        http://pypi.python.org/packages/source/d/django-tastypie/django-tastypie-%{version}.tar.gz
+Source0:        http://pypi.python.org/packages/source/d/django-tastypie/%{name}-%{version}.tar.gz
 # to get tests:
 # git clone https://github.com/toastdriven/django-tastypie.git && cd django-tastypie
 # git checkout v0.9.11
@@ -60,7 +60,6 @@ sed -i 's|django-admin.py|django-admin|' tests/run_all_tests.sh
 %install
 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
 mkdir -p $RPM_BUILD_ROOT%{docdir}
-cp -pr docs/_build/html $RPM_BUILD_ROOT%{docdir}
 cp -p LICENSE README.rst AUTHORS -t $RPM_BUILD_ROOT%{docdir}
 
 %check
