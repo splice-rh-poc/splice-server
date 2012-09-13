@@ -7,8 +7,8 @@
 %global srcname amqplib
 
 Name:           python-%{srcname}
-Version:        1.0.2
-Release:        6%{?dist}
+Version:        1.0.3
+Release:        1%{?dist}
 Summary:        Client library for AMQP
 
 Group:          Development/Languages
@@ -98,6 +98,9 @@ popd
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 1.0.3-1
+- new package built with tito
+
 * Sat Aug 04 2012 David Malcolm <dmalcolm@redhat.com> - 1.0.2-6
 - rebuild for https://fedoraproject.org/wiki/Features/Python_3.3
 
