@@ -7,7 +7,7 @@
 %global srcname amqplib
 
 Name:           python-%{srcname}
-Version:        1.0.3
+Version:        1.0.2
 Release:        1%{?dist}
 Summary:        Client library for AMQP
 
