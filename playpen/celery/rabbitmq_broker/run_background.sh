@@ -1,2 +1,2 @@
-celery worker --app=proj --loglevel=debug
+cd proj && celery worker --loglevel=debug
 

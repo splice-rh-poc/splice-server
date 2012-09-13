@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import sys
+sys.path.append("./proj")
 import time
 from proj.tasks import add
 
