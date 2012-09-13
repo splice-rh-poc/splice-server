@@ -8,7 +8,7 @@
 
 Name:           python-%{srcname}
 Version:        2.4.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        AMQP Messaging Framework for Python
 
 Group:          Development/Languages
@@ -136,6 +136,10 @@ popd
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 2.4.6-2
+- Upgrade python-kombu to 2.4.6 since celery is requesting this when run
+  (jmatthews@redhat.com)
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 2.4.3-2
 - new package built with tito
 
