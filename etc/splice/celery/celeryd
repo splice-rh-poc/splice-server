@@ -5,13 +5,13 @@ CELERYD_NODES="w1"
 #CELERYD_NODES="w1 w2 w3"
 
 # Where to chdir at start.
-CELERYD_CHDIR="/usr/lib/python2.6/site-packages/splice/common/"
+CELERYD_CHDIR="/etc/splice/celery/"
 
 # Extra arguments to celeryd
 CELERYD_OPTS="--time-limit=300 --concurrency=5"
 
 # Name of the celery config module.
-CELERYD_CONFIG_MODULE="celeryconfig"
+CELERY_CONFIG_MODULE="celeryconfig"
 
 # %n will be replaced with the nodename.
 CELERYD_LOG_FILE="/var/log/splice/celery_%n.log"

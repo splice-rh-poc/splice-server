@@ -1,5 +1,4 @@
-from splice.entitlement.tasks import BASE_TASK_NAME as ENT_BASE_TASK_NAME
-
+from splice.common.constants import SPLICE_ENTITLEMENT_BASE_TASK_NAME
 ## Broker settings.
 BROKER_URL = "amqp://guest:guest@localhost:5672//"
 
@@ -12,4 +11,4 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
     "host": "localhost"
 }
 
-CELERY_ANNOTATIONS = {"%s.add" % (ENT_BASE_TASK_NAME): {"rate_limit": "10/s"}}
+CELERY_ANNOTATIONS = {"%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME): {"rate_limit": "10/s"}}
