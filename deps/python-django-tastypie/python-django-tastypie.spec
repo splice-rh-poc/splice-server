@@ -3,7 +3,7 @@
 
 Name:           python-django-tastypie
 Version:        0.9.11
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A flexible and capable API layer for Django
 
 Group:          Development/Languages
@@ -85,6 +85,10 @@ cp -p LICENSE README.rst AUTHORS -t $RPM_BUILD_ROOT%{docdir}
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.9.11-7
+- Remove unneeded exclude of .buildinfo for django-tastypie spec
+  (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.9.11-6
 - new package built with tito
 
