@@ -1,0 +1,11 @@
+# Where to chdir at start.
+CELERYBEAT_CHDIR="/tmp"
+
+# Extra arguments to celerybeat
+CELERYBEAT_OPTS="--schedule=/var/run/celerybeat-schedule"
+
+#CELERYBEAT_USER="celery"
+#CELERYBEAT_GROUP="celery"
+
+# Name of the celery config module.#
+CELERY_CONFIG_MODULE="splice.common.celeryconfig"
