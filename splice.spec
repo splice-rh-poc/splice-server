@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.20
+Version:	0.21
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -79,6 +79,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.21-1
+- Update spec to account newly built RPMs for Django, tastypie, mongoengine,
+  celery (jmatthews@redhat.com)
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.20-1
 - Update spec to account newly built RPMs for Django, tastypie, mongoengine,
   celery (jmatthews@redhat.com)
