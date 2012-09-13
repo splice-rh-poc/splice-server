@@ -6,7 +6,7 @@
 
 Name:           python-celery
 Version:        3.0.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Distributed Task Queue
 
 Group:          Development/Languages
@@ -151,6 +151,9 @@ popd
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 3.0.9-4
+- Added missing runtime requires for python-celery (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 3.0.9-3
 - Bumping requires for python-kombu to 2.4.6 on celery, since running it fails
   with an explicit require of >= 2.4.6 (jmatthews@redhat.com)
