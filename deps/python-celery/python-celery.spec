@@ -6,7 +6,7 @@
 
 Name:           python-celery
 Version:        3.0.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Distributed Task Queue
 
 Group:          Development/Languages
@@ -148,6 +148,10 @@ popd
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 3.0.9-3
+- Bumping requires for python-kombu to 2.4.6 on celery, since running it fails
+  with an explicit require of >= 2.4.6 (jmatthews@redhat.com)
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 3.0.9-2
 - new package built with tito
 
