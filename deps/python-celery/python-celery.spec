@@ -153,8 +153,7 @@ getent passwd celery >/dev/null || \
     -c "Default celery worker user account" celery
 
 %postun
-/usr/sbin/userdel celery
-/usr/sbin/groupdel celery
+getent passwd celery >/dev/null && /usr/sbin/userdel celery
 
 %files
 %doc LICENSE README.rst TODO CONTRIBUTORS.txt docs examples
