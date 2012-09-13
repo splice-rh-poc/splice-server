@@ -48,7 +48,7 @@ This package contains documentation for %{name}.
 
 
 %prep 
-%setup -q -n django-tastypie-%{version}
+%setup -q -n %{name}-%{version}
 rm -rf *egg-info
 tar xzf %{SOURCE1}
 sed -i 's|django-admin.py|django-admin|' tests/run_all_tests.sh
