@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.22
+Version:	0.23
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -79,6 +79,13 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.23-1
+- Added a test task into splice that works with our celery daemon script
+  (jmatthews@redhat.com)
+- First pass at daemon scripts for celery & celerybeat (jmatthews@redhat.com)
+- Update playpen celery test files with explicit name of tasks
+  (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.22-1
 - Fix requires for python-mongoengine (jmatthews@redhat.com)
 
