@@ -6,7 +6,7 @@
 
 Name:           python-celery
 Version:        3.0.9
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Distributed Task Queue
 
 Group:          Development/Languages
@@ -172,6 +172,10 @@ getent passwd celery >/dev/null && /usr/sbin/userdel celery
 
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 3.0.9-7
+- Update python-celery spec to cleanup user/group on uninstall
+  (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 3.0.9-6
 - Creating a new/default user/group 'celery' for worker tasks in .spec
   (jmatthews@redhat.com)
