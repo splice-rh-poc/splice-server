@@ -22,6 +22,8 @@ Requires:       python-dateutil
 Requires:       python-kombu >= 2.4.6
 Requires:       python-billiard >= 2.7.3.12
 Requires:       python-amqplib >= 1.0.2
+Requires(pre):  shadow-utils
+Requires(postun): /usr/sbin/userdel, /usr/sbin/groupdel
 
 BuildRequires:  python-kombu >= 2.4.6
 Requires:       pyparsing
@@ -144,6 +146,15 @@ cp extra/generic-init.d/celerybeat $RPM_BUILD_ROOT/%{_sysconfdir}/rc.d/init.d/
 #%endif # with_python3
 
 
+%pre
+getent group celery >/dev/null || groupadd -r celery
+getent passwd celery >/dev/null || \
+    useradd -r -g celery -M -s /sbin/nologin \
+    -c "Default celery worker user account" celery
+
+%postun
+/usr/sbin/userdel celery
+/usr/sbin/groupdel celery
 
 %files
 %doc LICENSE README.rst TODO CONTRIBUTORS.txt docs examples
