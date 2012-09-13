@@ -1,8 +1,8 @@
 %global mod_name blinker
 
 Name:           python-blinker
-Version:        1.1
-Release:        3%{?dist}
+Version:        1.2
+Release:        1%{?dist}
 Summary:        Fast, simple object-to-object and broadcast signaling
 
 Group:          Development/Libraries
@@ -37,6 +37,9 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/%{mod_name}
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 1.2-1
+- new package built with tito
+
 * Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
