@@ -118,12 +118,20 @@ popd
 
 
 %install
+mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/rc.d/init.d/
+
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 %if 0%{?with_python3}
 pushd %{py3dir}
 %{__python3} setup.py install --skip-build --root %{buildroot}
 popd
 %endif # with_python3
+
+# Copy init.d scripts
+cp extra/generic-init.d/celeryd $RPM_BUILD_ROOT/%{_sysconfdir}/rc.d/init.d/
+cp extra/generic-init.d/celerybeat $RPM_BUILD_ROOT/%{_sysconfdir}/rc.d/init.d/
+
+
 
 # checks are currently failing
 #%check
@@ -141,6 +149,9 @@ popd
 %doc LICENSE README.rst TODO CONTRIBUTORS.txt docs examples
 %{python_sitelib}/*
 %{_bindir}/*
+%{_sysconfdir}/rc.d/init.d/celeryd
+%{_sysconfdir}/rc.d/init.d/celerybeat
+
 
 %if 0%{?with_python3}
 %files -n python3-celery
