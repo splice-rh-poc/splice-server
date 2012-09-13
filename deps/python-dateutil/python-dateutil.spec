@@ -1,6 +1,6 @@
 Name:           python-dateutil
 Version:        1.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Powerful extensions to the standard datetime module
 
 Group:          Development/Languages
@@ -36,6 +36,9 @@ mv NEWS.new NEWS
 %{python_sitelib}/*.egg-info
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 1.5-4
+- new package built with tito
+
 * Wed Sep 15 2011 Jef Spaleta <jspaleta@fedoraproject.org> - 1.5-3
 - Adjust patch to respect systemwide tzdata. Ref bug 729786
 
