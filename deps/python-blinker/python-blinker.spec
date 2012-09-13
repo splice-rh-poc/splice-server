@@ -1,7 +1,7 @@
 %global mod_name blinker
 
 Name:           python-blinker
-Version:        1.2
+Version:        1.1
 Release:        1%{?dist}
 Summary:        Fast, simple object-to-object and broadcast signaling
 
