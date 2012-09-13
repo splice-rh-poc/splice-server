@@ -19,8 +19,8 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 Requires:       python-anyjson
 Requires:       python-dateutil
-Requires:       python-kombu >= 2.2.5
-BuildRequires:  python-kombu >= 2.2.5
+Requires:       python-kombu >= 2.4.6
+BuildRequires:  python-kombu >= 2.4.6
 Requires:       pyparsing
 %if ! (0%{?fedora} > 13 || 0%{?rhel} > 6)
 Requires:       python-importlib
