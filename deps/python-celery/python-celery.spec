@@ -20,6 +20,9 @@ BuildRequires:  python-setuptools
 Requires:       python-anyjson
 Requires:       python-dateutil
 Requires:       python-kombu >= 2.4.6
+Requires:       python-billiard >= 2.7.3.12
+Requires:       python-amqplib >= 1.0.2
+
 BuildRequires:  python-kombu >= 2.4.6
 Requires:       pyparsing
 %if ! (0%{?fedora} > 13 || 0%{?rhel} > 6)
