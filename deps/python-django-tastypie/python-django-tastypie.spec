@@ -2,8 +2,8 @@
 %global docdir %{_docdir}/%{name}-%{version}
 
 Name:           python-django-tastypie
-Version:        0.9.11
-Release:        7%{?dist}
+Version:        0.9.12pre
+Release:        1%{?dist}
 Summary:        A flexible and capable API layer for Django
 
 Group:          Development/Languages
