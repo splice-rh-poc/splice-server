@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.23
+Version:	0.24
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -88,6 +88,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.24-1
+- Update splice.spec for celery daemon and config files (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.23-1
 - Added a test task into splice that works with our celery daemon script
   (jmatthews@redhat.com)
