@@ -1,7 +1,7 @@
 %global srcname billiard
 
 Name:           python-%{srcname}
-Version:        2.7.3.13
+Version:        2.7.3.12
 Release:        1%{?dist}
 Summary:        Multiprocessing Pool Extensions
 
