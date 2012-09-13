@@ -1,7 +1,7 @@
 %global srcname billiard
 
 Name:           python-%{srcname}
-Version:        2.7.3.12
+Version:        2.7.3.13
 Release:        1%{?dist}
 Summary:        Multiprocessing Pool Extensions
 
@@ -33,6 +33,9 @@ rm -rf %{buildroot}
 %{python_sitearch}/%{srcname}*.egg-info
 
 %changelog
+* Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 2.7.3.13-1
+- new package built with tito
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 2.7.3.12-1
 - update to new upstream version 2.7.3.12
 
