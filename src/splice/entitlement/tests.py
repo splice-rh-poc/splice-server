@@ -122,7 +122,7 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
         resp = self.api_client.post('/api/v1/entitlement/BOGUS_IDENTITY/', format='json',
             authentication=self.get_credentials(), data=self.post_data,
             SSL_CLIENT_CERT=self.valid_identity_cert_pem)
-        self.assertHttpAccepted(resp)
+        self.assertEquals(resp.status_code, 200)
         self.assertTrue(resp['Content-Type'].startswith('application/json'))
         self.assertValidJSON(resp.content)
 

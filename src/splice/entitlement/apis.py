@@ -1,4 +1,5 @@
 from tastypie import fields
+from tastypie import http
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
 from tastypie.bundle import Bundle
@@ -74,7 +75,16 @@ class EntitlementResource(Resource):
     # To support a 'POST' on a 'detail', we need to override the tastypies 'post_detail' implementation
     # 'tastypie' by default does not implement a post_detail, so we fallback to behavior of a put
     def post_detail(self, request, **kwargs):
-        return self.put_detail(request, **kwargs)
+        resp = self.put_detail(request, **kwargs)
+        # Change resp code
+        resp.status_code = 200
+        return resp
+
+    def put_detail(self, request, **kwargs):
+        resp = super(EntitlementResource, self).put_detail(request, **kwargs)
+        # Change resp code
+        resp.status_code = 200
+        return resp
 
     def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
         try:
