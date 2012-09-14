@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.24
+Version:	0.25
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -88,6 +88,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Fri Sep 14 2012 John Matthews <jmatthews@redhat.com> 0.25-1
+- Return a '202' if we don't know about a RHIC (jmatthews@redhat.com)
+
 * Thu Sep 13 2012 John Matthews <jmatthews@redhat.com> 0.24-1
 - Update splice.spec for celery daemon and config files (jmatthews@redhat.com)
 
