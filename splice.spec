@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.25
+Version:	0.26
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -88,6 +88,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Fri Sep 14 2012 John Matthews <jmatthews@redhat.com> 0.26-1
+- Return '200' instead of '202' for a valid checkin with data
+  (jmatthews@redhat.com)
+
 * Fri Sep 14 2012 John Matthews <jmatthews@redhat.com> 0.25-1
 - Return a '202' if we don't know about a RHIC (jmatthews@redhat.com)
 
