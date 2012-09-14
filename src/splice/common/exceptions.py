@@ -29,7 +29,12 @@ class UnknownConsumerIdentity(CheckinException):
         self.identity = identity
         self.response = HttpResponse(
             content=self.__str__(),
-            status=httplib.NOT_FOUND
+            # status = httplib.NOT_FOUND
+            # For a quick work around to aid in submgr testing
+            # we are returning a 202 for now
+            # TODO: Revisit later and update, a diff exception should prob be
+            # thrown in checkin.py
+            status=httplib.ACCEPTED
         )
 
     def __str__(self):
