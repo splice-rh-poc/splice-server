@@ -28,3 +28,6 @@ def get_rhic_serve_config_info():
         "port": CONFIG.get("rhic_serve", "port"),
         "get_all_rhics_url": CONFIG.get("rhic_serve", "get_all_rhics_url")
     }
+
+def get_logging_config_file():
+    return CONFIG.get("logging", "config")
