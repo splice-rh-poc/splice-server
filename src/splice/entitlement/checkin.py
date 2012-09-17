@@ -69,7 +69,7 @@ class CheckIn(object):
 
         allowed_products, unallowed_products = self.check_access(identity, installed_products)
         if unallowed_products:
-            raise UnallowedProductException(consumer_identifier, unallowed_products)
+            raise UnallowedProductException(identity, unallowed_products)
 
         cert_info = self.request_entitlement(identity, allowed_products, cert_length_in_min)
         # TODO:  Must add system facts to reporting data
