@@ -2,6 +2,7 @@ import json
 import os
 import time
 
+from logging import getLogger
 
 from tastypie.test import ResourceTestCase
 
@@ -13,11 +14,15 @@ from splice.common import candlepin_client
 from splice.common import rhic_serve_client
 from splice.common import utils
 from splice.common.certs import CertUtils
-from splice.common.identity import create_new_consumer_identity, sync_from_rhic_serve, sync_from_rhic_serve_blocking
+from splice.common.identity import create_new_consumer_identity, sync_from_rhic_serve, \
+        sync_from_rhic_serve_blocking, SyncRHICServeThread
 from splice.entitlement.checkin import CheckIn, CertValidationException
 from splice.entitlement.models import ConsumerIdentity
 
+from splice.common import identity
+
 TEST_DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "test_data")
+LOG = getLogger(__name__)
 
 #TODO Break these tests out to separate files and allow to run from nosetests outside of 'python manage.py test entitlement'
 
@@ -109,6 +114,13 @@ class BaseEntitlementTestCase(MongoTestCase):
 
     def tearDown(self):
         super(BaseEntitlementTestCase, self).tearDown()
+        key = SyncRHICServeThread.__name__
+        # Before quitting tests, wait for any spawned threads to complete and cleanup
+        for count in range(0,30):
+            if not identity.JOBS.has_key(key):
+                break
+            print "Waiting for %s to finish, is_alive() = %s" % (key, identity.JOBS[key].is_alive())
+            time.sleep(1)
         candlepin_client._request = self.saved_candlepin_client_request_method
         rhic_serve_client._request = self.saved_rhic_serve_client_request_method
         self.drop_database_and_reconnect()
@@ -135,9 +147,11 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
         return self.create_basic(username=self.username, password=self.password)
 
     def test_post_entitlement_valid_identity(self):
+        LOG.info("Entered 'test_post_entitlement_valid_identity'")
         resp = self.api_client.post('/api/v1/entitlement/BOGUS_IDENTITY/', format='json',
             authentication=self.get_credentials(), data=self.post_data,
             SSL_CLIENT_CERT=self.valid_identity_cert_pem)
+        LOG.info("Completed call to entitlement checkin from unit test: test_post_entitlement_valid_identity")
         if resp.status_code != 200:
             print resp.status_code, resp
         self.assertEquals(resp.status_code, 200)
@@ -211,6 +225,7 @@ class IdentityTest(BaseEntitlementTestCase):
         self.assertEquals(len(rhics), 3)
 
     def test_sync_from_rhic_serve_blocking(self):
+        self.assertEqual(len(identity.JOBS), 0)
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 0)
         sync_from_rhic_serve_blocking()
@@ -223,10 +238,11 @@ class IdentityTest(BaseEntitlementTestCase):
             self.assertTrue(r.uuid in expected_rhics)
 
     def test_sync_from_rhic_serve_threaded(self):
+        self.assertEqual(len(identity.JOBS), 0)
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 0)
         sync_thread = sync_from_rhic_serve()
-        for index in range(0,60):
+        for index in range(0,120):
             if not sync_thread.finished:
                 time.sleep(.05)
         self.assertTrue(sync_thread.finished)
@@ -239,6 +255,7 @@ class IdentityTest(BaseEntitlementTestCase):
             self.assertTrue(r.uuid in expected_rhics)
 
     def test_sync_that_removes_old_rhics(self):
+        self.assertEqual(len(identity.JOBS), 0)
         # Create one dummy RHIC which our sync should remove
         create_new_consumer_identity("old rhic uuid to be removed", ["1","2"])
         rhics = ConsumerIdentity.objects()
@@ -252,8 +269,20 @@ class IdentityTest(BaseEntitlementTestCase):
         for r in rhics:
             self.assertTrue(r.uuid in expected_rhics)
 
-    def test_attempt_multiple_jobs_enqueued(self):
-        pass
+    def test_simulate_multiple_sync_threads_at_sametime(self):
+        # Simulate a syncthread was created and hasn't finished yet
+        key = SyncRHICServeThread.__name__
+        # Skipping lock on identity.JOBS
+        dummy_job = SyncRHICServeThread()
+        identity.JOBS[key] = dummy_job
+        # This thread is not in a finished state, therefore next job we try to create should return None
+        # and do nothing, letting this job finish
+        sync_thread = sync_from_rhic_serve()
+        self.assertIsNone(sync_thread)
+        # Now we simulate the job finishing and cleaning up it's reference
+        dummy_job.remove_reference()
+        # Ensure JOBS has been cleanedup
+        self.assertEqual(len(identity.JOBS), 0)
 
 class CheckInTest(BaseEntitlementTestCase):
     """

@@ -47,7 +47,7 @@ def create_new_consumer_identity(uuid, products):
     _LOG.info("Creating new ConsumerIdentity(uuid=%s, products=%s)" % (uuid, products))
     identity = ConsumerIdentity(uuid=uuid, products=products)
     try:
-        identity.save()
+        identity.save(safe=True)
     except Exception, e:
         _LOG.exception(e)
 
@@ -64,15 +64,17 @@ def sync_from_rhic_serve_blocking():
 
 def sync_from_rhic_serve():
     """
-    @return returns a thread that has been started to synchronize from RHIC Serve server
+    @return None if a sync is in progress, or a thread id if a new sync has been initiated.
     @rtype: splice.common.identity.SyncRHICServeThread
     """
     # If a sync job is on-going, do nothing, just return and let it finish
+    global JOBS
     JOB_LOCK.acquire()
     try:
         key = SyncRHICServeThread.__name__
         if JOBS.has_key(key):
             if not JOBS[key].finished:
+                _LOG.info("A sync job from %s is already running, will allow to finish and not start a new sync" % (key))
                 # Job is still running so let it finish
                 return
         t = SyncRHICServeThread()
@@ -96,5 +98,16 @@ class SyncRHICServeThread(Thread):
                 _LOG.exception(e)
                 raise
         finally:
-            _LOG.info("Finished sync from %s" % (self.__class__.__name__))
             self.finished = True
+            self.remove_reference()
+            _LOG.info("Finished sync from %s" % (self.__class__.__name__))
+
+    def remove_reference(self):
+        global JOBS
+        JOB_LOCK.acquire()
+        try:
+            key = self.__class__.__name__
+            if JOBS.has_key(key):
+                del JOBS[key]
+        finally:
+            JOB_LOCK.release()
