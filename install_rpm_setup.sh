@@ -7,7 +7,7 @@ rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noar
     exit 1;
 }
 # Install Splice RPMs
-wget http://jmatthews.fedorapeople.org/splice.repo -O /etc/yum.repos.d/splice.repo || {
+wget http://ec2-54-242-2-52.compute-1.amazonaws.com/pub/splice_el6_x86_64.repo -O /etc/yum.repos.d/splice_el6_x86_64.repo || {
     echo "Unable to download the yum repo configuration for splice: splice.repo"
     exit 1;
 }
