@@ -5,6 +5,7 @@ import time
 
 from tastypie.test import ResourceTestCase
 
+from mongoengine import Document, StringField
 from mongoengine.connection import connect, disconnect
 from django.conf import settings
 
@@ -31,6 +32,7 @@ class MongoTestCase(ResourceTestCase):
         super(MongoTestCase, self).__init__(methodName)
         disconnect()
         self.db = connect(self.db_name)
+        self.drop_database_and_reconnect()
 
     def _post_teardown(self):
         super(MongoTestCase, self)._post_teardown()
@@ -40,6 +42,19 @@ class MongoTestCase(ResourceTestCase):
         disconnect()
         self.db.drop_database(self.db_name)
         self.db = connect(self.db_name)
+
+class MongoTestsTestCase(MongoTestCase):
+
+    def test_mongo_cleanup_is_working(self):
+        class MongoTestEntry(Document):
+            uuid = StringField(required=True, unique=True)
+        m = MongoTestEntry(uuid="new_entry")
+        m.save()
+        lookup = MongoTestEntry.objects()
+        self.assertEqual(len(lookup), 1)
+        self.drop_database_and_reconnect()
+        lookup = MongoTestEntry.objects()
+        self.assertEqual(len(lookup), 0)
 
 def mocked_candlepin_client_request_method(host, port, url, installed_product,
                           identity, username, password,
@@ -88,7 +103,6 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.valid_products = ["40", "41"]
         self.valid_identity_uuid = self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem)
         self.expected_valid_identity_uuid = "98e6aa41-a25d-4d60-976b-d70518382683"
-        self.load_rhic_data()
 
     def load_rhic_data(self):
         create_new_consumer_identity(self.valid_identity_uuid, self.valid_products)
@@ -97,6 +111,7 @@ class BaseEntitlementTestCase(MongoTestCase):
         super(BaseEntitlementTestCase, self).tearDown()
         candlepin_client._request = self.saved_candlepin_client_request_method
         rhic_serve_client._request = self.saved_rhic_serve_client_request_method
+        self.drop_database_and_reconnect()
 
 class EntitlementResourceTest(BaseEntitlementTestCase):
 
@@ -111,6 +126,7 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
             'products': self.valid_products,
             'system_facts': {"tbd":"values"}
             }
+        self.load_rhic_data()
 
     def tearDown(self):
         super(EntitlementResourceTest, self).tearDown()
@@ -122,6 +138,8 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
         resp = self.api_client.post('/api/v1/entitlement/BOGUS_IDENTITY/', format='json',
             authentication=self.get_credentials(), data=self.post_data,
             SSL_CLIENT_CERT=self.valid_identity_cert_pem)
+        if resp.status_code != 200:
+            print resp.status_code, resp
         self.assertEquals(resp.status_code, 200)
         self.assertTrue(resp['Content-Type'].startswith('application/json'))
         self.assertValidJSON(resp.content)
@@ -193,7 +211,6 @@ class IdentityTest(BaseEntitlementTestCase):
         self.assertEquals(len(rhics), 3)
 
     def test_sync_from_rhic_serve_blocking(self):
-        self.drop_database_and_reconnect()
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 0)
         sync_from_rhic_serve_blocking()
@@ -206,7 +223,6 @@ class IdentityTest(BaseEntitlementTestCase):
             self.assertTrue(r.uuid in expected_rhics)
 
     def test_sync_from_rhic_serve_threaded(self):
-        self.drop_database_and_reconnect()
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 0)
         sync_thread = sync_from_rhic_serve()
@@ -223,7 +239,6 @@ class IdentityTest(BaseEntitlementTestCase):
             self.assertTrue(r.uuid in expected_rhics)
 
     def test_sync_that_removes_old_rhics(self):
-        self.drop_database_and_reconnect()
         # Create one dummy RHIC which our sync should remove
         create_new_consumer_identity("old rhic uuid to be removed", ["1","2"])
         rhics = ConsumerIdentity.objects()
@@ -237,12 +252,16 @@ class IdentityTest(BaseEntitlementTestCase):
         for r in rhics:
             self.assertTrue(r.uuid in expected_rhics)
 
+    def test_attempt_multiple_jobs_enqueued(self):
+        pass
+
 class CheckInTest(BaseEntitlementTestCase):
     """
     Tests to exercise splice.entitlement.checkin.CheckIn
     """
     def setUp(self):
         super(CheckInTest, self).setUp()
+        self.load_rhic_data()
 
     def tearDown(self):
         super(CheckInTest, self).tearDown()
