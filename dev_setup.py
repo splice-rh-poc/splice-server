@@ -32,22 +32,37 @@ DJANGO_APP_DIR = os.path.join(BASE_DIR, "src", "splice")
 WARNING_COLOR = '\033[31m'
 WARNING_RESET = '\033[0m'
 
+#
+# Below are directories we will ensure exist
+#
 DIRS = ("/etc/splice",
+        "/etc/splice/celery",
         "/etc/pki/splice",
         "/var/log/splice",
         "/srv/splice",
         )
 
+#
+# Below are files we will symlink from the git checkout to local system settings
+#
 LINKS = (
             ('etc/httpd/conf.d/splice.conf', '/etc/httpd/conf.d/splice.conf'),
             ('etc/pki/splice/Splice_testing_root_CA.crt', '/etc/pki/splice/Splice_testing_root_CA.crt'),
             ('etc/pki/splice/Splice_testing_root_CA.key', '/etc/pki/splice/Splice_testing_root_CA.key'),
             ('etc/rc.d/init.d/splice_celerybeat', '/etc/rc.d/init.d/splice_celerybeat'),
             ('etc/rc.d/init.d/splice_celeryd', '/etc/rc.d/init.d/splice_celeryd'),
-            ('etc/splice/celery', '/etc/splice/celery'),
+            ('etc/splice/celery/celerybeat', '/etc/splice/celery/celerybeat'),
             ('etc/splice/server.conf', '/etc/splice/server.conf'),
             ('srv/splice/webservices.wsgi', '/srv/splice/webservices.wsgi'),
         )
+
+#
+# Below are files we copy from the git checkout to a local location and then modify
+#
+LOCAL_DEV_COPIES = (
+            ('etc/splice/celery/celeryd', '/etc/splice/celery/celeryd'),
+            )
+
 
 def parse_cmdline():
     """
@@ -67,15 +82,15 @@ def parse_cmdline():
 def warning(msg):
     print "%s%s%s" % (WARNING_COLOR, msg, WARNING_RESET)
 
-def debug(opts, msg):
+def debug(msg):
     sys.stderr.write('%s\n' % msg)
 
 def create_dirs(opts):
     for d in DIRS:
         if os.path.exists(d) and os.path.isdir(d):
-            debug(opts, 'skipping %s exists' % d)
+            debug('skipping %s exists' % d)
             continue
-        debug(opts, 'creating directory: %s' % d)
+        debug('creating directory: %s' % d)
         os.makedirs(d, 0777)
 
 def getlinks():
@@ -98,6 +113,7 @@ def install(opts):
         warning_msg = create_link(opts, os.path.join(currdir,src), dst)
         if warning_msg:
             warnings.append(warning_msg)
+    warnings.extend(create_local_copies())
     if warnings:
         print "\n***\nPossible problems:  Please read below\n***"
         for w in warnings:
@@ -108,13 +124,12 @@ def install(opts):
 
 def uninstall(opts):
     for src, dst in getlinks():
-        debug(opts, 'removing link: %s' % dst)
+        debug('removing link: %s' % dst)
         if not os.path.islink(dst):
-            debug(opts, '%s does not exist, skipping' % dst)
+            debug('%s does not exist, skipping' % dst)
             continue
         os.unlink(dst)
     return os.EX_OK
-
 
 def create_link(opts, src, dst):
     if not os.path.lexists(dst):
@@ -132,7 +147,7 @@ def create_link(opts, src, dst):
             msg = "[%s] was a broken symlink, failed to delete and relink to [%s], please fix this manually" % (dst, src)
             return msg
 
-    debug(opts, 'verifying link: %s points to %s' % (dst, src))
+    debug('verifying link: %s points to %s' % (dst, src))
     dst_stat = os.stat(dst)
     src_stat = os.stat(src)
     if dst_stat.st_ino != src_stat.st_ino:
@@ -140,12 +155,33 @@ def create_link(opts, src, dst):
         return msg
 
 def _create_link(opts, src, dst):
-        debug(opts, 'creating link: %s pointing to %s' % (dst, src))
+        debug('creating link: %s pointing to %s' % (dst, src))
         try:
             os.symlink(src, dst)
         except OSError, e:
             msg = "Unable to create symlink for [%s] pointing to [%s], received error: <%s>" % (dst, src, e)
             return msg
+
+def create_local_copies():
+    warnings = []
+    currdir = os.path.abspath(os.path.dirname(__file__))
+    for src, dst in LOCAL_DEV_COPIES:
+        warning_msg = copy_file(src, dst)
+        if warning_msg:
+            warnings.append(warning_msg)
+    return warnings
+
+def copy_file(src, dst):
+    if os.path.exists(dst):
+        debug("Skipping copy of [%s] to [%s] since [%s] already exists." % (src, dst, dst))
+        return
+    try:
+        debug("Copying [%s] to [%s]" % (src, dst))
+        shutil.copyfile(src, dst)
+    except OSError, e:
+        msg = "Unable to copy [%s] to [%s], received error: <%s>" % (src, dst, e)
+        return msg
+    return
 
 def update_celeryd_config():
     # Update celeryd configuration
