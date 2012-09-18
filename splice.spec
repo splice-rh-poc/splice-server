@@ -28,6 +28,7 @@ Requires: Django >= 1.4.1
 Requires: python-django-tastypie >= 0.9.12pre
 Requires: python-mongoengine >= 0.6.20
 Requires: python-celery >= 3.0
+Requires: python-django-celery >= 3.0.9
 Requires: m2crypto >= 0.21.1.pulp-7
 
 %description
