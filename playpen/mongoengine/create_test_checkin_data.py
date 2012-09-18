@@ -2,9 +2,8 @@
 
 import os
 import sys
-import time
-
-from datetime import datetime
+from datetime import date, datetime, timedelta
+import datetime
 from mongoengine.document import Document
 import pycurl, cStringIO, json
 
@@ -15,17 +14,60 @@ mongoengine.connect(MONGO_DATABASE_NAME)
 
 sys.path.append(os.path.join(os.path.abspath(os.path.dirname(__file__)), "../../src/splice"))
 
-from entitlement.models import SpliceServer, MarketingProduct, \
-    ConsumerIdentity, ReportingItem, ProductUsage
+from entitlement.models import SpliceServer, \
+    ConsumerIdentity,  ProductUsage
 
 import logging
 _LOG = logging.getLogger(__name__)
 
-def create_splice_server():
-    uuid="splice_server_1"
+# use real rhics from rhic_serve
+consumers = [
+             "5e6a8a78-ceb9-4835-80c8-4b2b337ebec4",
+             "766fbcfb-3769-41f6-8034-e8c77737b3db",
+             "2b8ef0ae-f6f4-45be-9d86-deb97a79d181",
+             
+             ]
+
+instance_identifier = [
+                       "12:31:3D:08:40:51",
+                       "12:31:3D:08:40:52",
+                       "12:31:3D:08:40:53",
+                       "12:31:3D:08:40:54",
+                       "12:31:3D:08:40:55",
+                       "12:31:3D:08:40:56",
+                       "12:31:3D:08:40:57",
+                       "12:31:3D:08:40:58",
+                       "12:31:3D:08:40:59",
+                       "12:31:3D:08:40:50",
+                       ]
+
+
+products = [
+    ( [69], 'RHEL Server'),
+    ( [83],  'RHEL HA'),
+    ( [70], 'RHEL EUS'),
+    ( [85], 'RHEL LB'),
+    ( [183],  'JBoss EAP'),
+    ([69], 'RHEL Server for Education')
+    ]
+
+fact1 = {"memory_dot_memtotal": "604836", "lscpu_dot_cpu_socket(s)": "1"}
+fact2 = {"memory_dot_memtotal": "1604836", "lscpu_dot_cpu_socket(s)": "4"}
+
+facts = [fact1, fact2]
+
+def create_splice_server(switch=True):
+    if switch:
+        uuid="splice_server_1"
+        hostname="splice_1"
+        description="1"
+    else:
+        uuid="splice_server_2"
+        hostname="splice_2"
+        description="2"
     server = SpliceServer.objects(uuid=uuid).first()
     if not server:
-        server = SpliceServer(uuid=uuid, description="Test data", hostname="somewhere.example.com:8000")
+        server = SpliceServer(uuid=uuid, description=description, hostname=hostname)
         try:
             server.save()
         except Exception, e:
@@ -33,101 +75,54 @@ def create_splice_server():
     return server
 
 
-def create_consumer_identity():
-    
-    buf = cStringIO.StringIO()
-    URL = 'http://ec2-184-72-159-16.compute-1.amazonaws.com:8000/api/account/'
-    USER = 'shadowman@redhat.com'
-    PASS = 'shadowman@redhat.com'
-    conn = pycurl.Curl()
-    conn.setopt(pycurl.USERPWD, "%s:%s" % (USER, PASS))
-    conn.setopt(pycurl.URL, URL)
-    conn.setopt(pycurl.WRITEFUNCTION, buf.write)
-    conn.perform()
-    
-    data = json.loads(buf.getvalue())
-    #consumer = data[0]['account_id'].encode('ascii')
-    consumer =  data[0]['resource_uri'].encode('ascii').split('/')[-2]
-    
-    
-    identity = ConsumerIdentity(uuid=consumer, subscriptions=[])
-    try:
-        identity.save()
-    except Exception, e:
-        _LOG.exception(e)
-    return identity
-    
-    '''
-    uuid = "dummy_identifier value_%s" % (time.time())
-    identity = ConsumerIdentity.objects(uuid=uuid).first()
-    if not identity:
-        identity = ConsumerIdentity(uuid=uuid, subscriptions=[])
-        try:
-            identity.save()
-        except Exception, e:
-            _LOG.exception(e)
-    return identity
-    '''
-    
-def create_marketing_products():
-    # sample produts
-# [(sku, product name), ...]
 
-    p = [
-    ('RH00001', 69, 'RHEL Server'),
-    ('RH00002', 83,  'RHEL HA'),
-    ('RH00003', 70, 'RHEL EUS'),
-    ('RH00004', 85, 'RHEL LB'),
-    ('RH00005', 183,  'JBoss EAP'),
-    ('RH00006', 69, 'RHEL Server for Education'),
-    ]
+   
 
-    mps_list = []
-    for i in p:
-        mp = MarketingProduct(uuid=i[0], engineering_id = i[1], name=i[2], description=i[2])
-        mp.tags = ['mongodb', 'mongoengine']
-        mp.save()
 
-def record_usage(server, identity, consumer_identifier, marketing_products):
-    prod_info = []
-    for mp in marketing_products:
-        prod_info.append(ReportingItem(product=mp, date=datetime.now()))
 
-    prod_usage = ProductUsage.objects(consumer=identity, splice_server=server,
-        instance_identifier=consumer_identifier).first()
-    if not prod_usage:
-        prod_usage = ProductUsage(consumer=identity, splice_server=server,
-            instance_identifier=consumer_identifier, product_info=[])
+def record_usage(identity, server, consumer_identifier, products, facts, date):
+
+
+    prod_usage = ProductUsage(consumer=identity, splice_server=server,
+        instance_identifier=consumer_identifier, product_info=products, facts=facts, date=date)
+    #if not prod_usage:
+    #    prod_usage = ProductUsage(consumer=identity, splice_server=server,
+    #        instance_identifier=consumer_identifier, product_info=[])
 
     # Add this checkin's usage info
-    prod_usage.product_info.extend(prod_info)
+    #prod_usage.product_info.extend(prod_info)
     try:
         prod_usage.save()
     except Exception, e:
         _LOG.exception(e)
+        print(e)
     return
 
 
 if __name__ == "__main__":
-    server = create_splice_server()
-    identity = create_consumer_identity()
-    print "Created consumer identity: %s  <%s>" % (identity.uuid, identity)
-    create_marketing_products()
-    linux_marketing_products = MarketingProduct.objects(name__contains='RHEL')
-    jboss_marketing_products = MarketingProduct.objects(name__contains='JBoss')
-    mrg_marketing_products = MarketingProduct.objects(name__contains='EUS')
-    cf_marketing_products = MarketingProduct.objects(name__contains='HA')
-    print "Created marketing products: %s" % (linux_marketing_products)
-    print "Created marketing products: %s" % (jboss_marketing_products)
+    server1 = create_splice_server(True)
+    server2 = create_splice_server(False)
+    start_date = "2012 01 01 05"
+    end_date = "2012  01 07 05"
+    
+    startDate = datetime.datetime.strptime(start_date, "%Y %m %d %H")
+    endDate = datetime.datetime.strptime(end_date, "%Y %m %d %H")
+    currentDate = startDate
+    delta=timedelta(hours=1)
+    print('started', str(startDate), str(endDate))
+    while currentDate < endDate:
+        for c in consumers:
+            for i in instance_identifier[0:5]:
+                #print(c, str(server1), i, ["69"], str(currentDate))
+                record_usage(c, server1, i, ["69"], facts[0], currentDate )
+            for i in instance_identifier[5:9]:
+                #print(c, str(server2), i, ["69", "83"], str(currentDate))
+                record_usage(c, server1, i, ["69", "83"], facts[1], currentDate )
+            for i in instance_identifier[9]:
+                #print(c, str(server2), i, ["69", "83"], str(currentDate))
+                record_usage(c, server1, i, ["69", "183"], facts[1], currentDate )
+            print('.')
+        currentDate += delta
 
-    for index in range(0,9):
-        record_usage(server, identity, "MAC_ADDR_1", linux_marketing_products)
-    for index in range(0,7):
-        record_usage(server, identity, "MAC_ADDR_2", linux_marketing_products)
-    for index in range(0,5):
-        record_usage(server, identity, "MAC_ADDR_1", jboss_marketing_products)
-    for index in range(0,3):
-        record_usage(server, identity, "MAC_ADDR_2", mrg_marketing_products)
-    for index in range(0,1):
-        record_usage(server, identity, "MAC_ADDR_2", cf_marketing_products)
+
     print "Product Usage data has been written to mongo database '%s'" % (MONGO_DATABASE_NAME)
