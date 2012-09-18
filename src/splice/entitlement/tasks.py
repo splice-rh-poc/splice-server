@@ -1,13 +1,11 @@
 # Placeholder for celery tasks
-import sys
 from celery import Celery
 from datetime import datetime
 from logging import getLogger
 
-sys.path.append("/etc/splice/celery")
 from splice.common.constants import SPLICE_ENTITLEMENT_BASE_TASK_NAME
 from splice.common.identity import sync_from_rhic_serve_blocking
-import celeryconfig
+from splice.common import celeryconfig
 
 _LOG = getLogger(__name__)
 
