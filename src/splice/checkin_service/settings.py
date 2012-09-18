@@ -246,9 +246,15 @@ CELERY_ANNOTATIONS = {"%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME): {"rate_lim
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
     # Executes every 30 seconds
-    'dummy_task_executes_every_five_seconds': {
-        'task': '%s.log_time' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-        'schedule': timedelta(seconds=5),
+    #'dummy_task_executes_every_hour': {
+    #    'task': '%s.log_time' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+    #    'schedule': timedelta(seconds=5),
+    #    'args': None,
+    #},
+    # Executes every hour
+    'sync_rhic_product_mappings_every_hour': {
+        'task': '%s.sync_rhics' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+        'schedule': timedelta(hours=1),
         'args': None,
     },
 }

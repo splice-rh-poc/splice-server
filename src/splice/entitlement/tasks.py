@@ -25,13 +25,9 @@ def xsum(numbers):
     return sum(numbers)
 
 @celery.task(name="%s.sync_rhics" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
-def sync_rhics(server_info=None):
+def sync_rhics():
     """
     Will synchronize RHIC to product mapping data from a RCS server.
-
-    @param server_info: optional, dict of information to connect to RCS server
-                        if no dict specified will retrieve info from local config file
-    @type  server_info: {}
     @return: status of synchronization, with optional error message:
              (True, "") - on success
              (False, "error message here") - on failure
