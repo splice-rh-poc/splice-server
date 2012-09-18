@@ -6,7 +6,7 @@ Summary:        Celery integration with Django
 Group:          Development/Libraries
 License:        MIT
 URL:            http://pypi.python.org/pypi/django-celery
-Source0:        http://pypi.python.org/packages/source/d/django-celery/django-celery-%{version}..tar.gz
+Source0:        http://pypi.python.org/packages/source/d/django-celery/django-celery-%{version}.tar.gz
 BuildArch:      noarch
 Requires:       python-celery >= 3.0.9
 Requires:       Django >= 1.4.1
