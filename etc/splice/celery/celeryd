@@ -5,15 +5,12 @@ CELERYD_NODES="w1"
 #CELERYD_NODES="w1 w2 w3"
 
 # Where to chdir at start.
-#CELERYD_CHDIR="/etc/splice/celery/"
-#CELERYD_CHDIR="/usr/lib/python2.6/site-packages/splice/"
-CELERYD_CHDIR="/git/splice-server/src/splice"
+CELERYD_CHDIR=/usr/lib/python2.6/site-packages/splice
 
 # Extra arguments to celeryd
 CELERYD_OPTS="--time-limit=300 --concurrency=5"
 
 CELERYD='"python $CELERYD_CHDIR/manage.py celeryd"'
-#CELERYD="python $CELERYD_CHDIR/manage.py celeryd --loglevel=$CELERYD_LOG_LEVEL"
 CELERYD_MULTI="python $CELERYD_CHDIR/manage.py celeryd_multi"
 
 # How to call "manage.py celeryctl"
