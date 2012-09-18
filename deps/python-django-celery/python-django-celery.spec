@@ -35,6 +35,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %{python_sitelib}/*.egg-info
 %{python_sitelib}/djcelery
+%{_bindir}/*
 
 %changelog
 * Tue Sep 18 2012 John Matthews <jmatthews@redhat.com> 3.0.9-8
