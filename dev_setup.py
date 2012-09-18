@@ -103,6 +103,7 @@ def install(opts):
         for w in warnings:
             warning(w)
     update_celeryd_config()
+    update_permissions()
     return os.EX_OK
 
 def uninstall(opts):
@@ -150,6 +151,12 @@ def update_celeryd_config():
     # Update celeryd configuration
     django_dir = DJANGO_APP_DIR.replace("/", "\/")
     cmd = "sed -i 's/^CELERYD_CHDIR=.*/CELERYD_CHDIR=%s/' %s" % (django_dir, '/etc/splice/celery/celeryd')
+    run_command(cmd)
+
+def update_permissions():
+    cmd = "chown -R apache:apache /var/log/splice"
+    run_command(cmd)
+    cmd = "chmod 3775 /var/log/splice"
     run_command(cmd)
 
 def run_command(cmd, verbose=True):
