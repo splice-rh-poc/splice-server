@@ -75,7 +75,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/splice/server.conf
 %config(noreplace) %{_sysconfdir}/splice/celery/celerybeat
 %config(noreplace) %{_sysconfdir}/splice/celery/celeryd
-%config(noreplace) %{_sysconfdir}/splice/celery/celeryconfig.*
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celerybeat
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celeryd
 
