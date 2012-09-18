@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.26
+Version:	0.27
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -89,6 +89,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Sep 18 2012 John Matthews <jmatthews@redhat.com> 0.27-1
+- Add requires for python-django-celery (jmatthews@redhat.com)
+- Added test periodic tasks to see how celery tasks behave from RPM
+
 * Fri Sep 14 2012 John Matthews <jmatthews@redhat.com> 0.26-1
 - Return '200' instead of '202' for a valid checkin with data
   (jmatthews@redhat.com)
