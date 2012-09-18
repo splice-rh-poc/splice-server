@@ -33,7 +33,7 @@ rm -rf $RPM_BUILD_ROOT
 
  
 %files
-%doc docs/ CHANGES LICENSE README PKG-INFO
+%doc docs/ FAQ ChangeLog AUTHORS INSTALL LICENSE README PKG-INFO THANKS TODO
 %{python_sitelib}/*.egg-info
 %{python_sitelib}/djcelery
 
