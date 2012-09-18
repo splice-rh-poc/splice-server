@@ -1,11 +1,19 @@
 # Where to chdir at start.
-CELERYBEAT_CHDIR="/tmp"
+# This is specified in the `celeryd` configuration file
+CELERYBEAT_CHDIR="$CELERYD_CHDIR"
 
 # Extra arguments to celerybeat
 CELERYBEAT_OPTS="--schedule=/var/run/celerybeat-schedule"
 
+# Path to celerybeat
+# Important, we are running integrated with django
+# We must be invoked through django's manage.py module
+CELERYBEAT="python $CELERYBEAT_CHDIR/manage.py celerybeat"
+
 #CELERYBEAT_USER="celery"
 #CELERYBEAT_GROUP="celery"
 
-# Name of the celery config module.#
-CELERY_CONFIG_MODULE="splice.common.celeryconfig"
+# Name of the projects settings module
+# this setting is inheritied from 'celeryd', only change if you need to override it
+#export DJANGO_SETTINGS_MODULE="splice.checkin_service.settings"
+

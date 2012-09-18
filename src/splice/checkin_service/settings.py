@@ -6,11 +6,13 @@ import pwd
 from splice.common import config
 config.init()
 
+
 def get_username():
     return pwd.getpwuid( os.getuid() )[ 0 ]
 # Set DEPLOYED to True if this is running under apache with mod_wsgi
 # We will attempt to detect this automatically and change
-DEPLOYED=False
+
+DEPLOYED=True # Setting to True so when celeryd runs and loads this it will use same settings as apache
 if get_username().lower() == "apache":
     DEPLOYED=True
 
@@ -140,6 +142,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'tastypie',
     'splice.entitlement',
+    'djcelery',
 )
 
 LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "debug_logs")
@@ -222,3 +225,34 @@ SESSION_ENGINE = 'mongoengine.django.sessions'
 ## End mongoengine specifics
 ##
 
+#############################
+# Celery Configuration
+#
+import djcelery
+djcelery.setup_loader()
+
+from splice.common.constants import SPLICE_ENTITLEMENT_BASE_TASK_NAME
+## Broker settings.
+BROKER_URL = "amqp://guest:guest@localhost:5672//"
+# List of modules to import when celery starts.
+CELERY_IMPORTS = ("splice.entitlement.tasks", )
+## Using the database to store task state and results.
+CELERY_RESULT_BACKEND = "mongodb"
+CELERY_MONGODB_BACKEND_SETTINGS = {
+    "host": "localhost"
+}
+CELERY_ANNOTATIONS = {"%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME): {"rate_limit": "10/s"}}
+
+from datetime import timedelta
+CELERYBEAT_SCHEDULE = {
+    # Executes every 30 seconds
+    'dummy_task_executes_every_five_seconds': {
+        'task': '%s.log_time' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+        'schedule': timedelta(seconds=5),
+        'args': None,
+    },
+}
+CELERY_TIMEZONE = 'UTC'
+#
+# End of Celery Configuration
+#############################
