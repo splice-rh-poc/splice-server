@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.28
+Version:	0.29
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -88,6 +88,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Sep 18 2012 John Matthews <jmatthews@redhat.com> 0.29-1
+- Making tasks.sync_rhics() periodic, will run every hour
+  (jmatthews@redhat.com)
+
 * Tue Sep 18 2012 John Matthews <jmatthews@redhat.com> 0.28-1
 - Remove celeryconfig from /etc/splice/celery (jmatthews@redhat.com)
 
