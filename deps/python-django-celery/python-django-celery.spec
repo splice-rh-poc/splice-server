@@ -20,7 +20,7 @@ autodiscovery of task modules for applications listed in
 INSTALLED_APPS, and more
 
 %prep
-%setup -q -n %{name}-%{version}
+%setup -q -n django-celery-%{version}
 
 
 %build
