@@ -35,7 +35,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %doc docs/ CHANGES LICENSE README PKG-INFO
 %{python_sitelib}/*.egg-info
-%{python_sitelib}/django-celery
+%{python_sitelib}/djcelery
 
 %changelog
 * Tue Sep 18 2012 John Matthews <jmatthews@redhat.com> 3.0.9-5
