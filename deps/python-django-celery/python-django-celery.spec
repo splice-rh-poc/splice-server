@@ -1,6 +1,6 @@
 Name:           python-django-celery
 Version:        3.0.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Celery integration with Django
 
 Group:          Development/Libraries
@@ -38,6 +38,9 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/django-celery
 
 %changelog
+* Tue Sep 18 2012 John Matthews <jmatthews@redhat.com> 3.0.9-3
+- python-django-celery update (jmatthews@redhat.com)
+
 * Tue Sep 18 2012 John Matthews <jmatthews@redhat.com> 3.0.9-2
 - new package built with tito
 
