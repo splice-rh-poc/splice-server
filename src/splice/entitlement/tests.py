@@ -1,6 +1,7 @@
 import json
 import os
 import time
+import uuid
 
 from logging import getLogger
 
@@ -235,7 +236,7 @@ class IdentityTest(BaseEntitlementTestCase):
                           "c921d17e-cf82-4738-bfbb-36a83dc45c03",
                           "98e6aa41-a25d-4d60-976b-d70518382683"]
         for r in rhics:
-            self.assertTrue(r.uuid in expected_rhics)
+            self.assertIn(str(r.uuid), expected_rhics)
 
     def test_sync_from_rhic_serve_threaded(self):
         self.assertEqual(len(identity.JOBS), 0)
@@ -252,12 +253,12 @@ class IdentityTest(BaseEntitlementTestCase):
                           "c921d17e-cf82-4738-bfbb-36a83dc45c03",
                           "98e6aa41-a25d-4d60-976b-d70518382683"]
         for r in rhics:
-            self.assertTrue(r.uuid in expected_rhics)
+            self.assertIn(str(r.uuid), expected_rhics)
 
     def test_sync_that_removes_old_rhics(self):
         self.assertEqual(len(identity.JOBS), 0)
         # Create one dummy RHIC which our sync should remove
-        create_new_consumer_identity("old rhic uuid to be removed", ["1","2"])
+        create_new_consumer_identity("180ed55f-c3fb-4249-ac4c-52e440cd9301", ["1","2"])
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 1)
         sync_from_rhic_serve_blocking()
@@ -267,7 +268,7 @@ class IdentityTest(BaseEntitlementTestCase):
                           "c921d17e-cf82-4738-bfbb-36a83dc45c03",
                           "98e6aa41-a25d-4d60-976b-d70518382683"]
         for r in rhics:
-            self.assertTrue(r.uuid in expected_rhics)
+            self.assertIn(str(r.uuid), expected_rhics)
 
     def test_sync_where_existing_rhics_product_mapping_changes(self):
         self.assertEqual(len(identity.JOBS), 0)
@@ -283,13 +284,13 @@ class IdentityTest(BaseEntitlementTestCase):
                           "c921d17e-cf82-4738-bfbb-36a83dc45c03",
                           "98e6aa41-a25d-4d60-976b-d70518382683"]
         for r in rhics:
-            self.assertTrue(r.uuid in expected_rhics)
+            self.assertIn(str(r.uuid), expected_rhics)
         # Ensure that the products have been updated
         rhic_under_test = ConsumerIdentity.objects(uuid=uuid_under_test).first()
         self.assertTrue(rhic_under_test)
         expected_products = ["183", "83", "69"]
         for ep in expected_products:
-            self.assertTrue(ep in rhic_under_test.products)
+            self.assertTrue(ep in rhic_under_test.engineering_ids)
 
 
     def test_simulate_multiple_sync_threads_at_sametime(self):

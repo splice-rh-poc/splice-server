@@ -30,6 +30,10 @@ Requires: python-mongoengine >= 0.6.20
 Requires: python-celery >= 3.0
 Requires: python-django-celery >= 3.0.9
 Requires: m2crypto >= 0.21.1.pulp-7
+#
+# RPMs from Splice Project
+#
+Requires: rhic-serve-rcs >= 0.8
 
 %description
 Framework for tracking entitlement consumption

@@ -31,3 +31,11 @@ def get_rhic_serve_config_info():
 
 def get_logging_config_file():
     return CONFIG.get("logging", "config")
+
+def get_splice_server_info():
+    ret_val = {}
+    ret_val["description"] = CONFIG.get("info", "description")
+    ret_val["environment"] = CONFIG.get("info", "environment")
+    ret_val["uuid"] = CONFIG.get("info", "uuid")
+    ret_val["hostname"] = CONFIG.get("info", "hostname")
+    return ret_val

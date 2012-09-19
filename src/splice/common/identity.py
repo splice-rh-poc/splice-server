@@ -1,5 +1,6 @@
 import logging
 from threading import Thread, Lock
+from uuid import UUID
 
 from splice.common import config
 from splice.common import rhic_serve_client
@@ -21,31 +22,35 @@ def process_data(data):
     # TODO: Redo this logic so it supports batch lookups and is more efficient
     "Fetched %s rhics from rhic_serve" % (len(data))
     for item in data:
-        products = item["engineering_ids"]
-        uuid = item["uuid"]
-        identity = ConsumerIdentity.objects(uuid=uuid).first()
+        _LOG.info("Processing: %s" % (item))
+        engineering_ids = item["engineering_ids"]
+        consumer_id = item["uuid"]
+        identity = ConsumerIdentity.objects(uuid=UUID(consumer_id)).first()
         if not identity:
-            create_new_consumer_identity(uuid, products)
+            create_new_consumer_identity(consumer_id, engineering_ids)
             continue
         try:
-            identity.products = products
+            _LOG.info("Trying to save: %s" % (identity))
+            identity.engineering_ids = engineering_ids
             identity.save()
+            _LOG.info("Saved: %s" % (identity))
         except Exception, e:
             _LOG.exception(e)
     # Process RHICs that have been removed from the remote source
     objects = ConsumerIdentity.objects()
-    known_uuids = [x.uuid for x in objects]
+    known_uuids = [str(x.uuid) for x in objects]
     remote_uuids = [x["uuid"] for x in data]
     known_uuids = set(known_uuids)
     remote_uuids = set(remote_uuids)
     uuids_to_remove = known_uuids.difference(remote_uuids)
-    for uuid in uuids_to_remove:
-        ci = ConsumerIdentity.objects(uuid=uuid)
+    for old_uuid in uuids_to_remove:
+        _LOG.info("Removing: %s" % (old_uuid))
+        ci = ConsumerIdentity.objects(uuid=UUID(old_uuid))
         ci.delete()
 
-def create_new_consumer_identity(uuid, products):
-    _LOG.info("Creating new ConsumerIdentity(uuid=%s, products=%s)" % (uuid, products))
-    identity = ConsumerIdentity(uuid=uuid, products=products)
+def create_new_consumer_identity(consumer_id, engineering_ids):
+    _LOG.info("Creating new ConsumerIdentity(consumer_id=%s, engineering_ids=%s)" % (consumer_id, engineering_ids))
+    identity = ConsumerIdentity(uuid=UUID(consumer_id), engineering_ids=engineering_ids)
     try:
         identity.save(safe=True)
     except Exception, e:

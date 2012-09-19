@@ -1,4 +1,5 @@
 from mongoengine import DateTimeField, Document, ListField, ReferenceField, StringField, DictField
+from rhic_serve.rhic_rcs.models import RHIC
 
 ###
 # Overview of what functionality will need to be supported:
@@ -37,18 +38,19 @@ class SpliceServer(Document):
     uuid = StringField(required=True, unique=True)
     description = StringField() # Example what datacenter is this deployed to, i.e. us-east-1
     hostname = StringField(required=True)
+    environment = StringField(required=True)
 
 class SpliceServerRelationships(Document):
     self = ReferenceField(SpliceServer, required=True)
     parent = ReferenceField(SpliceServer)
     children = ListField(ReferenceField(SpliceServer))
 
-class ConsumerIdentity(Document):
-    uuid = StringField(required=True, unique=True)  # matches the identifier from the identity certificate
-    products = ListField(StringField())
+class ConsumerIdentity(RHIC):
+    meta = RHIC.meta
+    meta["allow_inheritance"] = True
 
     def __str__(self):
-        return "Consumer Identity '%s' with products '%s'" % (self.uuid, self.products)
+        return "Consumer Identity '%s' with products '%s'" % (self.uuid, self.engineering_ids)
 
 class ProductUsage(Document):
     consumer = StringField(required=True)

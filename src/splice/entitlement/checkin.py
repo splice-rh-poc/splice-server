@@ -3,16 +3,19 @@ import time
 import pytz
 
 from datetime import datetime, timedelta
+from uuid import UUID
 
 from splice.common import candlepin_client, utils
 from splice.common.certs import CertUtils
-from splice.common.config import CONFIG, get_candlepin_config_info
+from splice.common.config import CONFIG, get_candlepin_config_info, get_splice_server_info
 from splice.common.exceptions import CheckinException, CertValidationException, UnallowedProductException, \
     UnknownConsumerIdentity
 from splice.common.identity import sync_from_rhic_serve
 from splice.entitlement.models import ConsumerIdentity, ProductUsage, SpliceServer
 
 _LOG = logging.getLogger(__name__)
+
+SPLICE_SERVER_INFO = get_splice_server_info()
 
 class CheckIn(object):
     """
@@ -32,11 +35,19 @@ class CheckIn(object):
 
     def get_this_server(self):
         # parse a configuration file and determine our splice server identifier
-        # OR...read in a SSL cert that identifies our splice server.
-        uuid="our splice server uuid"
-        server = SpliceServer.objects(uuid=uuid).first()
+        # TODO  read in a SSL cert that identifies our splice server.
+        server_uuid = SPLICE_SERVER_INFO["uuid"]
+        hostname = SPLICE_SERVER_INFO["hostname"]
+        environment = SPLICE_SERVER_INFO["environment"]
+        description = SPLICE_SERVER_INFO["description"]
+        server = SpliceServer.objects(uuid=server_uuid).first()
         if not server:
-            server = SpliceServer(uuid=uuid, description="Test data", hostname="somewhere.example.com:8000")
+            server = SpliceServer(
+                uuid=server_uuid,
+                description=description,
+                hostname=hostname,
+                environment=environment
+            )
             try:
                 server.save()
             except Exception, e:
@@ -97,7 +108,7 @@ class CheckIn(object):
     def get_identity(self, identity_cert):
         id_from_cert = self.extract_id_from_identity_cert(identity_cert)
         _LOG.info("Found ID from identity certificate is '%s' " % (id_from_cert))
-        identity = ConsumerIdentity.objects(uuid=id_from_cert).first()
+        identity = ConsumerIdentity.objects(uuid=UUID(id_from_cert)).first()
         if not identity:
             _LOG.info("Couldn't find RHIC with ID '%s' initiating a sync from RHIC_Serve" % (id_from_cert))
             sync_from_rhic_serve()
@@ -120,7 +131,7 @@ class CheckIn(object):
         allowed_products = []
         unallowed_products = []
         for prod in installed_products:
-            if prod not in identity.products:
+            if prod not in identity.engineering_ids:
                 unallowed_products.append(prod)
             else:
                 allowed_products.append(prod)
@@ -145,7 +156,8 @@ class CheckIn(object):
             sanitized_facts = utils.sanitize_dict_for_mongo(facts)
             _LOG.info("Record usage for '%s' with products '%s' on instance with identifier '%s' and facts <%s>" %\
                 (identity, products, consumer_identifier, sanitized_facts))
-            prod_usage = ProductUsage(consumer=identity.uuid, splice_server=self.get_this_server(),
+            consumer_uuid_str = str(identity.uuid)
+            prod_usage = ProductUsage(consumer=consumer_uuid_str, splice_server=self.get_this_server(),
                 instance_identifier=consumer_identifier, product_info=products, facts=sanitized_facts,
                 date=datetime.now())
             prod_usage.save()
@@ -170,7 +182,7 @@ class CheckIn(object):
         cert_info = candlepin_client.get_entitlement(
             host=cp_config["host"], port=cp_config["port"], url=cp_config["url"],
             installed_products=installed_products,
-            identity=identity.uuid,
+            identity=str(identity.uuid),
             username=cp_config["username"], password=cp_config["password"],
             start_date=start_date, end_date=end_date)
         return cert_info
