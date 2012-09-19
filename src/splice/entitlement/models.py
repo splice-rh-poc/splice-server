@@ -46,8 +46,6 @@ class SpliceServerRelationships(Document):
     children = ListField(ReferenceField(SpliceServer))
 
 class ConsumerIdentity(RHIC):
-    meta = RHIC.meta
-    meta["allow_inheritance"] = True
 
     def __str__(self):
         return "Consumer Identity '%s' with products '%s'" % (self.uuid, self.engineering_ids)

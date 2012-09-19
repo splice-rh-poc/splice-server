@@ -143,7 +143,7 @@ INSTALLED_APPS = (
     'tastypie',
     'splice.entitlement',
     'djcelery',
-    'rhic-serve-rcs.rhic_rcs',
+    'rhic_serve.rhic_rcs',
 )
 
 LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "debug_logs")
