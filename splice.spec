@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.30
+Version:	0.31
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -92,6 +92,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Wed Sep 19 2012 John Matthews <jmatthews@redhat.com> 0.31-1
+- Update settings.py for rhic_serve.rhic-rcs, also remove setting 'meta' on
+  models.ConsumerIdentity (jmatthews@redhat.com)
+
 * Wed Sep 19 2012 John Matthews <jmatthews@redhat.com> 0.30-1
 - Added rhic-serve-rcs API, updated ConsumerIdentity to inherit from RHIC,
   added config attributes for SpliceServer to config file
