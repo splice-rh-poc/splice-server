@@ -32,13 +32,13 @@ instance_identifier = [
                        "12:31:3D:08:40:51",
                        "12:31:3D:08:40:52",
                        "12:31:3D:08:40:53",
-                       "12:31:3D:08:40:54",
-                       "12:31:3D:08:40:55",
-                       "12:31:3D:08:40:56",
-                       "12:31:3D:08:40:57",
-                       "12:31:3D:08:40:58",
-                       "12:31:3D:08:40:59",
-                       "12:31:3D:08:40:50",
+                       #"12:31:3D:08:40:54",
+                       #"12:31:3D:08:40:55",
+                       #"12:31:3D:08:40:56",
+                       #"12:31:3D:08:40:57",
+                       #"12:31:3D:08:40:58",
+                       #"12:31:3D:08:40:59",
+                       #"12:31:3D:08:40:50",
                        ]
 
 
@@ -112,13 +112,13 @@ if __name__ == "__main__":
     print('started', str(startDate), str(endDate))
     while currentDate < endDate:
         for c in consumers:
-            for i in instance_identifier[0:5]:
+            for i in instance_identifier:
                 #print(c, str(server1), i, ["69"], str(currentDate))
                 record_usage(c, server1, i, ["69"], facts[0], currentDate )
-            for i in instance_identifier[5:9]:
+            for i in instance_identifier:
                 #print(c, str(server2), i, ["69", "83"], str(currentDate))
-                record_usage(c, server1, i, ["69", "83"], facts[1], currentDate )
-            for i in instance_identifier[9]:
+                record_usage(c, server2, i, ["69", "83"], facts[1], currentDate )
+            for i in instance_identifier:
                 #print(c, str(server2), i, ["69", "83"], str(currentDate))
                 record_usage(c, server1, i, ["69", "183"], facts[1], currentDate )
             print('.')
