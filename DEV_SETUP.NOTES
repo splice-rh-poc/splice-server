@@ -1,80 +1,15 @@
-# Disable SELinux 
-setenforce 0  # disable selinux
-vim /etc/selinux/config
- SELIUX=permissive
-# Install EPEL and get 3rd party deps
-rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm
-yum install mod_wsgi mod_ssl python-devel mongodb-server pymongo pymongo-gridfs git
-yum install python-pip
-yum install rabbitmq-server librabbitmq
+1) Install splice rpm to grab the rpm dependencies
+2) Remove splice rpm
+3) cd src/splice && python setup.py develop
+4) dev_setup.py -I
 
-pip-python install django
-pip-python install django-tastypie
-pip-python install mongoengine
-pip-python install django-tastypie-mongoengine
-pip-python install celery
+Start:
+ mongod
+ httpd
+ rabbitmq-server
+ splice_celerdy
+ splice_celerybeat
 
-# Install splice server from git
-mkdir /git
-cd /git
-git clone https://github.com/splice/splice-server.git
-cd /git/splice-server/src
-sudo python setup.py develop
-
-# Config for splice-server to use mod_wsgi
-sudo ln -s /git/splice-server/etc/httpd/conf.d/splice.conf /etc/httpd/conf.d/splice.conf
-mkdir -p /srv/splice
-sudo ln -s /git/splice-server/srv/splice/webservices.wsgi /srv/splice/webservices.wsgi
-# 
-# Install certs
-#  change hostname to external hostname
-#   on EC2 if using an EBS and you want this to persistent.
-#      edit /etc/sysconfig/network
-#        change HOSTNAME
-#   and
-hostname ec2-23-20-221-6.compute-1.amazonaws.com
-
-
-# Below script (playpent/certs/setup.sh) will
-#  - Create a CA and Server cert
-#  - it will also edit /etc/httpd/conf.d/ssl.conf
-#      SSLCertificateFile /etc/pki/splice/Splice_server.cert
-#      SSLCertificateKeyFile /etc/pki/splice/Splice_server.key
-cd /git/splice-server/playpen/certs
-./setup.sh
-
-
-# HACK needed for now
-sudo mkdir /var/www/debug_logs
-sudo chown -R apache:apache /var/www/debug_logs
-
-sudo mkdir /etc/splice
-sudo ln -s /git/splice-server/etc/splice/server.conf /etc/splice/server.conf
-
-# /etc/pki/splice is created by setup.sh for setting up apache certs
-cd /etc/pki/splice
-sudo ln -s /git/splice-server/etc/pki/splice/Splice_testing_root_CA.key
-sudo ln -s /git/splice-server/etc/pki/splice/Splice_testing_root_CA.crt
-
-sudo service mongod start
-sudo service httpd restart
-
-Check logs
-less /var/log/httpd/error_log
-Normal example:
-  [Tue Aug 21 12:03:03 2012] [notice] SELinux policy enabled; httpd running as context unconfined_u:system_r:httpd_t:s0
-  [Tue Aug 21 12:03:03 2012] [notice] suEXEC mechanism enabled (wrapper: /usr/sbin/suexec)
-  [Tue Aug 21 12:03:03 2012] [notice] Digest: generating secret for digest authentication ...
-  [Tue Aug 21 12:03:03 2012] [notice] Digest: done
-  [Tue Aug 21 12:03:03 2012] [warn] mod_wsgi: Compiled for Python/2.6.2.
-  [Tue Aug 21 12:03:03 2012] [warn] mod_wsgi: Runtime using Python/2.6.6.
-  [Tue Aug 21 12:03:03 2012] [notice] Apache/2.2.15 (Unix) DAV/2 mod_ssl/2.2.15 OpenSSL/1.0.0-fips mod_wsgi/3.2 Python/2.6.6 configured -- resuming normal operations
- 
-/var/log/httpd/ssl_error_log
-   [Tue Aug 21 12:03:03 2012] [warn] RSA server certificate CommonName (CN) `ec2-23-20-221-6.compute-1.amazonaws.com' does NOT match server name!?
-
-
-Try a https fetch
-cd /git/splice-server/playpen/curl_scripts
-./https_client_checkin.sh
+Now try a https fetch
+cd playpen/curl_scripts && ./https_client_checkin.sh
 
