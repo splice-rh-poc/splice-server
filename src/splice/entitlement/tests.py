@@ -116,11 +116,11 @@ class BaseEntitlementTestCase(MongoTestCase):
         super(BaseEntitlementTestCase, self).tearDown()
         key = SyncRHICServeThread.__name__
         # Before quitting tests, wait for any spawned threads to complete and cleanup
-        for count in range(0,30):
+        for count in range(0,100):
             if not identity.JOBS.has_key(key):
                 break
             print "Waiting for %s to finish, is_alive() = %s" % (key, identity.JOBS[key].is_alive())
-            time.sleep(1)
+            time.sleep(.1)
         candlepin_client._request = self.saved_candlepin_client_request_method
         rhic_serve_client._request = self.saved_rhic_serve_client_request_method
         self.drop_database_and_reconnect()
@@ -268,6 +268,29 @@ class IdentityTest(BaseEntitlementTestCase):
                           "98e6aa41-a25d-4d60-976b-d70518382683"]
         for r in rhics:
             self.assertTrue(r.uuid in expected_rhics)
+
+    def test_sync_where_existing_rhics_product_mapping_changes(self):
+        self.assertEqual(len(identity.JOBS), 0)
+        # Create a RHIC with products that will change after sync
+        uuid_under_test = "480ed55f-c3fb-4249-ac4c-52e440cd9304"
+        create_new_consumer_identity(uuid_under_test, ["1","2"])
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 1)
+        sync_from_rhic_serve_blocking()
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 3)
+        expected_rhics = ["480ed55f-c3fb-4249-ac4c-52e440cd9304",
+                          "c921d17e-cf82-4738-bfbb-36a83dc45c03",
+                          "98e6aa41-a25d-4d60-976b-d70518382683"]
+        for r in rhics:
+            self.assertTrue(r.uuid in expected_rhics)
+        # Ensure that the products have been updated
+        rhic_under_test = ConsumerIdentity.objects(uuid=uuid_under_test).first()
+        self.assertTrue(rhic_under_test)
+        expected_products = ["183", "83", "69"]
+        for ep in expected_products:
+            self.assertTrue(ep in rhic_under_test.products)
+
 
     def test_simulate_multiple_sync_threads_at_sametime(self):
         # Simulate a syncthread was created and hasn't finished yet
