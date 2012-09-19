@@ -1,6 +1,6 @@
 
 if [ $# -lt 1 ]; then
-    export SAMPLE_RHIC=../../src/splice/test_data/valid_cert/sample_rhic_valid.pem
+    export SAMPLE_RHIC=./sample_rhic_valid.pem
 else
     export SAMPLE_RHIC=$1
 fi
