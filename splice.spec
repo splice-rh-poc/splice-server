@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.31
+Version:	0.32
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -92,6 +92,12 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Sep 20 2012 John Matthews <jmatthews@redhat.com> 0.32-1
+- Update to request entitlement certificate for all products associated to
+  RHIC, also if a checkin is requested for some products not allowed by the
+  RHIC we will allow the products associated to succeed and be entitled, while
+  logging those unentitled. (jmatthews@redhat.com)
+
 * Wed Sep 19 2012 John Matthews <jmatthews@redhat.com> 0.31-1
 - Update settings.py for rhic_serve.rhic-rcs, also remove setting 'meta' on
   models.ConsumerIdentity (jmatthews@redhat.com)
