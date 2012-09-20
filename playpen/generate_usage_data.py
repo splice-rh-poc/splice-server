@@ -35,9 +35,6 @@ from rhic_serve.rhic_rest.models import RHIC
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-# Supress cert generation output
-cert_utils_logger = logging.getLogger('rhic_serve.common.cert_utils')
-cert_utils_logger.handlers = []
 
 # DB Setup
 # We need to connect to the checkin_service db and the rhic_serve db since
