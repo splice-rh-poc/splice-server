@@ -124,7 +124,8 @@ class ReportDataGenerator(object):
         """
         self.generate_splice_servers()
         self.generate_rhics()
-        self.generate_usage()
+        num_generated = self.generate_usage()
+        return num_generated
 
     def generate_splice_servers(self):
         """
@@ -249,6 +250,8 @@ class ReportDataGenerator(object):
                     num_generated += 1
             usage_datetime += self.interval
 
+        return num_generated
+
     def record_rhic_usage(self, rhic, inst_index, usage_datetime, 
                           splice_server):
         """
@@ -274,7 +277,8 @@ def main(start_datetime, end_datetime, num_instances):
     start_datetime = isodate.parse_datetime(start_datetime)
     end_datetime = isodate.parse_datetime(end_datetime)
     rdg = ReportDataGenerator(start_datetime, end_datetime, num_instances)
-    rdg.generate()
+    return rdg.generate()
+
 
 
 if __name__ == "__main__":
@@ -302,11 +306,11 @@ if __name__ == "__main__":
     if options.clear:
         clear_product_usage()
 
-    main(options.start_datetime,
-         options.end_datetime,
-         options.num_instances)
+    num_generated = main(options.start_datetime,
+                         options.end_datetime,
+                         options.num_instances)
 
     logger.info('Product Usage data has been written to mongo database %s' %
         MONGO_RCS_DATABASE_NAME)
-    logger.info('%s total records generated.' % ProductUsage.objects.count())
+    logger.info('%s total records generated.' % num_generated)
     sys.exit(0)
