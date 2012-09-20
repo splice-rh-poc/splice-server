@@ -232,12 +232,12 @@ class ReportDataGenerator(object):
                     Record Product Usage for the instance
         """
         # Generate usage for each RHIC
+        num_generated = 0
         usage_datetime = self.start_datetime
         while usage_datetime < self.end_datetime:
             if usage_datetime.hour % 24 == 0:
                 logger.info('Generating data for %s' % usage_datetime)
-                logger.info('%s records generated so far' %
-                    ProductUsage.objects.count())
+                logger.info('%s records generated so far' % num_generated)
             for rhic in self.rhics:
                 # Generate usage for each instance associated with the RHIC.
                 for inst_index in range(rhic.num_instances):
@@ -246,6 +246,7 @@ class ReportDataGenerator(object):
                     splice_server = self.splice_servers[0]
                     self.record_rhic_usage(rhic, inst_index, usage_datetime,
                                            splice_server)
+                    num_generated += 1
             usage_datetime += self.interval
 
     def record_rhic_usage(self, rhic, inst_index, usage_datetime, 
