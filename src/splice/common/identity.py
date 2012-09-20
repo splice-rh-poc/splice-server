@@ -11,13 +11,16 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
-
 import logging
 from threading import Thread, Lock
 from uuid import UUID
 
+from datetime import datetime
+from dateutil.tz import tzutc
+
 from splice.common import config
 from splice.common import rhic_serve_client
+from splice.common.utils import convert_to_datetime
 from splice.entitlement.models import ConsumerIdentity
 
 _LOG = logging.getLogger(__name__)
@@ -29,28 +32,20 @@ JOB_LOCK = Lock()
 def process_data(data):
     """
     Imports data into mongo, will update documents that have changed, and remove those which have been deleted
-
-    @param data from rhic_serve in the format: [{"engineering_ids":["str_id"], "uuid":"str_id"}]
-    @type [{"engineering_ids":[], "uuid":""}]
+    @param data from rhic_serve
     """
     # TODO: Redo this logic so it supports batch lookups and is more efficient
     "Fetched %s rhics from rhic_serve" % (len(data))
     for item in data:
-        _LOG.info("Processing: %s" % (item))
-        engineering_ids = item["engineering_ids"]
-        consumer_id = item["uuid"]
-        identity = ConsumerIdentity.objects(uuid=UUID(consumer_id)).first()
-        if not identity:
-            create_new_consumer_identity(consumer_id, engineering_ids)
-            continue
-        try:
-            _LOG.info("Trying to save: %s" % (identity))
-            identity.engineering_ids = engineering_ids
-            identity.save()
-            _LOG.info("Saved: %s" % (identity))
-        except Exception, e:
-            _LOG.exception(e)
+        _LOG.debug("Processing: %s" % (item))
+        create_or_update_consumer_identity(item)
+    ###
+    # TODO: Consider removing this 'removal' logic when getting ready to deploy in production
+    #   Does it make sense to keep this, or should we remove it?
     # Process RHICs that have been removed from the remote source
+    # This removal is likely to be more for testing as we delete database and cleanup environments
+    # In production we plan to keep 'deleted' RHICs by marking them as deleted.
+    ###
     objects = ConsumerIdentity.objects()
     known_uuids = [str(x.uuid) for x in objects]
     remote_uuids = [x["uuid"] for x in data]
@@ -62,13 +57,55 @@ def process_data(data):
         ci = ConsumerIdentity.objects(uuid=UUID(old_uuid))
         ci.delete()
 
-def create_new_consumer_identity(consumer_id, engineering_ids):
-    _LOG.info("Creating new ConsumerIdentity(consumer_id=%s, engineering_ids=%s)" % (consumer_id, engineering_ids))
-    identity = ConsumerIdentity(uuid=UUID(consumer_id), engineering_ids=engineering_ids)
+def create_or_update_consumer_identity(item):
+    """
+    Creates a new consumer identity or updates existing to match passed in item data
+    @param item: dict containing needed info to construct a ConsumerIdentity object
+                    required keys: 'uuid', 'engineering_ids'
+    @type item: dict
+    @return: True on success, False on failure
+    @rtype: bool
+    """
+    if not item.has_key("uuid"):
+        raise Exception("Missing required parameter: 'uuid'")
+    if not item.has_key("engineering_ids"):
+        raise Exception("Missing required parameter: 'engineering_ids'")
+    consumer_id = item["uuid"]
+    engineering_ids = item["engineering_ids"]
+
+    created_date = datetime.now(tzutc())
+    modified_date = datetime.now(tzutc())
+    deleted = False
+    deleted_date = None
+    if item.has_key("created_date"):
+        created_date = convert_to_datetime(item["created_date"])
+    if item.has_key("modified_date"):
+        modified_date = convert_to_datetime(item["modified_date"])
+    if item.has_key("deleted"):
+        deleted = item["deleted"]
+    if item.has_key("deleted_date"):
+        deleted_date = convert_to_datetime(item["deleted_date"])
+    if deleted and not deleted_date:
+        deleted_date = datetime.now(tzutc())
+
+    identity = ConsumerIdentity.objects(uuid=UUID(consumer_id)).first()
+    if not identity:
+        _LOG.info("Creating new ConsumerIdentity for: %s" % (consumer_id))
+        identity = ConsumerIdentity(uuid=UUID(consumer_id))
+
+    identity.engineering_ids = engineering_ids
+    identity.created_date = created_date
+    identity.modified_date = modified_date
+    identity.deleted = deleted
+    identity.deleted_date = deleted_date
     try:
+        _LOG.debug("Updating ConsumerIdentity: %s" % (identity))
         identity.save(safe=True)
+        return True
     except Exception, e:
         _LOG.exception(e)
+        return False
+
 
 def sync_from_rhic_serve_blocking():
     _LOG.info("Attempting to synchronize RHIC data from configured rhic_serve")

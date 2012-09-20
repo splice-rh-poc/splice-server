@@ -54,12 +54,17 @@ class UnknownConsumerIdentity(CheckinException):
         return "Unknown consumer identity '%s'" % (self.identity)
 
 class RequestException(Exception):
+    """
+    This exception is to be used when this server is sending a remote request
+    to a service and encounters an error.
+    """
     def __init__(self, status, message=""):
         super(RequestException, self).__init__()
         self.status = status
         self.message = message
         self.response = HttpResponse(
             content=self.__str__(),
+            # status is marking a remote service had a problem
             status=httplib.BAD_GATEWAY
         )
 
@@ -67,3 +72,16 @@ class RequestException(Exception):
         return "Exception: remote request yielded status code: '%s' with body '%s'"\
         % (self.status, self.message)
 
+class UnsupportedDateFormatException(Exception):
+    def __init__(self, date_str, message=""):
+        super(UnsupportedDateFormatException, self).__init__()
+        self.date_str = date_str
+        self.message = message
+        self.response = HttpResponse(
+            content=self.__str__(),
+            status=httplib.BAD_REQUEST
+        )
+
+    def __str__(self):
+        return "Exception: datetime string of '%s' could not be parsed with any known methods." \
+               % (self.date_str)

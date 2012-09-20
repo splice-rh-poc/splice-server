@@ -28,9 +28,10 @@ from splice.common import candlepin_client
 from splice.common import rhic_serve_client
 from splice.common import utils
 from splice.common.certs import CertUtils
-from splice.common.identity import create_new_consumer_identity, sync_from_rhic_serve, \
+from splice.common.exceptions import UnsupportedDateFormatException
+from splice.common.identity import create_or_update_consumer_identity, sync_from_rhic_serve, \
         sync_from_rhic_serve_blocking, SyncRHICServeThread
-from splice.entitlement.checkin import CheckIn, CertValidationException
+from splice.entitlement.checkin import CheckIn
 from splice.entitlement.models import ConsumerIdentity
 
 from splice.common import identity
@@ -124,7 +125,10 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.expected_valid_identity_uuid = "98e6aa41-a25d-4d60-976b-d70518382683"
 
     def load_rhic_data(self):
-        create_new_consumer_identity(self.valid_identity_uuid, self.valid_products)
+        item = {}
+        item["uuid"] = self.valid_identity_uuid
+        item["engineering_ids"] = self.valid_products
+        create_or_update_consumer_identity(item)
 
     def tearDown(self):
         super(BaseEntitlementTestCase, self).tearDown()
@@ -271,7 +275,10 @@ class IdentityTest(BaseEntitlementTestCase):
     def test_sync_that_removes_old_rhics(self):
         self.assertEqual(len(identity.JOBS), 0)
         # Create one dummy RHIC which our sync should remove
-        create_new_consumer_identity("180ed55f-c3fb-4249-ac4c-52e440cd9301", ["1","2"])
+        item = {}
+        item["uuid"] = "180ed55f-c3fb-4249-ac4c-52e440cd9301"
+        item["engineering_ids"] = ["1","2"]
+        create_or_update_consumer_identity(item)
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 1)
         sync_from_rhic_serve_blocking()
@@ -286,8 +293,10 @@ class IdentityTest(BaseEntitlementTestCase):
     def test_sync_where_existing_rhics_product_mapping_changes(self):
         self.assertEqual(len(identity.JOBS), 0)
         # Create a RHIC with products that will change after sync
-        uuid_under_test = "480ed55f-c3fb-4249-ac4c-52e440cd9304"
-        create_new_consumer_identity(uuid_under_test, ["1","2"])
+        item = {}
+        item["uuid"] = "480ed55f-c3fb-4249-ac4c-52e440cd9304"
+        item["engineering_ids"] = ["1", "2"]
+        create_or_update_consumer_identity(item)
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 1)
         sync_from_rhic_serve_blocking()
@@ -299,7 +308,7 @@ class IdentityTest(BaseEntitlementTestCase):
         for r in rhics:
             self.assertIn(str(r.uuid), expected_rhics)
         # Ensure that the products have been updated
-        rhic_under_test = ConsumerIdentity.objects(uuid=uuid_under_test).first()
+        rhic_under_test = ConsumerIdentity.objects(uuid=item["uuid"]).first()
         self.assertTrue(rhic_under_test)
         expected_products = ["183", "83", "69"]
         for ep in expected_products:
@@ -320,6 +329,57 @@ class IdentityTest(BaseEntitlementTestCase):
         dummy_job.remove_reference()
         # Ensure JOBS has been cleanedup
         self.assertEqual(len(identity.JOBS), 0)
+
+    def test_create_new_consumer_identity(self):
+        item = {}
+        item["uuid"] = "734ed55f-c3fb-4249-ac4c-52e440cd9304"
+        item["engineering_ids"] = ["1", "2"]
+        create_or_update_consumer_identity(item)
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 1)
+        self.assertEquals(str(rhics[0].uuid), item["uuid"])
+        self.assertEquals(rhics[0].engineering_ids, item["engineering_ids"])
+
+    def test_update_consumer_identity(self):
+        item = {}
+        item["uuid"] = "734ed55f-c3fb-4249-ac4c-52e440cd9304"
+        item["engineering_ids"] = ["1", "2"]
+        create_or_update_consumer_identity(item)
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 1)
+        self.assertEquals(str(rhics[0].uuid), item["uuid"])
+        self.assertEquals(rhics[0].engineering_ids, item["engineering_ids"])
+        self.assertEquals(len(rhics[0].engineering_ids), 2)
+        # Add a product to engineering ids and update
+        item["engineering_ids"] += "3"
+        self.assertNotEquals(rhics[0].engineering_ids, item["engineering_ids"])
+        create_or_update_consumer_identity(item)
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 1)
+        self.assertEquals(str(rhics[0].uuid), item["uuid"])
+        self.assertEquals(rhics[0].engineering_ids, item["engineering_ids"])
+        self.assertEquals(len(rhics[0].engineering_ids), 3)
+
+
+    def test_update_consumer_that_has_been_marked_as_deleted(self):
+        item = {}
+        item["uuid"] = "734ed55f-c3fb-4249-ac4c-52e440cd9304"
+        item["engineering_ids"] = ["1", "2"]
+        create_or_update_consumer_identity(item)
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 1)
+        self.assertEquals(str(rhics[0].uuid), item["uuid"])
+        self.assertEquals(rhics[0].engineering_ids, item["engineering_ids"])
+        item["deleted"] = True
+        create_or_update_consumer_identity(item)
+        rhics = ConsumerIdentity.objects()
+        self.assertEquals(len(rhics), 1)
+        self.assertEquals(str(rhics[0].uuid), item["uuid"])
+        self.assertTrue(rhics[0].deleted)
+
+
+    # TODO:  Update sample rhic data for more info
+
 
 class CheckInTest(BaseEntitlementTestCase):
     """
@@ -389,3 +449,45 @@ class UtilsTest(BaseEntitlementTestCase):
         self.assertTrue(sanitized.has_key(fixed_bad_dollar_key))
         self.assertEquals(sanitized[fixed_bad_dot_key], a[bad_dot_key])
         self.assertEquals(sanitized[fixed_bad_dollar_key], a[bad_dollar_key])
+
+    def test_convert_to_datetime(self):
+        # Ensure we can handle None being passed in
+        self.assertIsNone(utils.convert_to_datetime(None))
+        
+        a = '2012-09-19T19:01:55.008000+00:00'
+        dt_a = utils.convert_to_datetime(a)
+        self.assertEquals(dt_a.year, 2012)
+        self.assertEquals(dt_a.month, 9)
+        self.assertEquals(dt_a.day, 19)
+        self.assertEquals(dt_a.hour, 19)
+        self.assertEquals(dt_a.minute, 1)
+        self.assertEquals(dt_a.microsecond, 8000)
+        self.assertEquals(dt_a.second, 55)
+
+        b = '2012-09-19T19:01:55+00:00'
+        dt_b = utils.convert_to_datetime(b)
+        self.assertEquals(dt_a.year, 2012)
+        self.assertEquals(dt_a.month, 9)
+        self.assertEquals(dt_a.day, 19)
+        self.assertEquals(dt_a.hour, 19)
+        self.assertEquals(dt_a.minute, 1)
+        self.assertEquals(dt_a.second, 55)
+
+        c = '2012-09-19T19:01:55'
+        dt_c = utils.convert_to_datetime(c)
+        self.assertEquals(dt_c.year, 2012)
+        self.assertEquals(dt_c.month, 9)
+        self.assertEquals(dt_c.day, 19)
+        self.assertEquals(dt_c.hour, 19)
+        self.assertEquals(dt_c.minute, 1)
+        self.assertEquals(dt_c.second, 55)
+
+        caught  = False
+        bad_value = 'BadValue'
+        try:
+            utils.convert_to_datetime(bad_value)
+            self.assertTrue(False) # Exception should be raised
+        except UnsupportedDateFormatException, e:
+            caught = True
+            self.assertEquals(e.date_str, bad_value)
+        self.assertTrue(caught)

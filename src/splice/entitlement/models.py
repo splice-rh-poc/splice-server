@@ -61,7 +61,13 @@ class SpliceServerRelationships(Document):
 class ConsumerIdentity(RHIC):
 
     def __str__(self):
-        return "Consumer Identity '%s' with products '%s'" % (self.uuid, self.engineering_ids)
+        msg = "Consumer Identity '%s' with engineering_ids '%s', " \
+              "created_date '%s', modified_date '%s'" %\
+              (self.uuid, self.engineering_ids, self.created_date,
+                    self.modified_date)
+        if self.deleted:
+            msg += ", deleted = %s, deleted_date = %s" % (self.deleted, self.deleted_date)
+        return msg
 
 class ProductUsage(Document):
     consumer = StringField(required=True)
