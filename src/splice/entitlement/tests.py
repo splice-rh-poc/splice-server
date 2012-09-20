@@ -197,7 +197,7 @@ class CandlepinClientTest(BaseEntitlementTestCase):
 
     def test_get_entitlement(self):
         cert_info = candlepin_client.get_entitlement(host="localhost", port=0, url="mocked",
-            installed_products=[4], identity="dummy identity", username="", password="")
+            requested_products=[4], identity="dummy identity", username="", password="")
         self.assertEquals(len(cert_info), 1)
         self.assertEquals(cert_info[0][0], self.expected_cert)
         self.assertEquals(cert_info[0][1], self.expected_key)

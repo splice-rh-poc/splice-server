@@ -67,12 +67,18 @@ class ProductUsage(Document):
     consumer = StringField(required=True)
     splice_server = ReferenceField(SpliceServer, required=True)
     instance_identifier = StringField(required=True) # example: MAC Address
-    product_info = ListField(StringField())
+    allowed_product_info = ListField(StringField())
+    unallowed_product_info = ListField(StringField())
     facts = DictField()
     date = DateTimeField(required=True)
 
     def __str__(self):
-        return "Consumer '%s' on Splice Server '%s' from instance '%s' using products '%s' at '%s'" % \
-               (self.consumer, self.splice_server, self.instance_identifier, self.product_info, self.date)
+        return "Consumer '%s' on Splice Server '%s' from instance '%s' "" \
+            ""with allowed_products '%s', "" \
+            ""unallowed_products %s at '%s'" % \
+            (self.consumer, self.splice_server,
+            self.instance_identifier, self.allowed_product_info,
+            self.unallowed_product_info,
+            self.date)
 
 

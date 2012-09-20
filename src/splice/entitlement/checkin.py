@@ -92,13 +92,16 @@ class CheckIn(object):
 
         identity = self.get_identity(identity_cert)
 
+        # installed_products - product certificates installed on consumer
+        # allowed_products - products allowed by identity
+        # unallowed_products - products installed on consumer but unallowed by identity
+
         allowed_products, unallowed_products = self.check_access(identity, installed_products)
         if unallowed_products:
-            raise UnallowedProductException(identity, unallowed_products)
+            _LOG.info("%s requested access to unallowed products: '%s'" % (identity, unallowed_products))
 
-        cert_info = self.request_entitlement(identity, allowed_products, cert_length_in_min)
-        # TODO:  Must add system facts to reporting data
-        self.record_usage(identity, consumer_identifier, facts, allowed_products)
+        cert_info = self.request_entitlement(identity, cert_length_in_min)
+        self.record_usage(identity, consumer_identifier, facts, allowed_products, unallowed_products)
         return cert_info
 
     def validate_cert(self, cert_pem):
@@ -151,7 +154,7 @@ class CheckIn(object):
                 allowed_products.append(prod)
         return allowed_products, unallowed_products
 
-    def record_usage(self, identity, consumer_identifier, facts, products):
+    def record_usage(self, identity, consumer_identifier, facts, allowed_products, unallowed_products):
         """
         @param identity consumer's identity
         @type identity: str
@@ -163,25 +166,48 @@ class CheckIn(object):
         @param facts system facts
         @type facts: {}
 
-        @param products: list of product ids
-        @type products: [entitlement.models.Product]
+        @param allowed_products:    list of product ids that are
+                                    installed and entitled for usage by consumer
+        @type allowed_products: [str]
+
+        @param unallowed_products:  list of product ids that are
+                                    installed but _not_ entitled for usage by consumer
+        @type unallowed_products: [str]
         """
         try:
             sanitized_facts = utils.sanitize_dict_for_mongo(facts)
-            _LOG.info("Record usage for '%s' with products '%s' on instance with identifier '%s' and facts <%s>" %\
-                (identity, products, consumer_identifier, sanitized_facts))
+            _LOG.info("Record usage for '%s' with "
+                        "allowed_products '%s', "
+                        "unallowed_products '%s' "
+                        "on instance with identifier '%s' and facts <%s>" %\
+                (identity, allowed_products, unallowed_products,
+                 consumer_identifier, sanitized_facts))
             consumer_uuid_str = str(identity.uuid)
             prod_usage = ProductUsage(consumer=consumer_uuid_str, splice_server=self.get_this_server(),
-                instance_identifier=consumer_identifier, product_info=products, facts=sanitized_facts,
+                instance_identifier=consumer_identifier,
+                allowed_product_info=allowed_products,
+                unallowed_product_info=unallowed_products,
+                facts=sanitized_facts,
                 date=datetime.now())
             prod_usage.save()
         except Exception, e:
             _LOG.exception(e)
         return
 
-    def request_entitlement(self, identity, allowed_products, cert_length_in_min=None):
+    def request_entitlement(self, identity, cert_length_in_min=None):
+        """
+        Will request an entitlement certificate for all engineering_ids associated
+        to this 'identity'.
+
+        @param identity: the identity requesting an entitlement certificate
+        @type identity: checkin_service.entitlement.models.ConsumerIdentity
+        @param cert_length_in_min:  optional param, if specified will ask
+                                    candlepin for a cert that will live for
+                                    this many minutes
+        @type cert_length_in_min: int
+        @return:
+        """
         cp_config = get_candlepin_config_info()
-        installed_products=allowed_products
         start_date=None
         end_date=None
         if cert_length_in_min:
@@ -191,11 +217,11 @@ class CheckIn(object):
             end_date = end_date.isoformat()
 
         _LOG.info("Request entitlement certificate from external service: %s:%s%s for RHIC <%s> with products <%s>" %\
-                    (cp_config["host"], cp_config["port"], cp_config["url"], identity.uuid, installed_products))
+                    (cp_config["host"], cp_config["port"], cp_config["url"], identity.uuid, identity.engineering_ids))
 
         cert_info = candlepin_client.get_entitlement(
             host=cp_config["host"], port=cp_config["port"], url=cp_config["url"],
-            installed_products=installed_products,
+            requested_products=identity.engineering_ids,
             identity=str(identity.uuid),
             username=cp_config["username"], password=cp_config["password"],
             start_date=start_date, end_date=end_date)

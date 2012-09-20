@@ -25,19 +25,21 @@ from splice.common.exceptions import RequestException
 
 _LOG = logging.getLogger(__name__)
 
-def get_entitlement(host, port, url, installed_products, identity,
+def get_entitlement(host, port, url, requested_products, identity,
                     username, password,
                     start_date=None, end_date=None,
                     debug=False):
     """
 
-    @param host:
-    @param port:
-    @param url:
-    @param installed_products:
-    @param identity:
-    @param username:
-    @param password:
+    @param host: entitlement server host address
+    @param port: entitlement server host port
+    @param url:  URL to access entitlement service
+    @param requested_products: list of engineering product ids
+    @type requested_products: [str]
+    @param identity: identity we are requesting an ent cert on behalf of
+    @type identity: checkin_service.entitlement.models.ConsumerIdentity
+    @param username: username for auth to entitlement service
+    @param password: password for auth to entitlement service
     @param start_date:  optional param, if specified controls start date of certificate
                         expected to be in isoformat as: datetime.datetime.now().isoformat()
     @param end_date:    optional param, if specificed controls end date of certificate
@@ -46,7 +48,7 @@ def get_entitlement(host, port, url, installed_products, identity,
     @return:
     """
     status, data = _request(host, port, url,
-        installed_products, identity,
+        requested_products, identity,
         username, password,
         start_date=start_date, end_date=end_date, debug=debug)
     if status == 200:
@@ -60,7 +62,7 @@ def parse_data(data):
         certs.append(item)
     return certs
 
-def _request(host, port, url, installed_products,
+def _request(host, port, url, requested_products,
                 identity, username, password,
                 start_date=None, end_date=None,
                 debug=False):
@@ -77,7 +79,7 @@ def _request(host, port, url, installed_products,
     headers['Authorization'] = 'Basic ' + encoded
 
     query_params = {
-        "productIDs": installed_products,
+        "productIDs": requested_products,
         "rhicUUID": identity,
     }
 
@@ -117,7 +119,7 @@ if __name__ == "__main__":
     print "Start Date: %s" % (start_date.isoformat())
     print "End Date: %s" % (end_date.isoformat())
     print get_entitlement(host=cfg["host"], port=cfg["port"], url=cfg["url"],
-        installed_products=["69","83"],
+        requested_products=["69","83"],
         identity="1234",
         username=cfg["username"], password=cfg["password"],
         start_date=start_date.isoformat(),
