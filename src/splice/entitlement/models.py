@@ -52,6 +52,8 @@ class SpliceServer(Document):
     description = StringField() # Example what datacenter is this deployed to, i.e. us-east-1
     hostname = StringField(required=True)
     environment = StringField(required=True)
+   
+    meta = {'allow_inheritance': True}
 
 class SpliceServerRelationships(Document):
     self = ReferenceField(SpliceServer, required=True)
@@ -77,6 +79,8 @@ class ProductUsage(Document):
     unallowed_product_info = ListField(StringField())
     facts = DictField()
     date = DateTimeField(required=True)
+    
+    meta = {'allow_inheritance': True}
 
     def __str__(self):
         return "Consumer '%s' on Splice Server '%s' from instance '%s' "" \
