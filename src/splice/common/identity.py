@@ -20,8 +20,8 @@ from dateutil.tz import tzutc
 
 from splice.common import config
 from splice.common import rhic_serve_client
-from splice.common.utils import convert_to_datetime
-from splice.entitlement.models import ConsumerIdentity
+from splice.common.utils import convert_to_datetime, sanitize_key_for_mongo
+from splice.entitlement.models import ConsumerIdentity, IdentitySyncInfo
 
 _LOG = logging.getLogger(__name__)
 
@@ -106,17 +106,48 @@ def create_or_update_consumer_identity(item):
         _LOG.exception(e)
         return False
 
+def get_last_sync_timestamp(server_hostname):
+    key = sanitize_key_for_mongo(server_hostname)
+    sync = IdentitySyncInfo.objects(server_hostname=key).first()
+    if not sync:
+        return None
+    return sync.last_sync
+
+def save_last_sync(server_hostname, timestamp):
+    key = sanitize_key_for_mongo(server_hostname)
+    sync = IdentitySyncInfo.objects(server_hostname=key).first()
+    if not sync:
+        sync = IdentitySyncInfo(server_hostname=key)
+    sync.last_sync = timestamp
+    try:
+        sync.save()
+    except Exception, e:
+        _LOG.exception(e)
+        return False
+    return True
 
 def sync_from_rhic_serve_blocking():
     _LOG.info("Attempting to synchronize RHIC data from configured rhic_serve")
+    current_time = datetime.now(tzutc())
+
     cfg = config.get_rhic_serve_config_info()
     # TODO need to implement pagination
-    data = rhic_serve_client.get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"])
+    # Lookup last time we synced from this host
+    # Sync records from that point in time.
+    server_hostname = cfg["host"]
+    last_sync = get_last_sync_timestamp(server_hostname)
+
+    data = rhic_serve_client.get_all_rhics(host=server_hostname, port=cfg["port"],
+        url=cfg["get_all_rhics_url"], last_sync=last_sync)
     if not data:
         _LOG.info("Received no data from %s:%s%s" % (cfg["host"], cfg["port"], cfg["get_all_rhics_url"]))
-        return
+        return True
     _LOG.info("Fetched %s RHICs from %s:%s%s" % (len(data), cfg["host"], cfg["port"], cfg["get_all_rhics_url"]))
     process_data(data)
+    if not save_last_sync(server_hostname, current_time):
+        _LOG.info("Unable to update last sync for: %s at %s" % (server_hostname, current_time))
+        return False
+    return True
 
 def sync_from_rhic_serve():
     """

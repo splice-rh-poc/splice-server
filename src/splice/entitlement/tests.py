@@ -16,6 +16,9 @@ import os
 import time
 import uuid
 
+from datetime import datetime
+from dateutil.tz import tzutc
+
 from logging import getLogger
 
 from tastypie.test import ResourceTestCase
@@ -32,7 +35,7 @@ from splice.common.exceptions import UnsupportedDateFormatException
 from splice.common.identity import create_or_update_consumer_identity, sync_from_rhic_serve, \
         sync_from_rhic_serve_blocking, SyncRHICServeThread
 from splice.entitlement.checkin import CheckIn
-from splice.entitlement.models import ConsumerIdentity
+from splice.entitlement.models import ConsumerIdentity, IdentitySyncInfo
 
 from splice.common import identity
 
@@ -47,7 +50,8 @@ class MongoTestCase(ResourceTestCase):
     """
     TestCase class that clear the collection between the tests
     """
-    db_name = 'test_%s' % settings.MONGO_DATABASE_NAME
+    #db_name = 'test_%s' % settings.MONGO_DATABASE_NAME
+    db_name = settings.MONGO_DATABASE_NAME
     def __init__(self, methodName='runtest'):
         super(MongoTestCase, self).__init__(methodName)
         disconnect()
@@ -75,6 +79,25 @@ class MongoTestsTestCase(MongoTestCase):
         self.drop_database_and_reconnect()
         lookup = MongoTestEntry.objects()
         self.assertEqual(len(lookup), 0)
+
+    def test_save_duplicates(self):
+        class Simple(Document):
+            name = StringField(required=True, unique=True)
+        @classmethod
+        def pre_save(cls, sender, document, **kwargs):
+            document.name = "Hi %s" % (document.name)
+        def __str__(self):
+            return "Simple: name = %s" % (self.name)
+
+        fred = Simple(name="Fred")
+        fred.save()
+        duplicate = Simple(name=fred.name)
+        caught = False
+        try:
+            duplicate.save()
+        except:
+            caught = True
+        self.assertTrue(caught)
 
 def mocked_candlepin_client_request_method(host, port, url, installed_product,
                           identity, username, password,
@@ -377,6 +400,62 @@ class IdentityTest(BaseEntitlementTestCase):
         self.assertEquals(str(rhics[0].uuid), item["uuid"])
         self.assertTrue(rhics[0].deleted)
 
+    def test_get_last_sync_timestamp(self):
+        server_hostname = "a.b.c.example.com"
+        sync_info = IdentitySyncInfo(server_hostname=server_hostname)
+        sync_info.last_sync = datetime.now(tzutc())
+        sync_info.save()
+
+        found = identity.get_last_sync_timestamp(server_hostname)
+        self.assertIsNotNone(found)
+        created = sync_info.last_sync
+        self.assertEquals(created.year, found.year)
+        self.assertEquals(created.month, found.month)
+        self.assertEquals(created.day, found.day)
+        self.assertEquals(created.hour, found.hour)
+        self.assertEquals(created.minute, found.minute)
+        self.assertEquals(created.second, found.second)
+
+    def test_save_duplicate(self):
+        print "test_save_duplicate starting:\n"
+        server_hostname = "simple.example.com"
+        sync_info = IdentitySyncInfo(server_hostname=server_hostname)
+        sync_info.last_sync = datetime.now(tzutc())
+        sync_info.save()
+        self.assertEquals(len(IdentitySyncInfo.objects()), 1 )
+
+        dup = IdentitySyncInfo(server_hostname=server_hostname)
+        dup.last_sync = datetime.now(tzutc())
+        caught = False
+        try:
+            print "Attempting to save a new value:\n\t %s \nwhen the existing values are:\n\t %s" % (dup, IdentitySyncInfo.objects())
+            dup.save()
+        except:
+            caught = True
+        data =  IdentitySyncInfo.objects()
+        self.assertEquals(len(data), 2)
+        self.assertEqual(data[0].server_hostname, data[1].server_hostname)
+        print "Verified that <%s> == <%s>" % (data[0].server_hostname, data[1].server_hostname)
+        print "\ntest_save_duplicate ending\n"
+        self.assertTrue(caught)
+
+    def test_save_last_sync(self):
+        server_hostname = "a.b.c.example.com"
+        sync_info = IdentitySyncInfo(server_hostname=server_hostname)
+        sync_info.last_sync = datetime.now(tzutc())
+        sync_info.save()
+        key = utils.sanitize_key_for_mongo(server_hostname)
+        lookup = IdentitySyncInfo.objects(server_hostname=key)
+        self.assertIsNotNone(lookup)
+        self.assertEquals(len(lookup), 1)
+        created = sync_info.last_sync
+        found = lookup[0].last_sync
+        self.assertEquals(created.year, found.year)
+        self.assertEquals(created.month, found.month)
+        self.assertEquals(created.day, found.day)
+        self.assertEquals(created.hour, found.hour)
+        self.assertEquals(created.minute, found.minute)
+        self.assertEquals(created.second, found.second)
 
     # TODO:  Update sample rhic data for more info
 
@@ -450,10 +529,25 @@ class UtilsTest(BaseEntitlementTestCase):
         self.assertEquals(sanitized[fixed_bad_dot_key], a[bad_dot_key])
         self.assertEquals(sanitized[fixed_bad_dollar_key], a[bad_dollar_key])
 
+        expected_same = utils.sanitize_dict_for_mongo(sanitized)
+        self.assertEquals(expected_same, sanitized)
+
+
+    def test_sanitize_key_for_mongo(self):
+        bad_dots_in_list_key = ["bad.value.1", [["bad.value.2"]]]
+        fixed_bad_key = ["bad_dot_value_dot_1", [["bad_dot_value_dot_2"]]]
+        sanitized = utils.sanitize_key_for_mongo(bad_dots_in_list_key)
+        self.assertEquals(len(sanitized), len(fixed_bad_key))
+        for key in sanitized:
+            self.assertIn(key, fixed_bad_key)
+        expected_same = utils.sanitize_key_for_mongo(sanitized)
+        self.assertEquals(expected_same, sanitized)
+
+
     def test_convert_to_datetime(self):
         # Ensure we can handle None being passed in
         self.assertIsNone(utils.convert_to_datetime(None))
-        
+
         a = '2012-09-19T19:01:55.008000+00:00'
         dt_a = utils.convert_to_datetime(a)
         self.assertEquals(dt_a.year, 2012)

@@ -11,8 +11,18 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+from datetime import datetime
+from dateutil.tz import tzutc
+
 from mongoengine import DateTimeField, Document, ListField, ReferenceField, StringField, DictField
+from mongoengine import signals
+from rhic_serve.common.fields import IsoDateTimeField
 from rhic_serve.rhic_rcs.models import RHIC
+from splice.common.utils import sanitize_key_for_mongo
+
+
+
+
 
 ###
 # Overview of what functionality will need to be supported:
@@ -55,10 +65,23 @@ class SpliceServer(Document):
    
     meta = {'allow_inheritance': True}
 
-class SpliceServerRelationships(Document):
-    self = ReferenceField(SpliceServer, required=True)
-    parent = ReferenceField(SpliceServer)
-    children = ListField(ReferenceField(SpliceServer))
+class IdentitySyncInfo(Document):
+    server_hostname = StringField(required=True, unique=True)
+    last_sync = IsoDateTimeField(required=True)
+
+    @classmethod
+    def pre_save(cls, sender, document, **kwargs):
+        """
+        pre_save signal hook.
+        """
+        # Ensure that the 'server_hostname' has any "." removed so it can be a key in mongo
+        orig = document.server_hostname
+        document.server_hostname = sanitize_key_for_mongo(document.server_hostname)
+        print "pre_save(%s) converting original 'server_hostname' of %s to %s" % (document, orig, document.server_hostname)
+        #print "pre_save(%s)" % (document)
+    def __str__(self):
+        return "IdentitySyncInfo, server_hostname = %s, last_sync = %s" % (self.server_hostname, self.last_sync)
+
 
 class ConsumerIdentity(RHIC):
 
@@ -92,3 +115,5 @@ class ProductUsage(Document):
             self.date)
 
 
+# Signals
+signals.pre_save.connect(IdentitySyncInfo.pre_save, sender=IdentitySyncInfo)

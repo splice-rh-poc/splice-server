@@ -18,6 +18,19 @@ from splice.common.exceptions import UnsupportedDateFormatException
 import isodate
 
 _LOG = getLogger(__name__)
+
+def sanitize_key_for_mongo(input):
+    def _sanitize(input_str):
+        return input.replace(".", "_dot_").replace("$", "_dollarsign_")
+
+    if isinstance(input, list):
+        ret_val = []
+        for key in input:
+            ret_val.append(sanitize_key_for_mongo(key))
+        return ret_val
+    return _sanitize(input)
+
+
 def sanitize_dict_for_mongo(input_dict):
     """
     @param input_dict   dictionary to be processed and convert all "." and "$" to safe characters
@@ -30,7 +43,7 @@ def sanitize_dict_for_mongo(input_dict):
     """
     ret_val = {}
     for key in input_dict:
-        cleaned_key = key.replace(".", "_dot_").replace("$", "_dollarsign_")
+        cleaned_key = sanitize_key_for_mongo(key)
         ret_val[cleaned_key] = input_dict[key]
     return ret_val
 

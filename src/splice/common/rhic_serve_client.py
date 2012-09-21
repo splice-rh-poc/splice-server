@@ -25,7 +25,7 @@ from splice.common.exceptions import RequestException
 
 _LOG = logging.getLogger(__name__)
 
-def get_all_rhics(host, port, url, debug=False):
+def get_all_rhics(host, port, url, last_sync=None, debug=False):
     status, data = _request(host, port, url, debug)
     if status == 200:
         return data
