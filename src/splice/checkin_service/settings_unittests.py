@@ -227,9 +227,10 @@ LOGGING = {
 ##
 ## Adding mongoengine specifics ##
 ##
-MONGO_DATABASE_NAME = 'checkin_service'
+MONGO_DATABASE_NAME = 'TEST_checkin_service'
 import mongoengine
 mongoengine.connect(MONGO_DATABASE_NAME)
+mongoengine.register_connection("rhic_serve", MONGO_DATABASE_NAME)
 
 AUTHENTICATION_BACKENDS = (
     'mongoengine.django.auth.MongoEngineBackend',
