@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.32
+Version:	0.33
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -92,6 +92,11 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Fri Sep 21 2012 John Matthews <jmatthews@redhat.com> 0.33-1
+- Update mongo database alias for 'rhic_serve' (jmatthews@redhat.com)
+- Update logic for sync of RHIC data to update creation/modification/deletion
+  dates (jmatthews@redhat.com)
+
 * Thu Sep 20 2012 John Matthews <jmatthews@redhat.com> 0.32-1
 - Update to request entitlement certificate for all products associated to
   RHIC, also if a checkin is requested for some products not allowed by the
