@@ -257,7 +257,7 @@ class ReportDataGenerator(object):
         pu = ProductUsage(
             consumer=rhic.uuid, splice_server=splice_server,
             instance_identifier=rhic.instance_identifiers[inst_index], 
-            product_info=rhic.engineering_ids,
+            allowed_product_info=rhic.engineering_ids,
             facts=rhic.instance_facts[inst_index], date=usage_datetime)
         pu.save()
             
