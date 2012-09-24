@@ -75,10 +75,7 @@ class IdentitySyncInfo(Document):
         pre_save signal hook.
         """
         # Ensure that the 'server_hostname' has any "." removed so it can be a key in mongo
-        orig = document.server_hostname
         document.server_hostname = sanitize_key_for_mongo(document.server_hostname)
-        print "pre_save(%s) converting original 'server_hostname' of %s to %s" % (document, orig, document.server_hostname)
-        #print "pre_save(%s)" % (document)
     def __str__(self):
         return "IdentitySyncInfo, server_hostname = %s, last_sync = %s" % (self.server_hostname, self.last_sync)
 

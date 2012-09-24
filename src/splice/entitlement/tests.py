@@ -25,6 +25,7 @@ from tastypie.test import ResourceTestCase
 
 from mongoengine import Document, StringField
 from mongoengine.connection import connect, disconnect
+from mongoengine.queryset import QuerySet
 from django.conf import settings
 
 from splice.common import candlepin_client
@@ -58,14 +59,21 @@ class MongoTestCase(ResourceTestCase):
         self.db = connect(self.db_name)
         self.drop_database_and_reconnect()
 
+
     def _post_teardown(self):
         super(MongoTestCase, self)._post_teardown()
-        self.db.drop_database(self.db_name)
+        self.drop_database_and_reconnect(reconnect=False)
 
-    def drop_database_and_reconnect(self):
+    def drop_database_and_reconnect(self, reconnect=True):
         disconnect()
         self.db.drop_database(self.db_name)
-        self.db = connect(self.db_name)
+        # Mongoengine sometimes doesn't recreate unique indexes
+        # in between test runs, adding the below 'reset' to fix this
+        # https://github.com/hmarr/mongoengine/issues/422
+        QuerySet._reset_already_indexed()
+        if reconnect:
+            self.db = connect(self.db_name)
+
 
 class MongoTestsTestCase(MongoTestCase):
 
@@ -417,7 +425,6 @@ class IdentityTest(BaseEntitlementTestCase):
         self.assertEquals(created.second, found.second)
 
     def test_save_duplicate(self):
-        print "test_save_duplicate starting:\n"
         server_hostname = "simple.example.com"
         sync_info = IdentitySyncInfo(server_hostname=server_hostname)
         sync_info.last_sync = datetime.now(tzutc())
@@ -428,15 +435,11 @@ class IdentityTest(BaseEntitlementTestCase):
         dup.last_sync = datetime.now(tzutc())
         caught = False
         try:
-            print "Attempting to save a new value:\n\t %s \nwhen the existing values are:\n\t %s" % (dup, IdentitySyncInfo.objects())
             dup.save()
         except:
             caught = True
         data =  IdentitySyncInfo.objects()
-        self.assertEquals(len(data), 2)
-        self.assertEqual(data[0].server_hostname, data[1].server_hostname)
-        print "Verified that <%s> == <%s>" % (data[0].server_hostname, data[1].server_hostname)
-        print "\ntest_save_duplicate ending\n"
+        self.assertEquals(len(data), 1)
         self.assertTrue(caught)
 
     def test_save_last_sync(self):
