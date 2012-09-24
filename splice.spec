@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.34
+Version:	0.35
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -92,6 +92,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Sep 24 2012 John Matthews <jmatthews@redhat.com> 0.35-1
+- Added config option: 'task_schedule_minutes' under 'rhic_serve' controls how
+  often sync task runs (jmatthews@redhat.com)
+
 * Mon Sep 24 2012 John Matthews <jmatthews@redhat.com> 0.34-1
 - Update for last_sync functionality when syncing RHICs against rhic_server or
   another RCS (jmatthews@redhat.com)
