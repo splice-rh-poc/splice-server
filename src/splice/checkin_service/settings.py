@@ -16,6 +16,10 @@
 import os
 import pwd
 
+
+from logging import getLogger
+_LOG = getLogger(__name__)
+
 # Initialize Splice Config
 from splice.common import config
 config.init()
@@ -259,6 +263,13 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
 }
 CELERY_ANNOTATIONS = {"%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME): {"rate_limit": "10/s"}}
 
+
+rhic_serve_cfg = config.get_rhic_serve_config_info()
+rhic_sync_schedule = 60
+if rhic_serve_cfg.has_key("task_schedule_minutes"):
+    rhic_sync_schedule = int(rhic_serve_cfg["task_schedule_minutes"])
+_LOG.info("Configuring rhic_sync scheduled task to run every %s minutes" % (rhic_sync_schedule))
+
 from datetime import timedelta
 CELERYBEAT_SCHEDULE = {
     # Executes every 30 seconds
@@ -268,9 +279,9 @@ CELERYBEAT_SCHEDULE = {
     #    'args': None,
     #},
     # Executes every hour
-    'sync_rhic_product_mappings_every_hour': {
+    'sync_rhic_product_mappings': {
         'task': '%s.sync_rhics' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-        'schedule': timedelta(hours=1),
+        'schedule': timedelta(minutes=rhic_sync_schedule),
         'args': None,
     },
 }

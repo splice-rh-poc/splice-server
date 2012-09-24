@@ -39,7 +39,8 @@ def get_rhic_serve_config_info():
     return {
         "host": CONFIG.get("rhic_serve", "host"),
         "port": CONFIG.get("rhic_serve", "port"),
-        "get_all_rhics_url": CONFIG.get("rhic_serve", "get_all_rhics_url")
+        "get_all_rhics_url": CONFIG.get("rhic_serve", "get_all_rhics_url"),
+        "task_schedule_minutes": CONFIG.get("rhic_serve", "task_schedule_minutes"),
     }
 
 def get_logging_config_file():
