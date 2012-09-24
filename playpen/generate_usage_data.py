@@ -47,7 +47,7 @@ mongoengine.connect(MONGO_RHIC_DATABASE_NAME, alias=MONGO_RHIC_DATABASE_NAME)
 
 # Facts for instances
 fact1 = {"memory_dot_memtotal": "604836", "lscpu_dot_cpu_socket(s)": "1"}
-fact2 = {"memory_dot_memtotal": "1604836", "lscpu_dot_cpu_socket(s)": "4"}
+fact2 = {"memory_dot_memtotal": "16048360", "lscpu_dot_cpu_socket(s)": "4"}
 facts = [fact1, fact2]
 
 # Each mac address pattern below will be used by the
