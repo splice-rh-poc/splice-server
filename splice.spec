@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.33
+Version:	0.34
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -92,6 +92,13 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Sep 24 2012 John Matthews <jmatthews@redhat.com> 0.34-1
+- Update for last_sync functionality when syncing RHICs against rhic_server or
+  another RCS (jmatthews@redhat.com)
+- Add a new header to record time in seconds of last call to entitlement
+  service  example: X-Entitlement-Time-Seconds: 1.39451313019
+  (jmatthews@redhat.com)
+
 * Fri Sep 21 2012 John Matthews <jmatthews@redhat.com> 0.33-1
 - Update mongo database alias for 'rhic_serve' (jmatthews@redhat.com)
 - Update logic for sync of RHIC data to update creation/modification/deletion
