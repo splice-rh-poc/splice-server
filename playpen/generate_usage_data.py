@@ -164,8 +164,8 @@ class ReportDataGenerator(object):
             name='rhel-server-1190457-3116649-prem-l1-l3', 
             account_id='1190457',
             contract='3116649',
-            support_level='prem', 
-            sla='l1-l3',
+            support_level='l1-l3', 
+            sla='prem',
             products=['RHEL Server',], 
             engineering_ids=['69',])
         # Premium RHEL Server and JBoss
@@ -175,8 +175,8 @@ class ReportDataGenerator(object):
             name='rhel-server-jboss-1190457-3116649-prem-l1-l3', 
             account_id='1190457',
             contract='3116649', 
-            support_level='prem', 
-            sla='l1-l3',
+            support_level='l1-l3', 
+            sla='prem',
             products=['RHEL Server', 'JBoss EAP'], 
             engineering_ids=['69', '183'])
         # Self Support RHEL Server for Education
@@ -200,8 +200,8 @@ class ReportDataGenerator(object):
             name='rhel-server-jboss-1238730-4582732-prem-l1-l3',
             account_id='3485301',
             contract='1238730', 
-            support_level='prem', 
-            sla='l1-l3',
+            support_level='l1-l3', 
+            sla='prem',
             products=['RHEL Server', 'JBoss EAP'],
             engineering_ids=['69', '183'])
         # Premium OpenShift Gear (encompasses RHEL Server and JBoss Engineering
@@ -212,8 +212,8 @@ class ReportDataGenerator(object):
             name='openshift-gear-3485301-4582732-prem-l1-l3',
             account_id='3485301',
             contract='4582732', 
-            support_level='prem', 
-            sla='l1-l3',
+            support_level='l1-l3', 
+            sla='prem',
             products=['OpenShift Gear',],
             engineering_ids=['69', '183'])
 
