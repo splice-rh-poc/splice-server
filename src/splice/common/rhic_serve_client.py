@@ -19,6 +19,7 @@ import httplib
 import json
 import logging
 import time
+import urllib
 
 from splice.common import config
 from splice.common.exceptions import RequestException
@@ -26,12 +27,12 @@ from splice.common.exceptions import RequestException
 _LOG = logging.getLogger(__name__)
 
 def get_all_rhics(host, port, url, last_sync=None, debug=False):
-    status, data = _request(host, port, url, debug)
+    status, data = _request(host, port, url, last_sync, debug)
     if status == 200:
         return data
     raise RequestException(status, data)
 
-def _request(host, port, url, debug=False):
+def _request(host, port, url, last_sync=None, debug=False):
     connection = httplib.HTTPSConnection(host, port)
     if debug:
         connection.set_debuglevel(100)
@@ -40,6 +41,12 @@ def _request(host, port, url, debug=False):
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
+    if last_sync:
+        query_params = {
+            "modified_date__gt": last_sync,
+            }
+        data = urllib.urlencode(query_params, True)
+        url = url +"?" + data
     _LOG.info("Sending HTTP request to: %s:%s%s with headers:%s" % (host, port, url, headers))
     connection.request(method, url, body=None, headers=headers)
 
@@ -57,6 +64,10 @@ def _request(host, port, url, debug=False):
     return response.status, response_body
 
 if __name__ == "__main__":
+    from datetime import timedelta
+    from datetime import datetime
+    from dateutil.tz import tzutc
+    last_sync = datetime.now(tzutc()) - timedelta(days=30)
     config.init()
     cfg = config.get_rhic_serve_config_info()
-    print get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], debug=True)
+    print get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], last_sync=last_sync, debug=True)

@@ -134,6 +134,7 @@ def sync_from_rhic_serve_blocking():
     # TODO need to implement pagination
     # Lookup last time we synced from this host
     # Sync records from that point in time.
+    # If we haven't synced before we get back None and proceed with a full sync
     server_hostname = cfg["host"]
     last_sync = get_last_sync_timestamp(server_hostname)
 
@@ -142,7 +143,8 @@ def sync_from_rhic_serve_blocking():
     if not data:
         _LOG.info("Received no data from %s:%s%s" % (cfg["host"], cfg["port"], cfg["get_all_rhics_url"]))
         return True
-    _LOG.info("Fetched %s RHICs from %s:%s%s" % (len(data), cfg["host"], cfg["port"], cfg["get_all_rhics_url"]))
+    _LOG.info("Fetched %s RHICs from %s:%s%s with last_sync=%s" % (len(data),
+            cfg["host"], cfg["port"], cfg["get_all_rhics_url"], last_sync))
     process_data(data)
     if not save_last_sync(server_hostname, current_time):
         _LOG.info("Unable to update last sync for: %s at %s" % (server_hostname, current_time))
