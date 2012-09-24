@@ -83,9 +83,13 @@ class CheckIn(object):
         @param installed_products: a list of X509 certificates, identifying each product installed on the consumer
         @type products: [str]
 
-        @return:    a list of tuples, first entry is a string of the x509 certificate in PEM format,
-                    second entry is the associated private key in string format
-        @rtype: [(str,str)]
+        @return:    tuple
+                    first tuple item is a a list of tuples,
+                        first entry is a string of the x509 certificate in PEM format,
+                        second entry is the associated private key in string format,
+                    next tuple item is an integer representing how long the
+                    entitlement service took to process the call
+        @rtype: [(str,str)], int
         """
         if not self.validate_cert(identity_cert):
             raise CertValidationException()
@@ -100,9 +104,9 @@ class CheckIn(object):
         if unallowed_products:
             _LOG.info("%s requested access to unallowed products: '%s'" % (identity, unallowed_products))
 
-        cert_info = self.request_entitlement(identity, cert_length_in_min)
+        cert_info, ent_call_time = self.request_entitlement(identity, cert_length_in_min)
         self.record_usage(identity, consumer_identifier, facts, allowed_products, unallowed_products)
-        return cert_info
+        return cert_info, ent_call_time
 
     def validate_cert(self, cert_pem):
         """
@@ -205,7 +209,8 @@ class CheckIn(object):
                                     candlepin for a cert that will live for
                                     this many minutes
         @type cert_length_in_min: int
-        @return:
+        @return: Certificate and the time it took for entitlement server to process the call
+        @rtype: str, int
         """
         cp_config = get_candlepin_config_info()
         start_date=None
@@ -219,11 +224,13 @@ class CheckIn(object):
         _LOG.info("Request entitlement certificate from external service: %s:%s%s for RHIC <%s> with products <%s>" %\
                     (cp_config["host"], cp_config["port"], cp_config["url"], identity.uuid, identity.engineering_ids))
 
+        start_time = time.time()
         cert_info = candlepin_client.get_entitlement(
             host=cp_config["host"], port=cp_config["port"], url=cp_config["url"],
             requested_products=identity.engineering_ids,
             identity=str(identity.uuid),
             username=cp_config["username"], password=cp_config["password"],
             start_date=start_date, end_date=end_date)
-        return cert_info
+        end_time = time.time()
+        return cert_info, end_time - start_time
 

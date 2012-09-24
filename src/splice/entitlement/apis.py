@@ -90,14 +90,16 @@ class EntitlementResource(Resource):
     # 'tastypie' by default does not implement a post_detail, so we fallback to behavior of a put
     def post_detail(self, request, **kwargs):
         resp = self.put_detail(request, **kwargs)
-        # Change resp code
-        resp.status_code = 200
-        return resp
+        return self.modify_response(resp)
 
     def put_detail(self, request, **kwargs):
         resp = super(EntitlementResource, self).put_detail(request, **kwargs)
+        return self.modify_response(resp)
+
+    def modify_response(self, resp):
         # Change resp code
         resp.status_code = 200
+        resp['X-Entitlement-Time-Seconds'] = self.last_entitlement_call_length
         return resp
 
     def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
@@ -132,9 +134,10 @@ class EntitlementResource(Resource):
         system_facts = bundle.data["system_facts"]
         checkin = CheckIn()
         bundle.obj = Entitlement()
-        cert_info = checkin.get_entitlement_certificate(identity_cert, consumer_identifier, system_facts, products,
+        cert_info, ent_call_time = checkin.get_entitlement_certificate(identity_cert,
+            consumer_identifier, system_facts, products,
             cert_length_in_min=minutes)
         bundle.obj.certs = cert_info
-        # TODO add support for catching exception and returning appropriate error codes
-        # currently we just return a 500
+        # Setting time of last entitlement call, to be inserted in response header later in processing
+        self.last_entitlement_call_length = ent_call_time
         return bundle
