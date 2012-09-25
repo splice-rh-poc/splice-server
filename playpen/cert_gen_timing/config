@@ -1,0 +1,10 @@
+#!/bin/sh
+export OUT_DIR="./certs"
+export CA_KEY="${OUT_DIR}/CA.key"
+export CA_CERT="${OUT_DIR}/CA.cert"
+export CA_SERIAL="${OUT_DIR}/CA.srl"
+export KEY_PREFIX="${OUT_DIR}/New_key"
+export CSR_PREFIX="${OUT_DIR}/New_csr"
+export OUT_CERT_PREFIX="${OUT_DIR}/New_cert"
+export EXTENSION_FILE="${OUT_DIR}/extenstions.txt"
+
