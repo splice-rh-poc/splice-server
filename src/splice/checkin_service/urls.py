@@ -15,8 +15,8 @@
 from django.conf.urls import patterns, include, url
 from tastypie.api import Api
 from splice.common import identity
-from splice.entitlement.apis import EntitlementResource
-from rhic_serve.rhic_rcs.api import rhic
+from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource
+#
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -24,7 +24,7 @@ from rhic_serve.rhic_rcs.api import rhic
 
 v1_api = Api(api_name='v1')
 v1_api.register(EntitlementResource())
-v1_api.register(rhic.RHICRcsResource())
+v1_api.register(RHICRCSModifiedResource())
 
 urlpatterns = patterns('',
     # Examples:

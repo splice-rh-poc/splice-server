@@ -21,6 +21,8 @@ from tastypie.exceptions import NotFound
 from tastypie.resources import Resource
 from tastypie.exceptions import NotFound, BadRequest
 
+from rhic_serve.rhic_rcs.api import rhic
+
 from splice.entitlement.checkin import CheckIn
 from splice.common import certs
 
@@ -63,6 +65,37 @@ _LOG = logging.getLogger(__name__)
 #Note:  Adapted an example of how to create a Resource that doesn't use a Model from:
 #       https://gist.github.com/794424
 ###
+
+class RHICRCSModifiedResource(rhic.RHICRcsResource):
+
+    class Meta(rhic.RHICRcsResource.Meta):
+        #
+        # We want our class to have the same URL pattern as the base class
+        # So...explicitly setting 'resource_name'
+        #
+        resource_name = 'rhicrcs'
+
+
+    def __init__(self):
+        super(RHICRCSModifiedResource, self).__init__()
+
+    def get_detail(self, request, **kwargs):
+        resp = super(RHICRCSModifiedResource, self).get_detail(request, **kwargs)
+        if resp.status_code == 404:
+            # RHIC is unknown
+            #  Do we have a RHIC lookup cached for this RHIC that is valid?
+            #   Yes -
+            #     Has RHIC Lookup completed?
+            #       Yes:
+            #           Return a '404', RHIC is unknown to RCS Chain
+            #       No:
+            #           Lookup is in progress, return '202'
+            #   No -
+            #     1) Kick off new task to retrieve RHIC data
+            #     2) Return '202' to indicate it's being processed
+            resp.status_code = 202
+        return resp
+
 class Entitlement(object):
     certs = []
     message = "" # Holder for error messages
