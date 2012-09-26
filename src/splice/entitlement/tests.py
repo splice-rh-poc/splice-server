@@ -16,8 +16,10 @@ import os
 import time
 import uuid
 
+from datetime import timedelta
 from datetime import datetime
 from dateutil.tz import tzutc
+import pytz
 
 from logging import getLogger
 
@@ -29,6 +31,7 @@ from mongoengine.queryset import QuerySet
 from django.conf import settings
 
 from splice.common import candlepin_client
+from splice.common import config
 from splice.common import rhic_serve_client
 from splice.common import utils
 from splice.common.certs import CertUtils
@@ -36,7 +39,7 @@ from splice.common.exceptions import UnsupportedDateFormatException
 from splice.common.identity import create_or_update_consumer_identity, sync_from_rhic_serve, \
         sync_from_rhic_serve_blocking, SyncRHICServeThread
 from splice.entitlement.checkin import CheckIn
-from splice.entitlement.models import ConsumerIdentity, IdentitySyncInfo
+from splice.entitlement.models import ConsumerIdentity, IdentitySyncInfo, RHICLookupTask
 
 from splice.common import identity
 
@@ -58,7 +61,6 @@ class MongoTestCase(ResourceTestCase):
         disconnect()
         self.db = connect(self.db_name)
         self.drop_database_and_reconnect()
-
 
     def _post_teardown(self):
         super(MongoTestCase, self)._post_teardown()
@@ -154,6 +156,7 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.valid_products = ["40", "41"]
         self.valid_identity_uuid = self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem)
         self.expected_valid_identity_uuid = "98e6aa41-a25d-4d60-976b-d70518382683"
+        self.dummy_uuid = "11a1aa11-a11a-1a11-111a-a11111111111"
 
     def load_rhic_data(self):
         item = {}
@@ -169,9 +172,12 @@ class BaseEntitlementTestCase(MongoTestCase):
             if not identity.JOBS.has_key(key):
                 break
             print "Waiting for %s to finish, is_alive() = %s" % (key, identity.JOBS[key].is_alive())
-            time.sleep(.1)
+            time.sleep(.01)
         candlepin_client._request = self.saved_candlepin_client_request_method
         rhic_serve_client._request = self.saved_rhic_serve_client_request_method
+        # NOTE:  There is a potential timing issue which requires us to drop the database
+        #        after all identity.JOBS have completed.  Failure to do this can leave the database
+        #        in a bad state
         self.drop_database_and_reconnect()
 
 class EntitlementResourceTest(BaseEntitlementTestCase):
@@ -345,6 +351,246 @@ class IdentityTest(BaseEntitlementTestCase):
         for ep in expected_products:
             self.assertTrue(ep in rhic_under_test.engineering_ids)
 
+    def test_get_current_rhic_lookup_tasks(self):
+        cfg = config.get_rhic_serve_config_info()
+        # Create a valid, in_progress task
+        task_a = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a11111111111", completed=False)
+        task_a.save()
+        # Create a completed task
+        task_b = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a22222222222", completed=True,
+            initiated=datetime.now(tzutc()),
+            modified=datetime.now(tzutc()))
+        task_b.save()
+        # Create a timedout incomplete task
+        timeout_in_minutes = cfg["timeout_in_minutes"]
+        expired_time = datetime.now(tzutc()) - timedelta(minutes=timeout_in_minutes+1)
+        task_c = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a333333333333", completed=False, initiated=expired_time)
+        task_c.save()
+        # Create a completed expired task
+        expired_hours = cfg["cache_unknown_lookup_hours"]
+        expired_time = datetime.now(tzutc()) - timedelta(hours=expired_hours+1)
+        task_d = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a444444444444", completed=True, modified=expired_time)
+        task_d.save()
+
+        # Ensure all tasks where created and have been saved in mongo
+        current_tasks = [x.uuid for x in RHICLookupTask.objects()]
+        for t in [task_a, task_b, task_c, task_d]:
+            self.assertTrue(t.uuid in current_tasks)
+
+        # In-progress, valid task
+        task = identity.get_current_rhic_lookup_tasks(task_a.uuid)
+        self.assertIsNotNone(task)
+        self.assertEquals(task.uuid, task_a.uuid)
+
+        # Completed, valid task
+        task = identity.get_current_rhic_lookup_tasks(task_b.uuid)
+        self.assertIsNotNone(task)
+        self.assertEquals(task.uuid, task_b.uuid)
+
+        # In-progress, timed out task
+        task = identity.get_current_rhic_lookup_tasks(task_c.uuid)
+        self.assertIsNone(task)
+        found = [x.uuid for x in RHICLookupTask.objects()]
+        self.assertTrue(task_c.uuid not in found)
+
+        # Completed, cache time expired task
+        task = identity.get_current_rhic_lookup_tasks(task_d.uuid)
+        self.assertIsNone(task)
+        found = [x.uuid for x in RHICLookupTask.objects()]
+        self.assertTrue(task_d.uuid not in found)
+
+        # Be sure of the 4 tasks we created, the expired and timedout were removed
+        # while the 2 good tasks remained
+        self.assertEquals(len(found), 2)
+        self.assertTrue(task_a.uuid in found)
+        self.assertTrue(task_b.uuid in found)
+
+    def test_is_rhic_lookup_task_expired(self):
+        # Create a valid, in_progress task
+        task_a = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a11111111111", completed=False)
+        task_a.save()
+        self.assertFalse(identity.is_rhic_lookup_task_expired(task_a))
+
+        # Create a completed task
+        task_b = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a22222222222", completed=True,
+            initiated=datetime.now(tzutc()),
+            modified=datetime.now(tzutc()))
+        task_b.save()
+        self.assertFalse(identity.is_rhic_lookup_task_expired(task_b))
+
+        # Create a timedout incomplete task
+        cfg = config.get_rhic_serve_config_info()
+        timeout_in_minutes = cfg["timeout_in_minutes"]
+        expired_time = datetime.now(tzutc()) - timedelta(minutes=timeout_in_minutes+1)
+        task_c = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a333333333333", completed=False, initiated=expired_time)
+        task_c.save()
+        self.assertTrue(identity.is_rhic_lookup_task_expired(task_c))
+
+        # Create a completed expired task
+        expired_hours = cfg["cache_unknown_lookup_hours"]
+        expired_time = datetime.now(tzutc()) - timedelta(hours=expired_hours+1)
+        task_d = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a444444444444", completed=True, modified=expired_time)
+        task_d.save()
+        self.assertTrue(identity.is_rhic_lookup_task_expired(task_d))
+
+    def test_update_rhic_lookup_task(self):
+        task_a = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a11111111111", completed=False, task_id=None)
+        task_a.save()
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 1)
+        self.assertEquals(task_a.uuid, found[0].uuid)
+        self.assertIsNone(found[0].task_id)
+        prior_modified = task_a.modified
+
+        # Ensure that 'modified' has been updated to new time
+        # and the 'task_id' has been noted
+        task_id = "1"
+        ret_val = identity.update_rhic_lookup_task(task_a.uuid, task_id)
+        self.assertEquals(ret_val.uuid, task_a.uuid)
+        self.assertFalse(ret_val.completed)
+        self.assertEquals(ret_val.task_id, task_id)
+        self.assertTrue(ret_val.modified > prior_modified)
+
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 1)
+        self.assertEquals(found[0].uuid, task_a.uuid)
+        self.assertFalse(found[0].completed)
+        self.assertEquals(found[0].task_id, task_id)
+        # TODO Look into why we need to localize isodates that come back from mongo,
+        # looks like it's dropping off the timezone offset
+        self.assertTrue(pytz.UTC.localize(found[0].modified) > prior_modified)
+
+
+    def test_complete_rhic_lookup_task_200(self):
+        task = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a11111111111", completed=False, task_id=None)
+        task.save()
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 1)
+        self.assertEquals(found[0].uuid, task.uuid)
+
+        # Mark as '200', a successful complete which will remove the task from the lookup db
+        accepted = 200
+        ret_val = identity.complete_rhic_lookup_task(task.uuid, accepted)
+        self.assertIsNone(ret_val)
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 0)
+
+    def test_complete_rhic_lookup_task_404(self):
+        task = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a11111111111", completed=False, task_id=None)
+        task.save()
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 1)
+        self.assertEquals(found[0].uuid, task.uuid)
+
+        # Mark as '404', task finished and received answer RHIC is unknown
+        # task should be cached in DB with '404' status_code
+        # it should be marked as 'completed=True'
+        not_found = 404
+        ret_val = identity.complete_rhic_lookup_task(task.uuid, not_found)
+        self.assertIsNotNone(ret_val)
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 1)
+        self.assertEquals(found[0].uuid, task.uuid)
+        self.assertIsNone(found[0].task_id)
+        self.assertEquals(found[0].status_code, not_found)
+        self.assertTrue(found[0].completed)
+
+    def test_complete_rhic_lookup_task_202(self):
+        task = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a11111111111", completed=False, task_id=None)
+        task.save()
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 1)
+        self.assertEquals(found[0].uuid, task.uuid)
+
+        # Mark as '202', meaning we haven't found an answer yet, let the tasks continue
+        # task should remain in DB, should be marked as 'completed=False'
+        in_progress = 202
+        identity.complete_rhic_lookup_task(task.uuid, in_progress)
+        ret_val = identity.complete_rhic_lookup_task(task.uuid, in_progress)
+        self.assertIsNotNone(ret_val)
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 1)
+        self.assertEquals(found[0].uuid, task.uuid)
+        self.assertIsNone(found[0].task_id)
+        self.assertEquals(found[0].status_code, in_progress)
+        self.assertFalse(found[0].completed)
+
+
+    def test_complete_rhic_lookup_task_unexpected_value(self):
+        task = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a11111111111", completed=False, task_id=None)
+        task.save()
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 1)
+        self.assertEquals(found[0].uuid, task.uuid)
+
+        # Mark task with an odd unexpected value, we will mark the task as completed=True
+        # and store the status_code
+        unexpected = 123
+        identity.complete_rhic_lookup_task(task.uuid, unexpected)
+        ret_val = identity.complete_rhic_lookup_task(task.uuid, unexpected)
+        self.assertIsNotNone(ret_val)
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 1)
+        self.assertEquals(found[0].uuid, task.uuid)
+        self.assertIsNone(found[0].task_id)
+        self.assertEquals(found[0].status_code, unexpected)
+        self.assertTrue(found[0].completed)
+
+
+    def test_purge_expired_rhic_lookups(self):
+        cfg = config.get_rhic_serve_config_info()
+        # Create a valid, in_progress task
+        task_a = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a11111111111", completed=False)
+        task_a.save()
+        # Create a completed task
+        task_b = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a22222222222", completed=True,
+            initiated=datetime.now(tzutc()),
+            modified=datetime.now(tzutc()))
+        task_b.save()
+        # Create a timedout incomplete task
+        timeout_in_minutes = cfg["timeout_in_minutes"]
+        expired_time = datetime.now(tzutc()) - timedelta(minutes=timeout_in_minutes+1)
+        task_c = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a333333333333", completed=False, initiated=expired_time)
+        task_c.save()
+        # Create a completed expired task
+        expired_hours = cfg["cache_unknown_lookup_hours"]
+        expired_time = datetime.now(tzutc()) - timedelta(hours=expired_hours+1)
+        task_d = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a444444444444", completed=True, modified=expired_time)
+        task_d.save()
+
+        identity.purge_expired_rhic_lookups()
+        found = RHICLookupTask.objects()
+        self.assertEquals(len(found), 2)
+        for f in found:
+            self.assertTrue(f.uuid in [task_a.uuid, task_b.uuid])
+            self.assertTrue(f.uuid not in [task_c.uuid, task_d.uuid])
+
+    def test_get_in_progress_rhic_lookups(self):
+        # Create a valid, in_progress task
+        task_a = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a11111111111", completed=False)
+        task_a.save()
+        # Create a completed task
+        task_b = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a22222222222", completed=True,
+            initiated=datetime.now(tzutc()),
+            modified=datetime.now(tzutc()))
+        task_b.save()
+        # Create a timedout incomplete task
+        cfg = config.get_rhic_serve_config_info()
+        timeout_in_minutes = cfg["timeout_in_minutes"]
+        expired_time = datetime.now(tzutc()) - timedelta(minutes=timeout_in_minutes+1)
+        task_c = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a333333333333", completed=False, initiated=expired_time)
+        task_c.save()
+        current_tasks = identity.get_in_progress_rhic_lookups()
+        self.assertEquals(len(current_tasks), 1)
+        self.assertEquals(current_tasks[0].uuid, task_a.uuid)
+
+    def test_delete_rhic_lookup(self):
+        self.assertFalse(identity.delete_rhic_lookup(None))
+
+        task = RHICLookupTask(uuid=self.dummy_uuid)
+        task.save()
+        self.assertTrue(identity.delete_rhic_lookup(task))
+        self.assertEquals(len(RHICLookupTask.objects()), 0)
 
     def test_simulate_multiple_sync_threads_at_sametime(self):
         # Simulate a syncthread was created and hasn't finished yet

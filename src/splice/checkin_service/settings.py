@@ -268,6 +268,9 @@ rhic_serve_cfg = config.get_rhic_serve_config_info()
 rhic_sync_schedule = 60
 if rhic_serve_cfg.has_key("task_schedule_minutes"):
     rhic_sync_schedule = int(rhic_serve_cfg["task_schedule_minutes"])
+retry_lookup_tasks_in_minutes = 15
+if rhic_serve_cfg.has_key("retry_lookup_tasks_in_minutes"):
+    rhic_sync_schedule = int(rhic_serve_cfg["retry_lookup_tasks_in_minutes"])
 _LOG.info("Configuring rhic_sync scheduled task to run every %s minutes" % (rhic_sync_schedule))
 
 from datetime import timedelta
@@ -284,6 +287,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(minutes=rhic_sync_schedule),
         'args': None,
     },
+    'process_running_rhic_lookups': {
+        'task': '%s.process_running_rhic_lookup' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+        'schedule': timedelta(minutes=retry_lookup_tasks_in_minutes),
+        'args': None,
+    }
 }
 CELERY_TIMEZONE = 'UTC'
 #

@@ -26,6 +26,11 @@ from splice.common.exceptions import RequestException
 
 _LOG = logging.getLogger(__name__)
 
+def get_single_rhic(host, port, url, uuid, debug=False):
+    url = url + uuid + "/"
+    status, data = _request(host, port, url, last_sync=None, debug=debug)
+    return status, data
+
 def get_all_rhics(host, port, url, last_sync=None, debug=False):
     status, data = _request(host, port, url, last_sync, debug)
     if status == 200:
@@ -70,4 +75,13 @@ if __name__ == "__main__":
     last_sync = datetime.now(tzutc()) - timedelta(days=30)
     config.init()
     cfg = config.get_rhic_serve_config_info()
-    print get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], last_sync=last_sync, debug=True)
+    data = get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], last_sync=last_sync, debug=True)
+    print "--- Test Sync all RHICs ---"
+    print data
+    if len(data) > 0:
+        uuid = data[0]["uuid"]
+        print "\n---Test A Single RHIC ---\n"
+        print get_single_rhic(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], uuid=uuid)
+    print "\n -- Test an unknown RHIC ---\n"
+    uuid = "1a1aa1aa-f6f4-45be-9d86-deb97a79d181"
+    print get_single_rhic(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], uuid=uuid)

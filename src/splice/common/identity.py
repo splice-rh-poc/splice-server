@@ -15,19 +15,120 @@ import logging
 from threading import Thread, Lock
 from uuid import UUID
 
+from datetime import timedelta
 from datetime import datetime
 from dateutil.tz import tzutc
+import pytz
 
 from splice.common import config
 from splice.common import rhic_serve_client
 from splice.common.utils import convert_to_datetime, sanitize_key_for_mongo
-from splice.entitlement.models import ConsumerIdentity, IdentitySyncInfo
+from splice.entitlement.models import ConsumerIdentity, IdentitySyncInfo, RHICLookupTask
 
 _LOG = logging.getLogger(__name__)
 
 JOBS = {}
 JOB_LOCK = Lock()
 
+def complete_rhic_lookup_task(uuid, status_code):
+    current_task = get_current_rhic_lookup_tasks(uuid)
+    if not current_task:
+        _LOG.warning("completed_rhic_lookup_task with status code '%s' called on uuid '%s' "
+                     "yet no task was found" % (status_code, uuid))
+        return None
+    current_task.task_id = None
+    current_task.modified = datetime.now(tzutc())
+    current_task.status_code = status_code
+    current_task.completed = True
+    if status_code == 200:
+        delete_rhic_lookup(current_task)
+        return None
+    elif status_code == 202:
+        # 202 is considered to be in_progress, so don't mark it as complete
+        current_task.completed = False
+    current_task.save()
+    return current_task
+
+def update_rhic_lookup_task(uuid, task_id):
+    current_task = get_current_rhic_lookup_tasks(uuid)
+    if not current_task:
+        current_task = RHICLookupTask(uuid=uuid)
+    current_task.task_id = task_id
+    current_task.modified = datetime.now(tzutc())
+    current_task.completed = False
+    current_task.save()
+    return current_task
+
+def is_rhic_lookup_task_expired(current_task):
+    cfg = config.get_rhic_serve_config_info()
+    if not current_task.completed:
+        # Task is in progress, ensure that it's initiated time is within timeout range
+        timeout_in_minutes = cfg["timeout_in_minutes"]
+        threshold = current_task.initiated + timedelta(minutes=timeout_in_minutes)
+        if not threshold.tzinfo:
+            threshold = pytz.UTC.localize(threshold)
+        if threshold < datetime.now(tzutc()):
+            _LOG.info("Task has timed out, threshold was: %s.  Task = <%s>" % (threshold, current_task))
+            # Current time is greater than the threshold this task had to stay alive
+            # It is expired
+            return True
+    else:
+        # Task has completed, check if it's within cached time boundaries
+        valid_hours = cfg["cache_unknown_lookup_hours"]
+        modified = current_task.modified
+        if not modified.tzinfo:
+            modified = pytz.UTC.localize(modified)
+        threshold = datetime.now(tzutc()) - timedelta(hours=valid_hours)
+        if modified < threshold:
+            _LOG.info("Cached task has expired, threshold was: %s. Task = <%s>" % (threshold, current_task))
+            # Task was modified more than # hours ago
+            # It is expired
+            return True
+    return False
+
+def purge_expired_rhic_lookups():
+    all_tasks = RHICLookupTask.objects()
+    for current_task in all_tasks:
+        if is_rhic_lookup_task_expired(current_task):
+            delete_rhic_lookup(current_task)
+
+def get_in_progress_rhic_lookups():
+    all_tasks = RHICLookupTask.objects(completed=False)
+    ret_vals = [ x for x in all_tasks if not is_rhic_lookup_task_expired(x)]
+    return ret_vals
+
+def delete_rhic_lookup(lookup_task):
+    try:
+        _LOG.info("Deleting %s" % (lookup_task))
+        # Using 'safe=True' to ensure the delete is executed before returning
+        lookup_task.delete(safe=True)
+        return True
+    except Exception, e:
+        _LOG.exception(e)
+        return False
+
+def get_current_rhic_lookup_tasks(uuid):
+    """
+    Returns a valid RHICLookupTask for this 'uuid' if one exists, or None.
+    If an older, or invalid RHICLookupTask is found, it will be deleted from the
+    database and None will be returned.
+
+    Usage:  A task can be returned which is either in progress or completed,
+            check the "completed" value to determine.  Additionally, the 'status_code'
+            of the task holds the cached response code.
+
+    @param uuid: uuid of a RHIC
+    @return: a valid RHICLookupTask associated to this 'uuid' or None
+    @rtype: L{splice.entitlement.models.RHICLookupTask}
+    """
+    current_task = RHICLookupTask.objects(uuid=uuid).first()
+    if not current_task:
+        return None
+    expired = is_rhic_lookup_task_expired(current_task)
+    if expired:
+        delete_rhic_lookup(current_task)
+        return None
+    return current_task
 
 def process_data(data):
     """
@@ -125,6 +226,22 @@ def save_last_sync(server_hostname, timestamp):
         _LOG.exception(e)
         return False
     return True
+
+def sync_single_rhic_blocking(uuid):
+    cfg = config.get_rhic_serve_config_info()
+    _LOG.info("Attempting to synchronize a single RHIC '%s' with config info: '%s'" % (uuid, cfg))
+    host = cfg["host"]
+    port = cfg["port"]
+    # URL is based on URL for 'all_rhics', we add the RHIC uuid to it to form a single URL
+    url = cfg["get_all_rhics_url"]
+    status_code, data = rhic_serve_client.get_single_rhic(host=host, port=port, url=url, uuid=uuid)
+    _LOG.info("Received '%s' from %s:%s:%s for RHIC '%s'. Response = \n%s" % (status_code, host, port, url, uuid, data))
+    if status_code == 202:
+        # This task is in progress, nothing further to do
+        return status_code
+    if status_code == 200:
+        create_or_update_consumer_identity(data)
+    return status_code
 
 def sync_from_rhic_serve_blocking():
     _LOG.info("Attempting to synchronize RHIC data from configured rhic_serve")

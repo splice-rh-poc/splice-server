@@ -16,6 +16,9 @@ from splice.common import constants
 
 CONFIG = None
 
+#TODO:  Add logic to validate configuration entries and log/throw exception early to warn user of issues
+
+
 def init(config_file=None):
     global CONFIG
     if CONFIG:
@@ -40,7 +43,10 @@ def get_rhic_serve_config_info():
         "host": CONFIG.get("rhic_serve", "host"),
         "port": CONFIG.get("rhic_serve", "port"),
         "get_all_rhics_url": CONFIG.get("rhic_serve", "get_all_rhics_url"),
-        "task_schedule_minutes": CONFIG.get("rhic_serve", "task_schedule_minutes"),
+        "task_schedule_minutes": int(CONFIG.get("rhic_serve", "task_schedule_minutes")),
+        "cache_unknown_lookup_hours": int(CONFIG.get("rhic_serve", "cache_unknown_lookup_hours")),
+        "timeout_in_minutes": int(CONFIG.get("rhic_serve", "timeout_in_minutes")),
+        "retry_lookup_tasks_in_minutes": int(CONFIG.get("rhic_serve", "retry_lookup_tasks_in_minutes")),
     }
 
 def get_logging_config_file():

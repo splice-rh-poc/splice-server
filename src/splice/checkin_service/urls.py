@@ -38,6 +38,3 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     (r'^api/', include(v1_api.urls)),
 )
-
-# Synchronize our data with rhic_serve
-identity.sync_from_rhic_serve()

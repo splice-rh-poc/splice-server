@@ -11,14 +11,17 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import time
 
-# Placeholder for celery tasks
 from celery import Celery
+from celery.result import AsyncResult
+from datetime import timedelta
 from datetime import datetime
+from dateutil.tz import tzutc
 from logging import getLogger
 
 from splice.common.constants import SPLICE_ENTITLEMENT_BASE_TASK_NAME
-from splice.common.identity import sync_from_rhic_serve_blocking
+from splice.common import identity
 from splice.common import celeryconfig
 
 _LOG = getLogger(__name__)
@@ -38,6 +41,23 @@ def mul(x, y):
 def xsum(numbers):
     return sum(numbers)
 
+@celery.task(name="%s.sync_single_rhic" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
+def sync_single_rhic(uuid):
+    """
+    Will sync data on a single RHIC specified by the 'uuid'
+    @param uuid: uuid of a rhic to sync from our parent
+    @type uuid: str
+    @return:
+    """
+    start = time.time()
+    _LOG.info("Celery task: sync_single_rhic(%s) invoked" % (uuid))
+    status_code  = identity.sync_single_rhic_blocking(uuid)
+    identity.complete_rhic_lookup_task(uuid, status_code)
+    end = time.time()
+    _LOG.info("Celery task: sync_single_rhic(%s) completed with status_code '%s' in %s seconds" % \
+              (uuid, status_code, end-start))
+    return status_code
+
 @celery.task(name="%s.sync_rhics" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
 def sync_rhics():
     """
@@ -47,10 +67,30 @@ def sync_rhics():
              (False, "error message here") - on failure
     @rtype:  (bool,str)
     """
+    start = time.time()
     _LOG.info("Celery task: sync_rhics invoked")
-    retval = sync_from_rhic_serve_blocking()
-    _LOG.info("Celery task: sync_rhics finished")
+    retval = identity.sync_from_rhic_serve_blocking()
+    end = time.time()
+    _LOG.info("Celery task: sync_rhics finished in %s seconds" % (end-start))
     return retval
+
+@celery.task(name="%s.process_running_rhic_lookup_tasks" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
+def process_running_rhic_lookup_tasks():
+    start = time.time()
+    _LOG.info("Celery task: process_running_rhic_lookup_tasks invoked")
+    identity.purge_expired_rhic_lookups()
+    in_progress_tasks = identity.get_in_progress_rhic_lookups()
+    _LOG.info("Celery task: process_running_rhic_lookup_tasks %s in progress tasks exist" % (len(in_progress_tasks)))
+    for t in in_progress_tasks:
+        result = AsyncResult(t.task_id)
+        if result.state() not in ["RUNNING", "PENDING"]:
+            new_result = sync_single_rhic.apply_async((t.uuid,))
+            new_task = identity.update_rhic_lookup_task(t.uuid, new_result.task_id)
+            _LOG.info("Celery task: process_running_rhic_lookup_tasks initiated new task: %s" % (new_task))
+        else:
+            _LOG.info("Celery task: process_running_rhic_lookup_tasks skipped '%s' since it is %s" % (t, result.state()))
+    end = time.time()
+    _LOG.info("Celery task: process_running_rhic_lookup_tasks completed in %s seconds" % (end-start))
 
 @celery.task(name="%s.log_time" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
 def log_time():

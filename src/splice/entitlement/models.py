@@ -14,7 +14,7 @@
 from datetime import datetime
 from dateutil.tz import tzutc
 
-from mongoengine import DateTimeField, Document, ListField, ReferenceField, StringField, DictField
+from mongoengine import DateTimeField, Document, ListField, ReferenceField, StringField, DictField, IntField, BooleanField
 from mongoengine import signals
 from rhic_serve.common.fields import IsoDateTimeField
 from rhic_serve.rhic_rcs.models import RHIC
@@ -64,6 +64,23 @@ class SpliceServer(Document):
     environment = StringField(required=True)
    
     meta = {'allow_inheritance': True}
+
+class RHICLookupTask(Document):
+    meta = {
+        'collection': 'rhic_lookup_task',
+    }
+    uuid = StringField(required=True, unique=True)
+    task_id = StringField()
+    initiated = IsoDateTimeField(default=datetime.now(tzutc()))
+    modified = IsoDateTimeField(default=datetime.now(tzutc()))
+    completed = BooleanField(default=False)
+    status_code = IntField()
+
+    def __str__(self):
+        return "RHICLookupTask for '%s' initiated @ '%s', modified @ '%s', " \
+               "completed = '%s', status_code = '%s', task_id = '%s'" % \
+        (self.uuid, self.initiated, self.modified, self.completed, self.status_code, self.task_id)
+
 
 class IdentitySyncInfo(Document):
     server_hostname = StringField(required=True, unique=True)

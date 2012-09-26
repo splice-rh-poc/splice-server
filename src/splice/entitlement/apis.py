@@ -23,48 +23,14 @@ from tastypie.exceptions import NotFound, BadRequest
 
 from rhic_serve.rhic_rcs.api import rhic
 
+from splice.common import config
 from splice.entitlement.checkin import CheckIn
+from splice.entitlement import tasks
 from splice.common import certs
+from splice.common.identity import get_current_rhic_lookup_tasks, update_rhic_lookup_task
 
 import logging
 _LOG = logging.getLogger(__name__)
-
-
-# What REST APIs do we plan to expose
-#
-# 1) Consumer checkin API
-#       Consumer request:
-#           POST /entitlement
-#           Params: {
-#               "products": ["PRODUCT_CERT_1", "PRODUCT_CERT_2", ....],
-#               "consumer_identifier": "MAC_ADDRESS",
-#           }
-#       Expected Response: {
-#           "certs": ["CERT CONTENT", "KEY CONTENT"],
-#           "message": "placeholder to communicate error messages"
-#           }
-#
-# 2) SpliceServer requests identity of a consumer
-#       Request:  GET /identity/{$IDENTITY_UUID}/
-#       Params: {
-#           "server_id": "ID of the Splice Server"
-#           "API_KEY":  "API KEY VALUE"
-#           }
-#       Expected Response: {
-#           "consumer_identity": "UUID"
-#           "subscriptions": [{"marketing_product": "uuid", "expiration": "DATE_TIME"}, ...]
-#
-# 3) SpliceServer uploads reporting data
-#       Request:  PUT /usage/
-#       Params: {
-#            aggregate of reporting data, format TBD
-#           }
-#
-
-###
-#Note:  Adapted an example of how to create a Resource that doesn't use a Model from:
-#       https://gist.github.com/794424
-###
 
 class RHICRCSModifiedResource(rhic.RHICRcsResource):
 
@@ -75,27 +41,46 @@ class RHICRCSModifiedResource(rhic.RHICRcsResource):
         #
         resource_name = 'rhicrcs'
 
-
     def __init__(self):
         super(RHICRCSModifiedResource, self).__init__()
 
     def get_detail(self, request, **kwargs):
         resp = super(RHICRCSModifiedResource, self).get_detail(request, **kwargs)
         if resp.status_code == 404:
-            # RHIC is unknown
-            #  Do we have a RHIC lookup cached for this RHIC that is valid?
-            #   Yes -
-            #     Has RHIC Lookup completed?
-            #       Yes:
-            #           Return a '404', RHIC is unknown to RCS Chain
-            #       No:
-            #           Lookup is in progress, return '202'
-            #   No -
-            #     1) Kick off new task to retrieve RHIC data
-            #     2) Return '202' to indicate it's being processed
-            resp.status_code = 202
+            status_code = self.handle_rhic_lookup(kwargs['uuid'])
+            resp.status_code = status_code
         return resp
 
+    def handle_rhic_lookup(self, rhic_uuid):
+        """
+        Will look up if an existing lookup is in progress for this RHIC.
+        If a task is found, will return it's status code if completed, or 202 to signal in progress
+        If a task is not found, will create a new task and return 202 to signal in progress
+        @param rhic_uuid:
+        @return: status code to return for request
+        @rtype: int
+        """
+        _LOG.info("Processing rhic_lookup for an unknown RHIC of UUID '%s' " % (rhic_uuid))
+        task = get_current_rhic_lookup_tasks(rhic_uuid)
+        if task:
+            if task.completed:
+                ret_code = 404
+                if task.status_code:
+                    ret_code = task.status_code
+                _LOG.info("Using cached value %s" % (task))
+                return ret_code
+            else:
+                _LOG.info("Lookup task in progress: %s" % (task))
+                return 202
+        result = tasks.sync_single_rhic.apply_async((rhic_uuid,))
+        task = update_rhic_lookup_task(rhic_uuid, result.task_id)
+        _LOG.info("Initiated new lookup task: %s" % (task))
+        return 202
+
+###
+#Note:  Adapted an example of how to create a Resource that doesn't use a Model from:
+#       https://gist.github.com/794424
+###
 class Entitlement(object):
     certs = []
     message = "" # Holder for error messages
