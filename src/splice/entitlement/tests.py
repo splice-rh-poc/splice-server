@@ -146,7 +146,7 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.valid_identity_cert_pem =  os.path.join(TEST_DATA_DIR, "valid_cert", "valid.cert")
         self.valid_identity_cert_pem = open(self.valid_identity_cert_pem, "r").read()
         # CA
-        self.root_ca_pem = os.path.join(TEST_DATA_DIR, "valid_cert", "ca.cert")
+        self.root_ca_pem = self.root_ca_path = config.CONFIG.get("security", "root_ca_cert")
         self.root_ca_pem = open(self.root_ca_pem, "r").read()
         # Expected data from an example session communicating with Candlepin
         self.expected_cert = "-----BEGIN CERTIFICATE-----\nMIIJ4zCCCUygAwIBAgIIIp36AfDpBMEwDQYJKoZIhvcNAQEFBQAwODEXMBUGA1UE\nAwwOaXAtMTAtNi05NC0xNDExCzAJBgNVBAYTAlVTMRAwDgYDVQQHDAdSYWxlaWdo\nMB4XDTEyMDgyODIyNDcyOFoXDTEyMDgyODIzNDcyOFowFzEVMBMGA1UEAxMMdGVz\ndHRlc3R0ZXN0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAgJ5Cz8jQ\n+twjG6sOMM4HXuDLXlGWNNBV1N5TX/NVIUQ9Bzkgjzv1FTkpNUasASHXTjzVc7rl\nBmrXA4WN4y/y/gCHKsi4DEnjVNUq9j4aJ4NjAVLrtvh5OVIrWHZBKfcJFy06De0p\ncZWT6pUhUtW9ZqpqajRYefRUxjaiTtDNUq4rpzgLwYuAprzULd19cwpQEiY1TWlq\noVQoJy4/3q9YVvLwXquXOohdE+5iS6j/RFf7arUiJptkwyCXS7+YyPAlJDo6qnNW\nvxBLY0n2ApKGpFdgnZAq/01DIXJaNETduqdTX4w3VDgdKf4dzDq5FnnEktWHKZEk\nyKru81IiHTfH/wIDAQABo4IHkTCCB40wEQYJYIZIAYb4QgEBBAQDAgWgMAsGA1Ud\nDwQEAwIEsDBoBgNVHSMEYTBfgBSl9RwXEephltcl32HNuZwR7ZAm16E8pDowODEX\nMBUGA1UEAwwOaXAtMTAtNi05NC0xNDExCzAJBgNVBAYTAlVTMRAwDgYDVQQHDAdS\nYWxlaWdoggkA0hXeS2SIlPMwHQYDVR0OBBYEFB27SSn0Lv0Di0gXPpy1L+0/7vSg\nMBMGA1UdJQQMMAoGCCsGAQUFBwMCMCcGCysGAQQBkggJAUUBBBgMFkF3ZXNvbWUg\nT1MgU2VydmVyIEJpdHMwFAYLKwYBBAGSCAkBRQMEBQwDQUxMMBQGCysGAQQBkggJ\nAUUCBAUMAzYuMTAVBgwrBgEEAZIICQKBawEEBQwDeXVtMCMGDSsGAQQBkggJAoFr\nAQEEEgwQY29udGVudC1lbXB0eWdwZzAqBg0rBgEEAZIICQKBawECBBkMF2NvbnRl\nbnQtbGFiZWwtZW1wdHktZ3BnMB4GDSsGAQQBkggJAoFrAQUEDQwLdGVzdC12ZW5k\nb3IwHAYNKwYBBAGSCAkCgWsBBgQLDAkvZm9vL3BhdGgwEwYNKwYBBAGSCAkCgWsB\nBwQCDAAwFAYNKwYBBAGSCAkCgWsBCAQDDAExMBQGDSsGAQQBkggJAoFrAQkEAwwB\nMDAUBgsrBgEEAZIICQIBAQQFDAN5dW0wKAYMKwYBBAGSCAkCAQEBBBgMFmFsd2F5\ncy1lbmFibGVkLWNvbnRlbnQwKAYMKwYBBAGSCAkCAQECBBgMFmFsd2F5cy1lbmFi\nbGVkLWNvbnRlbnQwHQYMKwYBBAGSCAkCAQEFBA0MC3Rlc3QtdmVuZG9yMC4GDCsG\nAQQBkggJAgEBBgQeDBwvZm9vL3BhdGgvYWx3YXlzLyRyZWxlYXNldmVyMCYGDCsG\nAQQBkggJAgEBBwQWDBQvZm9vL3BhdGgvYWx3YXlzL2dwZzATBgwrBgEEAZIICQIB\nAQgEAwwBMTAVBgwrBgEEAZIICQIBAQkEBQwDMjAwMBUGDCsGAQQBkggJAoFqAQQF\nDAN5dW0wIAYNKwYBBAGSCAkCgWoBAQQPDA1jb250ZW50LW5vZ3BnMCcGDSsGAQQB\nkggJAoFqAQIEFgwUY29udGVudC1sYWJlbC1uby1ncGcwHgYNKwYBBAGSCAkCgWoB\nBQQNDAt0ZXN0LXZlbmRvcjAcBg0rBgEEAZIICQKBagEGBAsMCS9mb28vcGF0aDAT\nBg0rBgEEAZIICQKBagEHBAIMADAUBg0rBgEEAZIICQKBagEIBAMMATEwFAYNKwYB\nBAGSCAkCgWoBCQQDDAEwMBQGCysGAQQBkggJAgABBAUMA3l1bTAnBgwrBgEEAZII\nCQIAAQEEFwwVbmV2ZXItZW5hYmxlZC1jb250ZW50MCcGDCsGAQQBkggJAgABAgQX\nDBVuZXZlci1lbmFibGVkLWNvbnRlbnQwHQYMKwYBBAGSCAkCAAEFBA0MC3Rlc3Qt\ndmVuZG9yMCEGDCsGAQQBkggJAgABBgQRDA8vZm9vL3BhdGgvbmV2ZXIwJQYMKwYB\nBAGSCAkCAAEHBBUMEy9mb28vcGF0aC9uZXZlci9ncGcwEwYMKwYBBAGSCAkCAAEI\nBAMMATAwFQYMKwYBBAGSCAkCAAEJBAUMAzYwMDAUBgsrBgEEAZIICQICAQQFDAN5\ndW0wIAYMKwYBBAGSCAkCAgEBBBAMDnRhZ2dlZC1jb250ZW50MCAGDCsGAQQBkggJ\nAgIBAgQQDA50YWdnZWQtY29udGVudDAdBgwrBgEEAZIICQICAQUEDQwLdGVzdC12\nZW5kb3IwIgYMKwYBBAGSCAkCAgEGBBIMEC9mb28vcGF0aC9hbHdheXMwJgYMKwYB\nBAGSCAkCAgEHBBYMFC9mb28vcGF0aC9hbHdheXMvZ3BnMBMGDCsGAQQBkggJAgIB\nCAQDDAExMBsGDCsGAQQBkggJAgIBCgQLDAlUQUcxLFRBRzIwFQYMKwYBBAGSCAkC\niFcBBAUMA3l1bTAaBg0rBgEEAZIICQKIVwEBBAkMB2NvbnRlbnQwIAYNKwYBBAGS\nCAkCiFcBAgQPDA1jb250ZW50LWxhYmVsMB4GDSsGAQQBkggJAohXAQUEDQwLdGVz\ndC12ZW5kb3IwHAYNKwYBBAGSCAkCiFcBBgQLDAkvZm9vL3BhdGgwIQYNKwYBBAGS\nCAkCiFcBBwQQDA4vZm9vL3BhdGgvZ3BnLzAUBg0rBgEEAZIICQKIVwEIBAMMATEw\nFAYNKwYBBAGSCAkCiFcBCQQDDAEwMBwGCisGAQQBkggJBAEEDgwMUkhJQyBQcm9k\ndWN0MBQGCisGAQQBkggJBAIEBgwEMTIzNDAUBgorBgEEAZIICQQDBAYMBHJoaWMw\nEQYKKwYBBAGSCAkEBQQDDAExMCQGCisGAQQBkggJBAYEFgwUMjAxMi0wOC0yOFQy\nMjo0NzoyOFowJAYKKwYBBAGSCAkEBwQWDBQyMDEyLTA4LTI4VDIzOjQ3OjI4WjAR\nBgorBgEEAZIICQQMBAMMATAwEQYKKwYBBAGSCAkEDgQDDAEwMA0GCSqGSIb3DQEB\nBQUAA4GBAEbBBIl7zchyJ/iZ+8kc/xFXd3x0sKfnqzUTIGQYfH14Xo4tjYB0bymv\ngpXxM1+5zxwI5aiiIuvccrOgomZQIV8LHowxig+NmZb/PDCqfYw/32knReoi2bVG\nq2jpdUJLV9QdTm7KR5Lh7pPJb4foMKWEJrpztaXdMR4rfXw4Gzpe\n-----END CERTIFICATE-----\n"
@@ -155,7 +155,7 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.checkin = CheckIn()
         self.valid_products = ["40", "41"]
         self.valid_identity_uuid = self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem)
-        self.expected_valid_identity_uuid = "98e6aa41-a25d-4d60-976b-d70518382683"
+        self.expected_valid_identity_uuid = "7611261b-160f-486c-8e4f-c8af7ae6685f"
         self.dummy_uuid = "11a1aa11-a11a-1a11-111a-a11111111111"
 
     def load_rhic_data(self):
@@ -732,7 +732,7 @@ class CheckInTest(BaseEntitlementTestCase):
         #        subject=/CN=dbcbc8e1-5b37-4a77-9db1-faf4ef29307d
         self.assertEquals(
             self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem),
-            "98e6aa41-a25d-4d60-976b-d70518382683")
+            self.expected_valid_identity_uuid)
 
     def test_check_access_allowed(self):
         identity = ConsumerIdentity.objects(uuid=self.valid_identity_uuid).first()
