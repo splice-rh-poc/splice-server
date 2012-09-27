@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.36
+Version:	0.37
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Sep 27 2012 John Matthews <jmatthews@redhat.com> 0.37-1
+- Update for new shared CA from rhic-serve (jmatthews@redhat.com)
+
 * Thu Sep 27 2012 John Matthews <jmatthews@redhat.com> 0.36-1
 - Add an init.d script to control the deps RCS has, httpd, splice_celeryd &
   splice_celerybeat (jmatthews@redhat.com)
