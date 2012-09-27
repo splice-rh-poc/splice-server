@@ -287,8 +287,8 @@ CELERYBEAT_SCHEDULE = {
         'schedule': timedelta(minutes=rhic_sync_schedule),
         'args': None,
     },
-    'process_running_rhic_lookups': {
-        'task': '%s.process_running_rhic_lookup' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+    'process_running_rhic_lookup_tasks': {
+        'task': '%s.process_running_rhic_lookup_tasks' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
         'schedule': timedelta(minutes=retry_lookup_tasks_in_minutes),
         'args': None,
     }
