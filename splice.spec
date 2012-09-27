@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.35
+Version:	0.36
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,16 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Sep 27 2012 John Matthews <jmatthews@redhat.com> 0.36-1
+- Add an init.d script to control the deps RCS has, httpd, splice_celeryd &
+  splice_celerybeat (jmatthews@redhat.com)
+- Added logic for initiating a single RHIC lookup and managing the lookup task
+  until we receive a definitive '200' or '404' from an upstream parent.
+  (jmatthews@redhat.com)
+- Modify RHICRcsResource to return a '202' opposed to a '404' when a RHIC isn't
+  known. Future change will return '404' after a lookup through RCS chain.
+  (jmatthews@redhat.com)
+
 * Mon Sep 24 2012 John Matthews <jmatthews@redhat.com> 0.35-1
 - Added config option: 'task_schedule_minutes' under 'rhic_serve' controls how
   often sync task runs (jmatthews@redhat.com)
