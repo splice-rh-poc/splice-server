@@ -155,7 +155,7 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.checkin = CheckIn()
         self.valid_products = ["40", "41"]
         self.valid_identity_uuid = self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem)
-        self.expected_valid_identity_uuid = "7611261b-160f-486c-8e4f-c8af7ae6685f"
+        self.expected_valid_identity_uuid = "fb647f68-aa01-4171-b62b-35c2984a5328"
         self.dummy_uuid = "11a1aa11-a11a-1a11-111a-a11111111111"
 
     def load_rhic_data(self):
