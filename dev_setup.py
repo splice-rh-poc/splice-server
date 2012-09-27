@@ -51,6 +51,7 @@ LINKS = (
             ('etc/pki/splice/Splice_testing_root_CA.key', '/etc/pki/splice/Splice_testing_root_CA.key'),
             ('etc/rc.d/init.d/splice_celerybeat', '/etc/rc.d/init.d/splice_celerybeat'),
             ('etc/rc.d/init.d/splice_celeryd', '/etc/rc.d/init.d/splice_celeryd'),
+            ('etc/rc.d/init.d/splice_all', '/etc/rc.d/init.d/splice_all'),
             ('etc/splice/celery/celerybeat', '/etc/splice/celery/celerybeat'),
             ('etc/splice/server.conf', '/etc/splice/server.conf'),
             ('srv/splice/webservices.wsgi', '/srv/splice/webservices.wsgi'),

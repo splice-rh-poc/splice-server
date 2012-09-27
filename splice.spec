@@ -81,6 +81,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/splice/celery/celeryd
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celerybeat
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celeryd
+%config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_all
 
 
 %defattr(-,apache,apache,-)

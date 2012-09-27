@@ -1,0 +1,55 @@
+#!/bin/sh -e
+# ============================================
+#  splice_all - Controls the services splice depends on 
+# ============================================
+#
+# :Usage: /etc/init.d/splice_all {start|stop|restart|status}
+#
+
+start() {
+    service httpd start
+    service splice_celeryd start
+    service splice_celerybeat start
+}
+
+stop() {
+    service httpd stop
+    service splice_celeryd stop
+    service splice_celerybeat stop
+}
+
+restart() {
+    service httpd restart
+    service splice_celeryd restart
+    service splice_celerybeat stop
+    service splice_celerybeat start
+}
+
+status() {
+    service httpd status
+    service splice_celeryd status
+}
+
+case "$1" in
+    start)
+        start
+    ;;
+
+    stop)
+        stop
+    ;;
+    status)
+        status
+    ;;
+
+    restart)
+        restart
+    ;;
+
+    *)
+        echo "Usage: /etc/init.d/splice_all {start|stop|restart|status}"
+        exit 1
+    ;;
+esac
+
+exit 0
