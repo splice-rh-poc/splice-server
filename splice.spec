@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.37
+Version:	0.38
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,17 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Fri Sep 28 2012 John Matthews <jmatthews@redhat.com> 0.38-1
+- Update for rhic_serve changes placing rhic data in ["objects"]
+  (jmatthews@redhat.com)
+- Don't import Django 'settings.py' explicitly, use 'from django.conf import
+  settings', this broke mongoengine and using an alias, resulting in a some
+  documents using the 'production' database and others using the 'unittest'
+  database. (jmatthews@redhat.com)
+- Update rhic since after rhic_serve was wiped (jmatthews@redhat.com)
+- Update settings.py to correct wrong celery task name for
+  'process_running_rhic_lookup_tasks' (jmatthews@redhat.com)
+
 * Thu Sep 27 2012 John Matthews <jmatthews@redhat.com> 0.37-1
 - Update for new shared CA from rhic-serve (jmatthews@redhat.com)
 
