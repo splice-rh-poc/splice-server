@@ -23,6 +23,7 @@ from logging import getLogger
 from splice.common.constants import SPLICE_ENTITLEMENT_BASE_TASK_NAME
 from splice.common import identity
 from splice.common import celeryconfig
+from splice.managers import identity_lookup
 
 _LOG = getLogger(__name__)
 
@@ -52,7 +53,7 @@ def sync_single_rhic(uuid):
     start = time.time()
     _LOG.info("Celery task: sync_single_rhic(%s) invoked" % (uuid))
     status_code  = identity.sync_single_rhic_blocking(uuid)
-    identity.complete_rhic_lookup_task(uuid, status_code)
+    identity_lookup.complete_rhic_lookup_task(uuid, status_code)
     end = time.time()
     _LOG.info("Celery task: sync_single_rhic(%s) completed with status_code '%s' in %s seconds" % \
               (uuid, status_code, end-start))
@@ -85,7 +86,7 @@ def process_running_rhic_lookup_tasks():
         result = AsyncResult(t.task_id)
         if result.state() not in ["RUNNING", "PENDING"]:
             new_result = sync_single_rhic.apply_async((t.uuid,))
-            new_task = identity.update_rhic_lookup_task(t.uuid, new_result.task_id)
+            new_task = identity_lookup.update_rhic_lookup_task(t.uuid, new_result.task_id)
             _LOG.info("Celery task: process_running_rhic_lookup_tasks initiated new task: %s" % (new_task))
         else:
             _LOG.info("Celery task: process_running_rhic_lookup_tasks skipped '%s' since it is %s" % (t, result.state()))

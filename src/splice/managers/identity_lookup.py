@@ -19,12 +19,15 @@ from datetime import datetime
 from dateutil.tz import tzutc
 
 from splice.common import identity
-from splice.entitlement import tasks
+
 from splice.entitlement.models import RHICLookupTask
 
 _LOG = getLogger(__name__)
 
 def create_rhic_lookup_task(uuid):
+    # To avoid circular import
+    # where we import 'identity_lookup' from splice.entitlement.tasks
+    from splice.entitlement import tasks
     result = tasks.sync_single_rhic.apply_async((uuid,))
     task = update_rhic_lookup_task(uuid, result.task_id)
     return task
