@@ -27,7 +27,8 @@ from splice.common import config
 from splice.entitlement.checkin import CheckIn
 from splice.entitlement import tasks
 from splice.common import certs
-from splice.common.identity import get_current_rhic_lookup_tasks, update_rhic_lookup_task
+from splice.common.identity import get_current_rhic_lookup_tasks
+from splice.managers import identity_lookup
 
 import logging
 _LOG = logging.getLogger(__name__)
@@ -72,8 +73,7 @@ class RHICRCSModifiedResource(rhic.RHICRcsResource):
             else:
                 _LOG.info("Lookup task in progress: %s" % (task))
                 return 202
-        result = tasks.sync_single_rhic.apply_async((rhic_uuid,))
-        task = update_rhic_lookup_task(rhic_uuid, result.task_id)
+        task = identity_lookup.create_rhic_lookup_task(rhic_uuid)
         _LOG.info("Initiated new lookup task: %s" % (task))
         return 202
 
@@ -146,7 +146,7 @@ class EntitlementResource(Resource):
 
         # Read the SSL identity certificate from the SSL request environment variables
         identity_cert = certs.get_client_cert_from_request(request)
-        _LOG.info("Using 'identity_cert': %s" % (identity_cert))
+        #_LOG.info("Using 'identity_cert': %s" % (identity_cert))
         products = bundle.data["products"]
         consumer_identifier = bundle.data["consumer_identifier"]
         system_facts = bundle.data["system_facts"]

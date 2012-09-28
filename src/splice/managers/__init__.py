@@ -10,17 +10,3 @@
 # NON-INFRINGEMENT, or FITNESS FOR A PARTICULAR PURPOSE. You should
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
-
-from django.conf import settings
-
-## Broker settings.
-BROKER_URL = settings.BROKER_URL
-
-# List of modules to import when celery starts.
-CELERY_IMPORTS = settings.CELERY_IMPORTS
-
-## Using the database to store task state and results.
-CELERY_RESULT_BACKEND = settings.CELERY_RESULT_BACKEND
-CELERY_MONGODB_BACKEND_SETTINGS = settings.CELERY_MONGODB_BACKEND_SETTINGS
-
-CELERY_ANNOTATIONS = settings.CELERY_ANNOTATIONS

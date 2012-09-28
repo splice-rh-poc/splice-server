@@ -26,6 +26,7 @@ from splice.common.exceptions import CheckinException, CertValidationException, 
     UnknownConsumerIdentity
 from splice.common.identity import sync_from_rhic_serve
 from splice.entitlement.models import ConsumerIdentity, ProductUsage, SpliceServer
+from splice.managers import identity_lookup
 
 _LOG = logging.getLogger(__name__)
 
@@ -131,8 +132,8 @@ class CheckIn(object):
         _LOG.info("Found ID from identity certificate is '%s' " % (id_from_cert))
         identity = ConsumerIdentity.objects(uuid=UUID(id_from_cert)).first()
         if not identity:
-            _LOG.info("Couldn't find RHIC with ID '%s' initiating a sync from RHIC_Serve" % (id_from_cert))
-            sync_from_rhic_serve()
+            _LOG.info("Couldn't find RHIC with ID '%s', will query parent" % (id_from_cert))
+            identity_lookup.create_rhic_lookup_task(id_from_cert)
             raise UnknownConsumerIdentity(id_from_cert)
         return identity
 
