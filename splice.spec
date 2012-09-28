@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.39
+Version:	0.40
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Fri Sep 28 2012 John Matthews <jmatthews@redhat.com> 0.40-1
+- Fix broken tasks for single rhic lookup (jmatthews@redhat.com)
+
 * Fri Sep 28 2012 John Matthews <jmatthews@redhat.com> 0.39-1
 - Disabling full RHIC sync temporarily as we test single rhic lookup tasks
   (jmatthews@redhat.com)
