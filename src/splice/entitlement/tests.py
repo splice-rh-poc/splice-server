@@ -181,53 +181,6 @@ class BaseEntitlementTestCase(MongoTestCase):
         #        in a bad state
         self.drop_database_and_reconnect()
 
-class EntitlementResourceTest(BaseEntitlementTestCase):
-
-    def setUp(self):
-        super(EntitlementResourceTest, self).setUp()
-        self.username = "admin"
-        self.password = "admin"
-        # TODO add auth
-        # self.user = User.objects.create_user(self.username, 'admin@example.com', self.password)
-        self.post_data = {
-            'consumer_identifier': "52:54:00:15:E7:69",
-            'products': self.valid_products,
-            'system_facts': {"tbd":"values"}
-            }
-        self.load_rhic_data()
-
-    def tearDown(self):
-        super(EntitlementResourceTest, self).tearDown()
-
-    def get_credentials(self):
-        return self.create_basic(username=self.username, password=self.password)
-
-    def test_post_entitlement_valid_identity(self):
-        LOG.info("Entered 'test_post_entitlement_valid_identity'")
-        resp = self.api_client.post('/api/v1/entitlement/BOGUS_IDENTITY/', format='json',
-            authentication=self.get_credentials(), data=self.post_data,
-            SSL_CLIENT_CERT=self.valid_identity_cert_pem)
-        LOG.info("Completed call to entitlement checkin from unit test: test_post_entitlement_valid_identity")
-        if resp.status_code != 200:
-            print resp.status_code, resp
-        self.assertEquals(resp.status_code, 200)
-        self.assertTrue(resp['Content-Type'].startswith('application/json'))
-        self.assertValidJSON(resp.content)
-
-        deserialized = self.deserialize(resp)
-        self.assertEquals(len(deserialized["certs"]), 1)
-        self.assertEquals(deserialized["certs"][0][0], self.expected_cert)
-        self.assertEquals(deserialized["certs"][0][1], self.expected_key)
-        self.assertEquals(deserialized["certs"][0][2], self.expected_serial)
-
-    def test_post_entitlement_invalid_identity(self):
-        resp = self.api_client.post('/api/v1/entitlement/BOGUS_IDENTITY/',
-            format='json',
-            authentication=self.get_credentials(),
-            data=self.post_data,
-            SSL_CLIENT_CERT=self.invalid_identity_cert_pem)
-        self.assertHttpForbidden(resp)
-        self.assertEqual("Unable to verify consumer's identity certificate was signed by configured CA", resp.content)
 
 class CandlepinClientTest(BaseEntitlementTestCase):
 
@@ -268,6 +221,54 @@ class CertUtilsTest(BaseEntitlementTestCase):
         pieces = self.cert_utils.get_subject_pieces(self.valid_identity_cert_pem)
         self.assertEquals(len(pieces), 1)
         self.assertEquals(pieces["CN"], self.expected_valid_identity_uuid)
+
+class EntitlementResourceTest(BaseEntitlementTestCase):
+
+    def setUp(self):
+        super(EntitlementResourceTest, self).setUp()
+        self.username = "admin"
+        self.password = "admin"
+        # TODO add auth
+        # self.user = User.objects.create_user(self.username, 'admin@example.com', self.password)
+        self.post_data = {
+            'consumer_identifier': "52:54:00:15:E7:69",
+            'products': self.valid_products,
+            'system_facts': {"tbd":"values"}
+        }
+        self.load_rhic_data()
+
+    def tearDown(self):
+        super(EntitlementResourceTest, self).tearDown()
+
+    def get_credentials(self):
+        return self.create_basic(username=self.username, password=self.password)
+
+    def test_post_entitlement_valid_identity(self):
+        LOG.info("Entered 'test_post_entitlement_valid_identity'")
+        resp = self.api_client.post('/api/v1/entitlement/BOGUS_IDENTITY/', format='json',
+            authentication=self.get_credentials(), data=self.post_data,
+            SSL_CLIENT_CERT=self.valid_identity_cert_pem)
+        LOG.info("Completed call to entitlement checkin from unit test: test_post_entitlement_valid_identity")
+        if resp.status_code != 200:
+            print resp.status_code, resp
+        self.assertEquals(resp.status_code, 200)
+        self.assertTrue(resp['Content-Type'].startswith('application/json'))
+        self.assertValidJSON(resp.content)
+
+        deserialized = self.deserialize(resp)
+        self.assertEquals(len(deserialized["certs"]), 1)
+        self.assertEquals(deserialized["certs"][0][0], self.expected_cert)
+        self.assertEquals(deserialized["certs"][0][1], self.expected_key)
+        self.assertEquals(deserialized["certs"][0][2], self.expected_serial)
+
+    def test_post_entitlement_invalid_identity(self):
+        resp = self.api_client.post('/api/v1/entitlement/BOGUS_IDENTITY/',
+            format='json',
+            authentication=self.get_credentials(),
+            data=self.post_data,
+            SSL_CLIENT_CERT=self.invalid_identity_cert_pem)
+        self.assertHttpForbidden(resp)
+        self.assertEqual("Unable to verify consumer's identity certificate was signed by configured CA", resp.content)
 
 class IdentityLookupTest(BaseEntitlementTestCase):
     def setUp(self):
@@ -396,9 +397,9 @@ class IdentityTest(BaseEntitlementTestCase):
         sync_from_rhic_serve_blocking()
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 3)
-        expected_rhics = ["480ed55f-c3fb-4249-ac4c-52e440cd9304",
-                          "c921d17e-cf82-4738-bfbb-36a83dc45c03",
-                          "98e6aa41-a25d-4d60-976b-d70518382683"]
+        expected_rhics = ["fb647f68-aa01-4171-b62b-35c2984a5328",
+                          "ef8548a9-c874-42a8-b5dc-bc5ab0b34cd7",
+                          "a17013d8-e896-4749-9b37-8606d62bf643"]
         for r in rhics:
             self.assertIn(str(r.uuid), expected_rhics)
 
@@ -413,9 +414,9 @@ class IdentityTest(BaseEntitlementTestCase):
         self.assertTrue(sync_thread.finished)
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 3)
-        expected_rhics = ["480ed55f-c3fb-4249-ac4c-52e440cd9304",
-                          "c921d17e-cf82-4738-bfbb-36a83dc45c03",
-                          "98e6aa41-a25d-4d60-976b-d70518382683"]
+        expected_rhics = ["fb647f68-aa01-4171-b62b-35c2984a5328",
+                          "ef8548a9-c874-42a8-b5dc-bc5ab0b34cd7",
+                          "a17013d8-e896-4749-9b37-8606d62bf643"]
         for r in rhics:
             self.assertIn(str(r.uuid), expected_rhics)
 
@@ -431,9 +432,9 @@ class IdentityTest(BaseEntitlementTestCase):
         sync_from_rhic_serve_blocking()
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 3)
-        expected_rhics = ["480ed55f-c3fb-4249-ac4c-52e440cd9304",
-                          "c921d17e-cf82-4738-bfbb-36a83dc45c03",
-                          "98e6aa41-a25d-4d60-976b-d70518382683"]
+        expected_rhics = ["fb647f68-aa01-4171-b62b-35c2984a5328",
+                          "ef8548a9-c874-42a8-b5dc-bc5ab0b34cd7",
+                          "a17013d8-e896-4749-9b37-8606d62bf643"]
         for r in rhics:
             self.assertIn(str(r.uuid), expected_rhics)
 
@@ -441,7 +442,7 @@ class IdentityTest(BaseEntitlementTestCase):
         self.assertEqual(len(identity.JOBS), 0)
         # Create a RHIC with products that will change after sync
         item = {}
-        item["uuid"] = "480ed55f-c3fb-4249-ac4c-52e440cd9304"
+        item["uuid"] = "fb647f68-aa01-4171-b62b-35c2984a5328"
         item["engineering_ids"] = ["1", "2"]
         create_or_update_consumer_identity(item)
         rhics = ConsumerIdentity.objects()
@@ -449,9 +450,9 @@ class IdentityTest(BaseEntitlementTestCase):
         sync_from_rhic_serve_blocking()
         rhics = ConsumerIdentity.objects()
         self.assertEquals(len(rhics), 3)
-        expected_rhics = ["480ed55f-c3fb-4249-ac4c-52e440cd9304",
-                          "c921d17e-cf82-4738-bfbb-36a83dc45c03",
-                          "98e6aa41-a25d-4d60-976b-d70518382683"]
+        expected_rhics = ["fb647f68-aa01-4171-b62b-35c2984a5328",
+                          "ef8548a9-c874-42a8-b5dc-bc5ab0b34cd7",
+                          "a17013d8-e896-4749-9b37-8606d62bf643"]
         for r in rhics:
             self.assertIn(str(r.uuid), expected_rhics)
         # Ensure that the products have been updated

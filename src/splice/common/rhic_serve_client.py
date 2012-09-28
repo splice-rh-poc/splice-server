@@ -34,6 +34,9 @@ def get_single_rhic(host, port, url, uuid, debug=False):
 def get_all_rhics(host, port, url, last_sync=None, debug=False):
     status, data = _request(host, port, url, last_sync, debug)
     if status == 200:
+        # Newer rhic_serves support pagination and will return data under ["objects"]
+        if data.has_key("objects"):
+            return data["objects"]
         return data
     raise RequestException(status, data)
 
@@ -79,7 +82,7 @@ if __name__ == "__main__":
     print "--- Test Sync all RHICs ---"
     print data
     if len(data) > 0:
-        uuid = data[0]["uuid"]
+        uuid = data["objects"][0]["uuid"]
         print "\n---Test A Single RHIC ---\n"
         print get_single_rhic(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], uuid=uuid)
     print "\n -- Test an unknown RHIC ---\n"

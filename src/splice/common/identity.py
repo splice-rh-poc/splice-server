@@ -106,7 +106,6 @@ def process_data(data):
     Imports data into mongo, will update documents that have changed, and remove those which have been deleted
     @param data from rhic_serve
     """
-    # TODO: Redo this logic so it supports batch lookups and is more efficient
     "Fetched %s rhics from rhic_serve" % (len(data))
     for item in data:
         _LOG.debug("Processing: %s" % (item))
