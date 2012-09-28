@@ -281,12 +281,13 @@ CELERYBEAT_SCHEDULE = {
     #    'schedule': timedelta(seconds=5),
     #    'args': None,
     #},
+    # Disabling full sync while we test single rhic lookups
     # Executes every hour
-    'sync_rhic_product_mappings': {
-        'task': '%s.sync_rhics' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-        'schedule': timedelta(minutes=rhic_sync_schedule),
-        'args': None,
-    },
+    #'sync_rhic_product_mappings': {
+    #    'task': '%s.sync_rhics' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+    #    'schedule': timedelta(minutes=rhic_sync_schedule),
+    #    'args': None,
+    #},
     'process_running_rhic_lookup_tasks': {
         'task': '%s.process_running_rhic_lookup_tasks' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
         'schedule': timedelta(minutes=retry_lookup_tasks_in_minutes),
