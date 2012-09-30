@@ -82,7 +82,7 @@ if __name__ == "__main__":
     print "--- Test Sync all RHICs ---"
     print data
     if len(data) > 0:
-        uuid = data["objects"][0]["uuid"]
+        uuid = data[0]["uuid"]
         print "\n---Test A Single RHIC ---\n"
         print get_single_rhic(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], uuid=uuid)
     print "\n -- Test an unknown RHIC ---\n"
