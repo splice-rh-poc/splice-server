@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.40
+Version:	0.41
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,13 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Sun Sep 30 2012 John Matthews <jmatthews@redhat.com> 0.41-1
+- Fix processing existing rhic lookup tasks, logic for determining if a celery
+  task was pending was incorrect. (jmatthews@redhat.com)
+- Fix for data["objects"] when testing rhic_service_client.py by itself
+  (jmatthews@redhat.com)
+- Fix for getting 'state' of celery task (jmatthews@redhat.com)
+
 * Fri Sep 28 2012 John Matthews <jmatthews@redhat.com> 0.40-1
 - Fix broken tasks for single rhic lookup (jmatthews@redhat.com)
 
