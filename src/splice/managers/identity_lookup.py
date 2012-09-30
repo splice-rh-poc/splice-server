@@ -25,14 +25,17 @@ from splice.entitlement.models import RHICLookupTask
 _LOG = getLogger(__name__)
 
 def create_rhic_lookup_task(uuid):
+    _LOG.info("create_rhic_lookup_task(%s)" % (uuid))
     # To avoid circular import
     # where we import 'identity_lookup' from splice.entitlement.tasks
     from splice.entitlement import tasks
     result = tasks.sync_single_rhic.apply_async((uuid,))
     task = update_rhic_lookup_task(uuid, result.task_id)
+    _LOG.info("create_rhic_lookup_task(%s) created lookup task: '%s'" % (uuid, task))
     return task
 
 def complete_rhic_lookup_task(uuid, status_code):
+    _LOG.info("complete_rhic_lookup_task(rhic_uuid='%s', status_code='%s') invoked" % (uuid, status_code))
     current_task = identity.get_current_rhic_lookup_tasks(uuid)
     if not current_task:
         _LOG.warning("completed_rhic_lookup_task with status code '%s' called on uuid '%s' "
@@ -52,6 +55,7 @@ def complete_rhic_lookup_task(uuid, status_code):
     return current_task
 
 def update_rhic_lookup_task(uuid, task_id):
+    _LOG.info("update_rhic_lookup_task(rhic_uuid='%s', task_id='%s')" % (uuid, task_id))
     current_task = identity.get_current_rhic_lookup_tasks(uuid)
     if not current_task:
         current_task = RHICLookupTask(uuid=uuid)
@@ -59,4 +63,5 @@ def update_rhic_lookup_task(uuid, task_id):
     current_task.modified = datetime.now(tzutc())
     current_task.completed = False
     current_task.save()
+    _LOG.info("update_rhic_lookup_task(%s, %s) updated task to %s" % (uuid, task_id, current_task))
     return current_task

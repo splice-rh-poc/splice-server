@@ -92,8 +92,10 @@ def get_current_rhic_lookup_tasks(uuid):
     @return: a valid RHICLookupTask associated to this 'uuid' or None
     @rtype: L{splice.entitlement.models.RHICLookupTask}
     """
+    _LOG.info("get_current_rhic_lookup_tasks(rhic_uuid='%s')" % (uuid))
     current_task = RHICLookupTask.objects(uuid=uuid).first()
     if not current_task:
+        _LOG.info("Unable to find lookup task '%s', all lookup tasks are: %s" % (uuid, RHICLookupTask.objects()))
         return None
     expired = is_rhic_lookup_task_expired(current_task)
     if expired:

@@ -83,13 +83,18 @@ def process_running_rhic_lookup_tasks():
     in_progress_tasks = identity.get_in_progress_rhic_lookups()
     _LOG.info("Celery task: process_running_rhic_lookup_tasks %s in progress tasks exist" % (len(in_progress_tasks)))
     for t in in_progress_tasks:
-        result = AsyncResult(t.task_id)
-        if result.state not in ["RUNNING", "PENDING"]:
-            new_result = sync_single_rhic.apply_async((t.uuid,))
-            new_task = identity_lookup.update_rhic_lookup_task(t.uuid, new_result.task_id)
-            _LOG.info("Celery task: process_running_rhic_lookup_tasks initiated new task: %s" % (new_task))
-        else:
-            _LOG.info("Celery task: process_running_rhic_lookup_tasks skipped '%s' since it is %s" % (t, result.state))
+        if t.task_id:
+            result = AsyncResult(t.task_id)
+            if result.state in ["RUNNING", "PENDING"]:
+                _LOG.info("Celery task: process_running_rhic_lookup_tasks skipped '%s' since it is %s" % (t, result.state))
+                continue
+            else:
+                _LOG.info("Celery task: process_running_rhic_lookup_tasks found existing "
+                          "celery task with id '%s' and state '%s'.  Will issue a new task "
+                          "since state was not RUNNING or PENDING." % (t.task_id, result.state))
+        new_result = sync_single_rhic.apply_async((t.uuid,))
+        new_task = identity_lookup.update_rhic_lookup_task(t.uuid, new_result.task_id)
+        _LOG.info("Celery task: process_running_rhic_lookup_tasks initiated new task: %s" % (new_task))
     end = time.time()
     _LOG.info("Celery task: process_running_rhic_lookup_tasks completed in %s seconds" % (end-start))
 
