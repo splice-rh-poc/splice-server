@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.41
+Version:	0.42
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,10 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Mon Oct 01 2012 John Matthews <jmatthews@redhat.com> 0.42-1
+- Added logic to return a '410' when we know a RHIC has been deleted from rhic-
+  serve (jmatthews@redhat.com)
+
 * Sun Sep 30 2012 John Matthews <jmatthews@redhat.com> 0.41-1
 - Fix processing existing rhic lookup tasks, logic for determining if a celery
   task was pending was incorrect. (jmatthews@redhat.com)
