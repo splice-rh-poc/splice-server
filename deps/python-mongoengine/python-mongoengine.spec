@@ -3,7 +3,7 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 Name:           python-mongoengine
-Version:        0.6.20
+Version:        0.7.5
 Release:        2%{?dist}
 Summary:        A Python Document-Object Mapper for working with MongoDB
 
