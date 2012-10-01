@@ -4,7 +4,7 @@
 
 Name:           python-mongoengine
 Version:        0.7.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Python Document-Object Mapper for working with MongoDB
 
 Group:          Development/Libraries
@@ -49,6 +49,9 @@ rm -rf $RPM_BUILD_ROOT
 # %{python_sitearch}/*
 
 %changelog
+* Mon Oct 01 2012 James Slagle <jslagle@redhat.com> 0.7.5-3
+- Bump mongoengine to 0.7.5 (jslagle@redhat.com)
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 0.6.20-2
 - new package built with tito
 
