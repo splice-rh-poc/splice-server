@@ -146,6 +146,8 @@ class BaseEntitlementTestCase(MongoTestCase):
         # a valid cert, signed by the below CA, 'root_ca_pem'
         self.valid_identity_cert_pem =  os.path.join(TEST_DATA_DIR, "valid_cert", "valid.cert")
         self.valid_identity_cert_pem = open(self.valid_identity_cert_pem, "r").read()
+        self.deleted_identity_cert_pem = os.path.join(TEST_DATA_DIR, "deleted_cert", "deleted.cert")
+        self.deleted_identity_cert_pem = open(self.deleted_identity_cert_pem, "r").read()
         # CA
         self.root_ca_pem = self.root_ca_path = config.CONFIG.get("security", "root_ca_cert")
         self.root_ca_pem = open(self.root_ca_pem, "r").read()
@@ -156,6 +158,7 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.checkin = CheckIn()
         self.valid_products = ["40", "41"]
         self.valid_identity_uuid = self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem)
+        self.deleted_identity_uuid = self.checkin.extract_id_from_identity_cert(self.deleted_identity_cert_pem)
         self.expected_valid_identity_uuid = "fb647f68-aa01-4171-b62b-35c2984a5328"
         self.dummy_uuid = "11a1aa11-a11a-1a11-111a-a11111111111"
 
@@ -163,6 +166,11 @@ class BaseEntitlementTestCase(MongoTestCase):
         item = {}
         item["uuid"] = self.valid_identity_uuid
         item["engineering_ids"] = self.valid_products
+        create_or_update_consumer_identity(item)
+        item = {}
+        item["uuid"] = self.deleted_identity_uuid
+        item["engineering_ids"] = self.valid_products
+        item["deleted"] = True
         create_or_update_consumer_identity(item)
 
     def tearDown(self):
@@ -269,6 +277,15 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
             SSL_CLIENT_CERT=self.invalid_identity_cert_pem)
         self.assertHttpForbidden(resp)
         self.assertEqual("Unable to verify consumer's identity certificate was signed by configured CA", resp.content)
+
+    def test_post_entitlement_deleted_identity(self):
+        resp = self.api_client.post('/api/v1/entitlement/%s/' % (self.deleted_identity_uuid),
+            format='json',
+            authentication=self.get_credentials(),
+            data=self.post_data,
+            SSL_CLIENT_CERT=self.deleted_identity_cert_pem)
+        self.assertHttpGone(resp)
+        self.assertEqual("Exception: consumer identity '%s' has been deleted." % (self.deleted_identity_uuid), resp.content)
 
 class IdentityLookupTest(BaseEntitlementTestCase):
     def setUp(self):

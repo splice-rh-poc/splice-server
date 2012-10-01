@@ -85,3 +85,15 @@ class UnsupportedDateFormatException(Exception):
     def __str__(self):
         return "Exception: datetime string of '%s' could not be parsed with any known methods." \
                % (self.date_str)
+
+class DeletedConsumerIdentityException(Exception):
+    def __init__(self, consumer_uuid):
+        super(DeletedConsumerIdentityException, self).__init__()
+        self.consumer_uuid = consumer_uuid
+        self.response = HttpResponse(
+            content=self.__str__(),
+            status=httplib.GONE
+        )
+
+    def __str__(self):
+        return "Exception: consumer identity '%s' has been deleted." % (self.consumer_uuid)

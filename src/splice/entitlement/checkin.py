@@ -23,7 +23,7 @@ from splice.common import candlepin_client, utils
 from splice.common.certs import CertUtils
 from splice.common.config import CONFIG, get_candlepin_config_info, get_splice_server_info
 from splice.common.exceptions import CheckinException, CertValidationException, UnallowedProductException, \
-    UnknownConsumerIdentity
+    UnknownConsumerIdentity, DeletedConsumerIdentityException
 from splice.common.identity import sync_from_rhic_serve
 from splice.entitlement.models import ConsumerIdentity, ProductUsage, SpliceServer
 from splice.managers import identity_lookup
@@ -150,6 +150,10 @@ class CheckIn(object):
         """
         _LOG.info("Check if consumer identity <%s> is allowed to access products: %s" % \
                   (identity, installed_products))
+        if identity.deleted:
+            _LOG.info("check_access() found that consumer identifier: %s has been deleted" % (identity.uuid))
+            raise DeletedConsumerIdentityException(identity.uuid)
+
         allowed_products = []
         unallowed_products = []
         for prod in installed_products:
