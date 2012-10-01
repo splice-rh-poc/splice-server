@@ -490,12 +490,12 @@ class IdentityTest(BaseEntitlementTestCase):
             modified=datetime.now(tzutc()))
         task_b.save()
         # Create a timedout incomplete task
-        timeout_in_minutes = cfg["timeout_in_minutes"]
+        timeout_in_minutes = cfg["single_rhic_lookup_timeout_in_minutes"]
         expired_time = datetime.now(tzutc()) - timedelta(minutes=timeout_in_minutes+1)
         task_c = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a333333333333", completed=False, initiated=expired_time)
         task_c.save()
         # Create a completed expired task
-        expired_hours = cfg["cache_unknown_lookup_hours"]
+        expired_hours = cfg["single_rhic_lookup_cache_unknown_in_hours"]
         expired_time = datetime.now(tzutc()) - timedelta(hours=expired_hours+1)
         task_d = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a444444444444", completed=True, modified=expired_time)
         task_d.save()
@@ -548,14 +548,14 @@ class IdentityTest(BaseEntitlementTestCase):
 
         # Create a timedout incomplete task
         cfg = config.get_rhic_serve_config_info()
-        timeout_in_minutes = cfg["timeout_in_minutes"]
+        timeout_in_minutes = cfg["single_rhic_lookup_timeout_in_minutes"]
         expired_time = datetime.now(tzutc()) - timedelta(minutes=timeout_in_minutes+1)
         task_c = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a333333333333", completed=False, initiated=expired_time)
         task_c.save()
         self.assertTrue(identity.is_rhic_lookup_task_expired(task_c))
 
         # Create a completed expired task
-        expired_hours = cfg["cache_unknown_lookup_hours"]
+        expired_hours = cfg["single_rhic_lookup_cache_unknown_in_hours"]
         expired_time = datetime.now(tzutc()) - timedelta(hours=expired_hours+1)
         task_d = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a444444444444", completed=True, modified=expired_time)
         task_d.save()
@@ -573,12 +573,12 @@ class IdentityTest(BaseEntitlementTestCase):
             modified=datetime.now(tzutc()))
         task_b.save()
         # Create a timedout incomplete task
-        timeout_in_minutes = cfg["timeout_in_minutes"]
+        timeout_in_minutes = cfg["single_rhic_lookup_timeout_in_minutes"]
         expired_time = datetime.now(tzutc()) - timedelta(minutes=timeout_in_minutes+1)
         task_c = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a333333333333", completed=False, initiated=expired_time)
         task_c.save()
         # Create a completed expired task
-        expired_hours = cfg["cache_unknown_lookup_hours"]
+        expired_hours = cfg["single_rhic_lookup_cache_unknown_in_hours"]
         expired_time = datetime.now(tzutc()) - timedelta(hours=expired_hours+1)
         task_d = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a444444444444", completed=True, modified=expired_time)
         task_d.save()
@@ -601,7 +601,7 @@ class IdentityTest(BaseEntitlementTestCase):
         task_b.save()
         # Create a timedout incomplete task
         cfg = config.get_rhic_serve_config_info()
-        timeout_in_minutes = cfg["timeout_in_minutes"]
+        timeout_in_minutes = cfg["single_rhic_lookup_timeout_in_minutes"]
         expired_time = datetime.now(tzutc()) - timedelta(minutes=timeout_in_minutes+1)
         task_c = RHICLookupTask(uuid="11a1aa11-a11a-1a11-111a-a333333333333", completed=False, initiated=expired_time)
         task_c.save()

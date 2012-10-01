@@ -34,7 +34,7 @@ def is_rhic_lookup_task_expired(current_task):
     cfg = config.get_rhic_serve_config_info()
     if not current_task.completed:
         # Task is in progress, ensure that it's initiated time is within timeout range
-        timeout_in_minutes = cfg["timeout_in_minutes"]
+        timeout_in_minutes = cfg["single_rhic_lookup_timeout_in_minutes"]
         threshold = current_task.initiated + timedelta(minutes=timeout_in_minutes)
         if not threshold.tzinfo:
             threshold = pytz.UTC.localize(threshold)
@@ -45,7 +45,7 @@ def is_rhic_lookup_task_expired(current_task):
             return True
     else:
         # Task has completed, check if it's within cached time boundaries
-        valid_hours = cfg["cache_unknown_lookup_hours"]
+        valid_hours = cfg["single_rhic_lookup_cache_unknown_in_hours"]
         modified = current_task.modified
         if not modified.tzinfo:
             modified = pytz.UTC.localize(modified)
