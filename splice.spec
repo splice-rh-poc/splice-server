@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.44
+Version:	0.45
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,11 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Oct 02 2012 John Matthews <jmatthews@redhat.com> 0.45-1
+- Updated to return '404' during checkin when a RHIC is confirmed NOT FOUND
+  from parent chain, added test scripts to create a RHIC to throw a 404 with
+  curl scripts (jmatthews@redhat.com)
+
 * Tue Oct 02 2012 John Matthews <jmatthews@redhat.com> 0.44-1
 - Bumpd requires on rhic-serve (jmatthews@redhat.com)
 
