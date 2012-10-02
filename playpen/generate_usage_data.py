@@ -185,28 +185,39 @@ class ReportDataGenerator(object):
             uuid='fbbd06c6-ebed-4892-87a3-2bf17c86e610',
             name='rhel-server-education-1190457-3879847-na-ss',
             account_id='1190457',
-            contract='3116649', 
+            contract='3879847', 
             support_level='ss', 
             sla='na',
             products=['RHEL Server for Education',],
             engineering_ids=['69'])
+        
+        r4 = RHICData(
+            num_instances=self.num_instances,
+            uuid='fbbd06c6-ebed-4892-87a3-2bf17c864444',
+            name='rhel-ha-1190457-3874444-na-standard',
+            account_id='1190457',
+            contract='3116649', 
+            support_level='l1-l3', 
+            sla='prem',
+            products=['RHEL HA',],
+            engineering_ids=['83'])
 
         # RHIC's for login: slim@redhat.com
         #
         # Premium RHEL Server and JBoss
-        r4 = RHICData(
+        r5 = RHICData(
             num_instances=self.num_instances,
-            uuid='ee5c9aaa-a40c-4b58-80a6-ef731076bbe8',
-            name='rhel-server-jboss-1238730-4582732-prem-l1-l3',
-            account_id='3485301',
-            contract='1238730', 
-            support_level='l1-l3', 
-            sla='prem',
-            products=['RHEL Server', 'JBoss EAP'],
-            engineering_ids=['69', '183'])
+            uuid='ee5c9aaa-a40c-1111-80a6-ef731076bbe8',
+            name='jboss-1111730-4582732-prem-l1-l3',
+            account_id='1190480',
+            contract='3879880', 
+            support_level='l3', 
+            sla='std',
+            products=['JBoss EAP'],
+            engineering_ids=['183'])
         # Premium OpenShift Gear (encompasses RHEL Server and JBoss Engineering
         # Id's).
-        r5 = RHICData(
+        r6 = RHICData(
             num_instances=self.num_instances,
             uuid='b0e7bd8a-0b23-4b35-86d7-52a87311a5c2',
             name='openshift-gear-3485301-4582732-prem-l1-l3',
@@ -216,8 +227,41 @@ class ReportDataGenerator(object):
             sla='prem',
             products=['OpenShift Gear',],
             engineering_ids=['69', '183'])
+        
+        r7 = RHICData(
+            num_instances=self.num_instances,
+            uuid='fbbd06c6-ebed-4892-87a3-2bf17c865555',
+            name='rhel-eus-1190457-3874444-prem-l1-l3',
+            account_id='3485301',
+            contract='1238730', 
+            support_level='l1-l3', 
+            sla='prem',
+            products=['RHEL EUS',],
+            engineering_ids=['70'])
+        
+        r8 = RHICData(
+            num_instances=self.num_instances,
+            uuid='fbbd06c6-ebed-4892-87a3-2bf17c866666',
+            name='rhel-lb-1190457-3874444-prem-l1-l3',
+            account_id='3485301',
+            contract='1238730', 
+            support_level='l3', 
+            sla='prem',
+            products=['RHEL LB',],
+            engineering_ids=['85'])
+        
+        r9 = RHICData(
+            num_instances=self.num_instances,
+            uuid='fbbd06c6-ebed-4892-87a3-2bf17c867777',
+            name='rhel-2socket_unlimited-1190457-3874444-prem-l1-l3',
+            account_id='3485301',
+            contract='1238730', 
+            support_level='l1-l3', 
+            sla='prem',
+            products=['RHEL Server 2-socket Unlimited Guest'],
+            engineering_ids=['69'])
 
-        self.rhics = [r1, r2, r3, r4, r5]
+        self.rhics = [r1, r2, r3, r4, r5, r6, r7, r8, r9]
 
     def generate_usage(self):
         """
