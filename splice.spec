@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.42
+Version:	0.43
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,15 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Oct 02 2012 John Matthews <jmatthews@redhat.com> 0.43-1
+- Convenience method to drop the database (jmatthews@redhat.com)
+- Added config option to enable/disable the task for syncing all RHICs
+  (jmatthews@redhat.com)
+- Automatic commit of package [python-mongoengine] minor release [0.7.5-3].
+  (jslagle@redhat.com)
+- Bump mongoengine to 0.7.5 (jslagle@redhat.com)
+- Cleanup configuration options for rhic lookup tasks (jmatthews@redhat.com)
+
 * Mon Oct 01 2012 John Matthews <jmatthews@redhat.com> 0.42-1
 - Added logic to return a '410' when we know a RHIC has been deleted from rhic-
   serve (jmatthews@redhat.com)
