@@ -53,6 +53,19 @@ class UnknownConsumerIdentity(CheckinException):
     def __str__(self):
         return "Unknown consumer identity '%s'" % (self.identity)
 
+
+class NotFoundConsumerIdentity(CheckinException):
+    def __init__(self, identity):
+        super(NotFoundConsumerIdentity, self).__init__(self)
+        self.identity = identity
+        self.response = HttpResponse(
+            content=self.__str__(),
+            status = httplib.NOT_FOUND
+        )
+
+    def __str__(self):
+        return "RCS chain was queried and top parent confirmed that consumer identity '%s' is NOT_FOUND" % (self.identity)
+
 class RequestException(Exception):
     """
     This exception is to be used when this server is sending a remote request
@@ -97,3 +110,16 @@ class DeletedConsumerIdentityException(Exception):
 
     def __str__(self):
         return "Exception: consumer identity '%s' has been deleted." % (self.consumer_uuid)
+
+class UnexpectedStatusCodeException(Exception):
+    def __init__(self, consumer_uuid, status_code):
+        super(UnexpectedStatusCodeException, self).__init__()
+        self.consumer_uuid = consumer_uuid
+        self.status_code = status_code
+        self.response = HttpResponse(
+            content=self.__str__(),
+            status=self.status_code
+        )
+
+    def __str__(self):
+        return "Parent RCS returned a status code of '%s' for this RHIC lookup on '%s'." % (self.consumer_uuid, self.status_code)

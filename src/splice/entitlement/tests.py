@@ -35,7 +35,7 @@ from splice.common import config
 from splice.common import rhic_serve_client
 from splice.common import utils
 from splice.common.certs import CertUtils
-from splice.common.exceptions import UnsupportedDateFormatException
+from splice.common.exceptions import UnsupportedDateFormatException, UnexpectedStatusCodeException, NotFoundConsumerIdentity
 from splice.common.identity import create_or_update_consumer_identity, sync_from_rhic_serve, \
         sync_from_rhic_serve_blocking, SyncRHICServeThread
 from splice.entitlement.checkin import CheckIn
@@ -778,6 +778,39 @@ class CheckInTest(BaseEntitlementTestCase):
         self.assertTrue("101" in unallowed_products)
         self.assertEquals(len(allowed_products), 1)
         self.assertEquals(len(unallowed_products), 1)
+
+    def test_not_found(self):
+    # Create a stored rhic lookup that is valid and set response to 404
+        rhic_uuid = "11a1aa11-a11a-1a11-111a-a22222222222"
+        task = RHICLookupTask(uuid=rhic_uuid, completed=True,
+            initiated=datetime.now(tzutc()),
+            modified=datetime.now(tzutc()),
+            status_code=404)
+        task.save()
+        # Verify we return this '404'
+        caught = False
+        try:
+            self.checkin.get_identity_object(rhic_uuid)
+        except NotFoundConsumerIdentity, e:
+            caught = True
+        self.assertTrue(caught)
+
+    def test_unexpected_cached_status_code(self):
+        # Create a stored rhic lookup that is valid and set response to 483
+        # Verify we return this 'unexpected status code'
+        rhic_uuid = "11a1aa11-a11a-1a11-111a-a22222222222"
+        task = RHICLookupTask(uuid=rhic_uuid, completed=True,
+            initiated=datetime.now(tzutc()),
+            modified=datetime.now(tzutc()),
+            status_code=483)
+        task.save()
+        caught = False
+        try:
+            self.checkin.get_identity_object(rhic_uuid)
+        except UnexpectedStatusCodeException, e:
+            caught = True
+            self.assertEqual(e.status_code, 483)
+        self.assertTrue(caught)
 
 class UtilsTest(BaseEntitlementTestCase):
     """

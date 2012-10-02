@@ -4,6 +4,7 @@ if [ $# -lt 1 ]; then
 else
     export SAMPLE_RHIC=$1
 fi
+echo using "${SAMPLE_RHIC} for sample rhic"
 export SERVER_ADDR=`hostname`
 export PORT=443
 export CONSUMER_IDENTITY="playpenscript_sample_rhic" # Server doesn't use this value, so putting a dummy value in to identify we are testing for logs

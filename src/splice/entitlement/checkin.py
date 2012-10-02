@@ -23,7 +23,7 @@ from splice.common import candlepin_client, utils
 from splice.common.certs import CertUtils
 from splice.common.config import CONFIG, get_candlepin_config_info, get_splice_server_info
 from splice.common.exceptions import CheckinException, CertValidationException, UnallowedProductException, \
-    UnknownConsumerIdentity, DeletedConsumerIdentityException
+    UnknownConsumerIdentity, DeletedConsumerIdentityException, NotFoundConsumerIdentity, UnexpectedStatusCodeException
 from splice.common.identity import sync_from_rhic_serve
 from splice.entitlement.models import ConsumerIdentity, ProductUsage, SpliceServer
 from splice.managers import identity_lookup
@@ -129,12 +129,24 @@ class CheckIn(object):
 
     def get_identity(self, identity_cert):
         id_from_cert = self.extract_id_from_identity_cert(identity_cert)
-        _LOG.info("Found ID from identity certificate is '%s' " % (id_from_cert))
-        identity = ConsumerIdentity.objects(uuid=UUID(id_from_cert)).first()
+        return self.get_identity_object(id_from_cert)
+
+    def get_identity_object(self, consumer_uuid):
+        _LOG.info("Found ID from identity certificate is '%s' " % (consumer_uuid))
+        identity = ConsumerIdentity.objects(uuid=UUID(consumer_uuid)).first()
         if not identity:
-            _LOG.info("Couldn't find RHIC with ID '%s', will query parent" % (id_from_cert))
-            identity_lookup.create_rhic_lookup_task(id_from_cert)
-            raise UnknownConsumerIdentity(id_from_cert)
+            # Lookup if we have a cached response for this uuid
+            cached_status_code = identity_lookup.get_cached_status_code(consumer_uuid)
+            if cached_status_code:
+                _LOG.info("Found cached lookup for '%s' with status_code '%s'" % (consumer_uuid, cached_status_code))
+                if cached_status_code == 404:
+                    raise NotFoundConsumerIdentity(consumer_uuid)
+                else:
+                    raise UnexpectedStatusCodeException(consumer_uuid, cached_status_code)
+            # If not, create a new lookup and query parent
+            _LOG.info("Couldn't find RHIC with ID '%s', will query parent" % (consumer_uuid))
+            identity_lookup.create_rhic_lookup_task(consumer_uuid)
+            raise UnknownConsumerIdentity(consumer_uuid)
         return identity
 
     def check_access(self, identity, installed_products):

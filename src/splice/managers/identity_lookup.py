@@ -24,6 +24,12 @@ from splice.entitlement.models import RHICLookupTask
 
 _LOG = getLogger(__name__)
 
+def get_cached_status_code(uuid):
+    t = identity.get_current_rhic_lookup_tasks(uuid)
+    if t and t.completed:
+        return t.status_code
+    return None
+
 def create_rhic_lookup_task(uuid):
     _LOG.info("create_rhic_lookup_task(%s)" % (uuid))
     # To avoid circular import
