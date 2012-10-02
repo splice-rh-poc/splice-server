@@ -49,6 +49,7 @@ def get_rhic_serve_config_info():
         "single_rhic_lookup_timeout_in_minutes": CONFIG.getint("tasks", "single_rhic_lookup_timeout_in_minutes"),
         "single_rhic_retry_lookup_tasks_in_minutes": CONFIG.getint("tasks", "single_rhic_retry_lookup_tasks_in_minutes"),
         "sync_all_rhics_bool" : CONFIG.getboolean("tasks", "sync_all_rhics_bool"),
+        "sync_all_rhics_pagination_limit_per_call" : CONFIG.getint("tasks", "sync_all_rhics_pagination_limit_per_call"),
     }
 
 def get_logging_config_file():

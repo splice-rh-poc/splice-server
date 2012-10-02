@@ -31,16 +31,14 @@ def get_single_rhic(host, port, url, uuid, debug=False):
     status, data = _request(host, port, url, last_sync=None, debug=debug)
     return status, data
 
-def get_all_rhics(host, port, url, last_sync=None, debug=False):
-    status, data = _request(host, port, url, last_sync, debug)
+def get_all_rhics(host, port, url, last_sync=None, offset=None, limit=None, debug=False):
+    status, data = _request(host, port, url, last_sync, offset=offset, limit=limit, debug=debug)
     if status == 200:
         # Newer rhic_serves support pagination and will return data under ["objects"]
-        if data.has_key("objects"):
-            return data["objects"]
-        return data
+        return data["objects"], data["meta"]
     raise RequestException(status, data)
 
-def _request(host, port, url, last_sync=None, debug=False):
+def _request(host, port, url, last_sync=None, offset=None, limit=None, debug=False):
     connection = httplib.HTTPSConnection(host, port)
     if debug:
         connection.set_debuglevel(100)
@@ -49,10 +47,14 @@ def _request(host, port, url, last_sync=None, debug=False):
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
+    query_params = {}
     if last_sync:
-        query_params = {
-            "modified_date__gt": last_sync,
-            }
+        query_params["modified_date__gt"] = last_sync,
+    if offset is not None:
+        query_params["offset"] = offset
+    if limit is not None:
+        query_params["limit"] = limit
+    if query_params:
         data = urllib.urlencode(query_params, True)
         url = url +"?" + data
     _LOG.info("Sending HTTP request to: %s:%s%s with headers:%s" % (host, port, url, headers))
@@ -78,7 +80,9 @@ if __name__ == "__main__":
     last_sync = datetime.now(tzutc()) - timedelta(days=30)
     config.init()
     cfg = config.get_rhic_serve_config_info()
-    data = get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], last_sync=last_sync, debug=True)
+    data, meta = get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"],
+        offset=0, limit=5,
+        last_sync=last_sync, debug=True)
     print "--- Test Sync all RHICs ---"
     print data
     if len(data) > 0:

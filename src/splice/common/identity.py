@@ -112,23 +112,8 @@ def process_data(data):
     for item in data:
         _LOG.debug("Processing: %s" % (item))
         create_or_update_consumer_identity(item)
-    ###
-    # TODO: Consider removing this 'removal' logic when getting ready to deploy in production
-    #   Does it make sense to keep this, or should we remove it?
-    # Process RHICs that have been removed from the remote source
-    # This removal is likely to be more for testing as we delete database and cleanup environments
-    # In production we plan to keep 'deleted' RHICs by marking them as deleted.
-    ###
-    objects = ConsumerIdentity.objects()
-    known_uuids = [str(x.uuid) for x in objects]
     remote_uuids = [x["uuid"] for x in data]
-    known_uuids = set(known_uuids)
-    remote_uuids = set(remote_uuids)
-    uuids_to_remove = known_uuids.difference(remote_uuids)
-    for old_uuid in uuids_to_remove:
-        _LOG.info("Removing: %s" % (old_uuid))
-        ci = ConsumerIdentity.objects(uuid=UUID(old_uuid))
-        ci.delete()
+    return remote_uuids
 
 def create_or_update_consumer_identity(item):
     """
@@ -215,29 +200,54 @@ def sync_single_rhic_blocking(uuid):
         create_or_update_consumer_identity(data)
     return status_code
 
+# TODO: Refactor to a smaller set of methods, we are currently doing pagination and removal of rhics here
 def sync_from_rhic_serve_blocking():
     _LOG.info("Attempting to synchronize RHIC data from configured rhic_serve")
     current_time = datetime.now(tzutc())
-
     cfg = config.get_rhic_serve_config_info()
-    # TODO need to implement pagination
     # Lookup last time we synced from this host
     # Sync records from that point in time.
     # If we haven't synced before we get back None and proceed with a full sync
+
+    known_uuids = [str(x.uuid) for x in ConsumerIdentity.objects()]
+    remote_uuids = []
+    known_uuids = set(known_uuids)
+
     server_hostname = cfg["host"]
     last_sync = get_last_sync_timestamp(server_hostname)
+    current_offset=0
+    current_limit=cfg["sync_all_rhics_pagination_limit_per_call"]
+    sync_loop = True
+    while sync_loop:
+        data, meta = rhic_serve_client.get_all_rhics(host=server_hostname, port=cfg["port"],
+            url=cfg["get_all_rhics_url"], last_sync=last_sync, offset=current_offset, limit=current_limit)
+        if not data:
+            _LOG.info("Received no data from %s:%s%s" % (cfg["host"], cfg["port"], cfg["get_all_rhics_url"]))
+            return True
+        _LOG.info("Fetched %s RHICs from %s:%s%s with last_sync=%s, offset=%s, limit=%s" % (len(data),
+             cfg["host"], cfg["port"], cfg["get_all_rhics_url"], last_sync, current_offset, current_limit))
+        syncd_uuids = process_data(data)
+        remote_uuids.extend(syncd_uuids)
+        current_offset = current_offset + len(syncd_uuids)
+        if current_offset >= meta["total_count"]:
+            break
 
-    data = rhic_serve_client.get_all_rhics(host=server_hostname, port=cfg["port"],
-        url=cfg["get_all_rhics_url"], last_sync=last_sync)
-    if not data:
-        _LOG.info("Received no data from %s:%s%s" % (cfg["host"], cfg["port"], cfg["get_all_rhics_url"]))
-        return True
-    _LOG.info("Fetched %s RHICs from %s:%s%s with last_sync=%s" % (len(data),
-            cfg["host"], cfg["port"], cfg["get_all_rhics_url"], last_sync))
-    process_data(data)
     if not save_last_sync(server_hostname, current_time):
         _LOG.info("Unable to update last sync for: %s at %s" % (server_hostname, current_time))
         return False
+
+    ###
+    # TODO: Consider deleting the below 'removal' logic.
+    ###
+    remote_uuids = set(remote_uuids)
+    _LOG.info("sync_from_rhic_serve_blocking:  full sync grabbed %s consumer uuids" % (len(remote_uuids)))
+    uuids_to_remove = known_uuids.difference(remote_uuids)
+    if uuids_to_remove:
+        _LOG.info("sync_from_rhic_serve_blocking: %s uuids are no longer available on the parent, will delete" % (len(uuids_to_remove)))
+        for old_uuid in uuids_to_remove:
+            _LOG.info("Removing: %s as it is not on parent." % (old_uuid))
+            ci = ConsumerIdentity.objects(uuid=UUID(old_uuid))
+            ci.delete()
     return True
 
 def sync_from_rhic_serve():
