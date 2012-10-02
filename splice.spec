@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.43
+Version:	0.44
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,9 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Oct 02 2012 John Matthews <jmatthews@redhat.com> 0.44-1
+- Bumpd requires on rhic-serve (jmatthews@redhat.com)
+
 * Tue Oct 02 2012 John Matthews <jmatthews@redhat.com> 0.43-1
 - Convenience method to drop the database (jmatthews@redhat.com)
 - Added config option to enable/disable the task for syncing all RHICs
