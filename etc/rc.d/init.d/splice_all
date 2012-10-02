@@ -6,6 +6,10 @@
 # :Usage: /etc/init.d/splice_all {start|stop|restart|status}
 #
 
+dropdatabase() {
+    mongo 'checkin_service' --eval "db.dropDatabase();"
+}
+
 start() {
     service httpd start
     service splice_celeryd start
@@ -31,6 +35,10 @@ status() {
 }
 
 case "$1" in
+    dropdatabase)
+        dropdatabase
+    ;;
+
     start)
         start
     ;;
