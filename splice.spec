@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.46
+Version:	0.47
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,11 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Tue Oct 02 2012 John Matthews <jmatthews@redhat.com> 0.47-1
+- Removed the 'removal' logic that was deleting a RHIC if it wasn't on rhic-
+  serve  - If rhic-serve deletes a rhic it will keep the RHIC in the DB and
+  mark it as 'deleted=True' (jmatthews@redhat.com)
+
 * Tue Oct 02 2012 John Matthews <jmatthews@redhat.com> 0.46-1
 - Added pagination support for syncing all rhics (jmatthews@redhat.com)
 
