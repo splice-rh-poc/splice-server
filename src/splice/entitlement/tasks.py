@@ -59,7 +59,7 @@ def sync_single_rhic(uuid):
               (uuid, status_code, end-start))
     return status_code
 
-@celery.task(name="%s.sync_rhics" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
+@celery.task(name="%s.sync_all_rhics" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
 def sync_rhics():
     """
     Will synchronize RHIC to product mapping data from a RCS server.
@@ -69,10 +69,10 @@ def sync_rhics():
     @rtype:  (bool,str)
     """
     start = time.time()
-    _LOG.info("Celery task: sync_rhics invoked")
+    _LOG.info("Celery task: sync_all_rhics invoked")
     retval = identity.sync_from_rhic_serve_blocking()
     end = time.time()
-    _LOG.info("Celery task: sync_rhics finished in %s seconds" % (end-start))
+    _LOG.info("Celery task: sync_all_rhics finished in %s seconds" % (end-start))
     return retval
 
 @celery.task(name="%s.process_running_rhic_lookup_tasks" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)

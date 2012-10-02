@@ -265,10 +265,6 @@ CELERY_ANNOTATIONS = {"%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME): {"rate_lim
 
 
 rhic_serve_cfg = config.get_rhic_serve_config_info()
-# Controls when we will run a full sync of rhics
-sync_all_rhics_in_minutes = 60
-if rhic_serve_cfg.has_key("sync_all_rhics_in_minutes"):
-    sync_all_rhics_in_minutes = int(rhic_serve_cfg["sync_all_rhics_in_minutes"])
 
 single_rhic_retry_lookup_tasks_in_minutes = 15
 if rhic_serve_cfg.has_key("single_rhic_retry_lookup_tasks_in_minutes"):
@@ -282,20 +278,28 @@ CELERYBEAT_SCHEDULE = {
     #    'schedule': timedelta(seconds=5),
     #    'args': None,
     #},
-    # Disabling full sync while we test single rhic lookups
-    # Executes every hour
-    #'sync_rhic_product_mappings': {
-    #    'task': '%s.sync_rhics' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-    #    'schedule': timedelta(minutes=sync_all_rhics_in_minutess),
-    #    'args': None,
-    #},
     'process_running_rhic_lookup_tasks': {
         'task': '%s.process_running_rhic_lookup_tasks' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
         'schedule': timedelta(minutes=single_rhic_retry_lookup_tasks_in_minutes),
-        'args': None,
+       'args': None,
     }
 }
 CELERY_TIMEZONE = 'UTC'
+
+# Controls 'if' we will sync all rhics
+sync_all_rhics_bool = True
+if rhic_serve_cfg.has_key("sync_all_rhics_bool"):
+    sync_all_rhics_bool = rhic_serve_cfg["sync_all_rhics_bool"]
+if sync_all_rhics_bool:
+    # Controls 'when' we will run a full sync of rhics
+    sync_all_rhics_in_minutes = 60
+    if rhic_serve_cfg.has_key("sync_all_rhics_in_minutes"):
+        sync_all_rhics_in_minutes = int(rhic_serve_cfg["sync_all_rhics_in_minutes"])
+    CELERYBEAT_SCHEDULE['sync_all_rhics'] = {
+        'task': '%s.sync_all_rhics' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+        'schedule': timedelta(minutes=sync_all_rhics_in_minutes),
+        'args': None,
+    }
 #
 # End of Celery Configuration
 #############################
