@@ -33,7 +33,7 @@ Requires: m2crypto >= 0.21.1.pulp-7
 #
 # RPMs from Splice Project
 #
-Requires: rhic-serve-rcs >= 0.8
+Requires: rhic-serve-rcs >= 0.15
 
 %description
 Framework for tracking entitlement consumption
