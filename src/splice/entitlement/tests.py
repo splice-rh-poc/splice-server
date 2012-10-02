@@ -437,24 +437,6 @@ class IdentityTest(BaseEntitlementTestCase):
         for r in rhics:
             self.assertIn(str(r.uuid), expected_rhics)
 
-    def test_sync_that_removes_old_rhics(self):
-        self.assertEqual(len(identity.JOBS), 0)
-        # Create one dummy RHIC which our sync should remove
-        item = {}
-        item["uuid"] = "180ed55f-c3fb-4249-ac4c-52e440cd9301"
-        item["engineering_ids"] = ["1","2"]
-        create_or_update_consumer_identity(item)
-        rhics = ConsumerIdentity.objects()
-        self.assertEquals(len(rhics), 1)
-        sync_from_rhic_serve_blocking()
-        rhics = ConsumerIdentity.objects()
-        self.assertEquals(len(rhics), 3)
-        expected_rhics = ["fb647f68-aa01-4171-b62b-35c2984a5328",
-                          "ef8548a9-c874-42a8-b5dc-bc5ab0b34cd7",
-                          "a17013d8-e896-4749-9b37-8606d62bf643"]
-        for r in rhics:
-            self.assertIn(str(r.uuid), expected_rhics)
-
     def test_sync_where_existing_rhics_product_mapping_changes(self):
         self.assertEqual(len(identity.JOBS), 0)
         # Create a RHIC with products that will change after sync
