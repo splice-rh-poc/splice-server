@@ -22,7 +22,7 @@ if __name__ == "__main__":
     parser.add_option("--num", action="store", 
             help="Number of RHICs to create", default=10000)
     (opts, args) = parser.parse_args()
-    num_rhics = opts.num
+    num_rhics = int(opts.num)
     init()
     # How many RHICs to create? parse CLI options
     # Create RHICs
