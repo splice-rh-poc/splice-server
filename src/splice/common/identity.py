@@ -179,6 +179,7 @@ def save_last_sync(server_hostname, timestamp):
     sync.last_sync = timestamp
     try:
         sync.save()
+        _LOG.info("Last sync saved: %s" % (sync))
     except Exception, e:
         _LOG.exception(e)
         return False
