@@ -1,0 +1,1 @@
+export DJANGO_SETTINGS_MODULE="splice.checkin_service.settings_unittests"
