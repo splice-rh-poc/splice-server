@@ -12,6 +12,7 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import logging
+import time
 from threading import Thread, Lock
 from uuid import UUID
 
@@ -108,12 +109,87 @@ def process_data(data):
     Imports data into mongo, will update documents that have changed, and remove those which have been deleted
     @param data from rhic_serve
     """
-    "Fetched %s rhics from rhic_serve" % (len(data))
-    for item in data:
-        _LOG.debug("Processing: %s" % (item))
-        create_or_update_consumer_identity(item)
-    remote_uuids = [x["uuid"] for x in data]
-    return remote_uuids
+    start = time.time()
+    _LOG.info("Fetched %s rhics from rhic_serve" % (len(data)))
+    consumer_ids = [x["uuid"] for x in data if x.has_key("uuid")]
+    # Determine which of these IDs already exist in DB and which are new
+
+    existing_objects = ConsumerIdentity.objects(uuid__in=consumer_ids).only("uuid")
+    existing_ids = [str(x.uuid) for x in existing_objects]
+    new_consumer_ids = set(consumer_ids).difference(set(existing_ids))
+    existing_consumers = [x for x in data if x.has_key("uuid") and x["uuid"] in existing_ids]
+    new_consumers = [x for x in data if x.has_key("uuid") and x["uuid"] in new_consumer_ids]
+    end_determine_new_and_existing = time.time()
+    _LOG.info("%s RHICs from parent consist of %s new and %s updates, %s seconds to determine this" % \
+              (len(data), len(new_consumers), len(existing_consumers), end_determine_new_and_existing-start))
+    # Perform a bulk insert for all new_consumers
+    if new_consumers:
+        objectids = bulk_insert(new_consumers)
+        if len(objectids) != len(new_consumer_ids):
+            _LOG.warning("Some RHICs were not created in database: %s new RHICs were intended only %s were created" % \
+                         (len(new_consumers), len(objectids)))
+    end_bulk_insert_new_items = time.time()
+    # Update existing consumer IDs serially
+    if existing_consumers:
+        for item in existing_consumers:
+            create_or_update_consumer_identity(item)
+    end_update_existing_items = time.time()
+    _LOG.info("%s seconds to process %s RHICs, %s new (in %s seconds) and %s updated (in %s seconds)" % \
+                (end_update_existing_items-start, len(data), len(new_consumers),
+                end_bulk_insert_new_items-end_determine_new_and_existing,
+                len(existing_consumers), end_update_existing_items-end_bulk_insert_new_items))
+    return consumer_ids
+
+def bulk_insert(data):
+    # Form model objects out of dictionary data items
+    objects = []
+    for d in data:
+        objects.append(convert_dict_to_consumer_identity(d))
+    if objects:
+        # Perform bulk insert
+        q = ConsumerIdentity.objects()
+        return q.insert(objects, load_bulk=False, safe=False)
+    return []
+
+def convert_dict_to_consumer_identity(item):
+    """
+    Converts a dictionary to a ConsumerIdentity
+    @param item: dict containing needed info to construct a ConsumerIdentity object
+                    required keys: 'uuid', 'engineering_ids'
+    @type item: dict
+    @return: instance of a consumer identity, note this instance has not yet been saved
+    @rtype: splice.entitlement.models.ConsumerIdentity
+    """
+    if not item.has_key("uuid"):
+        raise Exception("Missing required parameter: 'uuid'")
+    if not item.has_key("engineering_ids"):
+        raise Exception("Missing required parameter: 'engineering_ids'")
+    consumer_id = item["uuid"]
+    engineering_ids = item["engineering_ids"]
+
+    created_date = datetime.now(tzutc())
+    modified_date = datetime.now(tzutc())
+    deleted = False
+    deleted_date = None
+    if item.has_key("created_date"):
+        created_date = convert_to_datetime(item["created_date"])
+    if item.has_key("modified_date"):
+        modified_date = convert_to_datetime(item["modified_date"])
+    if item.has_key("deleted"):
+        deleted = item["deleted"]
+    if item.has_key("deleted_date"):
+        deleted_date = convert_to_datetime(item["deleted_date"])
+    if deleted and not deleted_date:
+        deleted_date = datetime.now(tzutc())
+
+    identity = ConsumerIdentity(uuid=UUID(consumer_id))
+    identity.engineering_ids = engineering_ids
+    identity.created_date = created_date
+    identity.modified_date = modified_date
+    identity.deleted = deleted
+    identity.deleted_date = deleted_date
+    return identity
+
 
 def create_or_update_consumer_identity(item):
     """
