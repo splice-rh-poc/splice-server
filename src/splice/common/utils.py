@@ -64,5 +64,12 @@ def convert_to_datetime(input_date_str):
     try:
         return isodate.parse_datetime(input_date_str)
     except Exception, e:
+        try:
+            # Fallback to a non iso format datetime parser
+            from dateutil.parser import parser
+            p = parser()
+            return p.parse(input_date_str)
+        except:
+            pass
         _LOG.exception("Unable to parse date: %s" % (input_date_str))
         raise UnsupportedDateFormatException(input_date_str)
