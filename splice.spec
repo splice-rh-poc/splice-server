@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.47
+Version:	0.48
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,11 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Thu Oct 04 2012 John Matthews <jmatthews@redhat.com> 0.48-1
+- Performance improvement for syncing RHICs, new UUIDs are broken out and a
+  bulk insert is done, updates proceed sequentially as before, speed up seen
+  about 20X improvement. (jmatthews@redhat.com)
+
 * Tue Oct 02 2012 John Matthews <jmatthews@redhat.com> 0.47-1
 - Removed the 'removal' logic that was deleting a RHIC if it wasn't on rhic-
   serve  - If rhic-serve deletes a rhic it will keep the RHIC in the DB and
