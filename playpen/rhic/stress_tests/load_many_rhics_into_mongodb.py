@@ -12,10 +12,14 @@ def init():
     mongoengine.connect(MONGO_DATABASE_NAME)
     mongoengine.register_connection("rhic_serve", MONGO_DATABASE_NAME)
 
-def create_identity():
-    identity = ConsumerIdentity(uuid=uuid.uuid4())
-    identity.save()
-    return identity
+def create_identities(num_rhics):
+    objects = []
+    for x in range(0, num_rhics):
+        identity = ConsumerIdentity(uuid=uuid.uuid4())
+        identity.engineering_ids=[str(x)]
+        objects.append(identity)
+    q = ConsumerIdentity.objects()
+    return q.insert(objects, safe=False, load_bulk=False)
 
 if __name__ == "__main__":
     parser = OptionParser(description="Test script to generate many fake RHICs")
@@ -26,8 +30,6 @@ if __name__ == "__main__":
     init()
     # How many RHICs to create? parse CLI options
     # Create RHICs
-    created_ids = []
     print "Will create %s RHICs into DB: %s" % (num_rhics, MONGO_DATABASE_NAME)
-    for x in range(0, num_rhics):
-        identity = create_identity()
-        created_ids.append(identity.uuid)
+    created_ids = create_identities(num_rhics)
+    print "Created %s RHICs" % (len(created_ids))
