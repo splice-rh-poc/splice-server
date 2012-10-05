@@ -15,11 +15,13 @@
 
 # Responsible for making a remote call to rhic_serve to fetch data for RHIC to Product mapping
 #
+import gzip
 import httplib
 import json
 import logging
 import time
 import urllib
+import StringIO
 
 from splice.common import config
 from splice.common.exceptions import RequestException
@@ -31,14 +33,14 @@ def get_single_rhic(host, port, url, uuid, debug=False):
     status, data = _request(host, port, url, last_sync=None, debug=debug)
     return status, data
 
-def get_all_rhics(host, port, url, last_sync=None, offset=None, limit=None, debug=False):
-    status, data = _request(host, port, url, last_sync, offset=offset, limit=limit, debug=debug)
+def get_all_rhics(host, port, url, last_sync=None, offset=None, limit=None, debug=False, accept_gzip=True):
+    status, data = _request(host, port, url, last_sync, offset=offset, limit=limit, debug=debug, accept_gzip=accept_gzip)
     if status == 200:
         # Newer rhic_serves support pagination and will return data under ["objects"]
         return data["objects"], data["meta"]
     raise RequestException(status, data)
 
-def _request(host, port, url, last_sync=None, offset=None, limit=None, debug=False):
+def _request(host, port, url, last_sync=None, offset=None, limit=None, debug=False, accept_gzip=True):
     connection = httplib.HTTPSConnection(host, port)
     if debug:
         connection.set_debuglevel(100)
@@ -47,6 +49,8 @@ def _request(host, port, url, last_sync=None, offset=None, limit=None, debug=Fal
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
+    if accept_gzip:
+        headers['Accept-Encoding'] = 'gzip'
     query_params = {}
     if last_sync:
         query_params["modified_date__gt"] = last_sync,
@@ -58,15 +62,28 @@ def _request(host, port, url, last_sync=None, offset=None, limit=None, debug=Fal
         data = urllib.urlencode(query_params, True)
         url = url +"?" + data
     _LOG.info("Sending HTTP request to: %s:%s%s with headers:%s" % (host, port, url, headers))
+    start = time.time()
     connection.request(method, url, body=None, headers=headers)
-
     response = connection.getresponse()
-    response_body = response.read()
+    orig_response_body = response.read()
+    response_body = orig_response_body
+    response_headers = response.getheaders()
+
+    if response.getheader('content-encoding', '') == 'gzip':
+        data = StringIO.StringIO(response_body)
+        gzipper = gzip.GzipFile(fileobj=data)
+        response_body = gzipper.read()
+    end = time.time()
+    _LOG.info("\nReceived %s bytes (%s uncompressed) in %s seconds with status<%s>, reason<%s>\n"
+              " Response headers '%s'\n Request: %s:%s%s with headers:%s" % \
+                (len(orig_response_body), len(response_body), end-start, response.status, response.reason,
+                 response_headers, host, port, url, headers))
+
     if response.status == 200:
         response_body_raw = response_body
         response_body = json.loads(response_body_raw)
         if debug:
-            print "Response: %s %s" % (response.status, response.reason)
+            print "Response: %s %s %s bytes" % (response.status, response.reason, len(response_body_raw))
             print "JSON: %s" % (json.dumps(response_body))
             output = open("example_rhic_serve_data_%s.json" % (time.time()), "w")
             output.write(response_body_raw)
@@ -81,8 +98,8 @@ if __name__ == "__main__":
     config.init()
     cfg = config.get_rhic_serve_config_info()
     data, meta = get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"],
-        offset=0, limit=5,
-        last_sync=last_sync, debug=True)
+        offset=0, limit=1000,
+        last_sync=last_sync, debug=True, accept_gzip=True)
     print "--- Test Sync all RHICs ---"
     print data
     if len(data) > 0:

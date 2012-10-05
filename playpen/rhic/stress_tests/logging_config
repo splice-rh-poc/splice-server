@@ -27,7 +27,7 @@ format: %(asctime)s %(process)d:%(thread)d: %(name)s:%(levelname)s: %(module)s:%
 keys: console,file
 
 [handler_console]
-level: ERROR
+level: INFO
 class: StreamHandler
 args: []
 formatter: simple
