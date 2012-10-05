@@ -1,5 +1,5 @@
 Name:		splice
-Version:	0.48
+Version:	0.49
 Release:	1%{?dist}
 Summary:	Framework for tracking entitlement consumption
 
@@ -93,6 +93,17 @@ rm -rf %{buildroot}
 %doc
 
 %changelog
+* Fri Oct 05 2012 John Matthews <jmatthews@redhat.com> 0.49-1
+- Bumping number of RHICs to fetch on each pagination call
+  (jmatthews@redhat.com)
+- Touch up test script so we can vary gzip/limit and other params
+  (jmatthews@redhat.com)
+- Configuring splice server to use mod_defalte to gzip data,  updating rhic
+  serve client to handle gzip response  adding test script to isolate behavior
+  (jmatthews@redhat.com)
+- Update speed of test script so it's quicker to load test rhics for syncing
+  (jmatthews@redhat.com)
+
 * Thu Oct 04 2012 John Matthews <jmatthews@redhat.com> 0.48-1
 - Performance improvement for syncing RHICs, new UUIDs are broken out and a
   bulk insert is done, updates proceed sequentially as before, speed up seen
