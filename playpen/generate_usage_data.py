@@ -46,9 +46,10 @@ MONGO_RHIC_DATABASE_NAME = 'rhic_serve'
 mongoengine.connect(MONGO_RHIC_DATABASE_NAME, alias=MONGO_RHIC_DATABASE_NAME)
 
 # Facts for instances
-fact1 = {"memory_dot_memtotal": "604836", "lscpu_dot_cpu_socket(s)": "1"}
-fact2 = {"memory_dot_memtotal": "16048360", "lscpu_dot_cpu_socket(s)": "4"}
-facts = [fact1, fact2]
+fact1 = {"memory_dot_memtotal": "604836", "lscpu_dot_cpu_socket(s)": "1", "lscpu_dot_cpu(s)": "1"}
+fact2 = {"memory_dot_memtotal": "9048360", "lscpu_dot_cpu_socket(s)": "2", "lscpu_dot_cpu(s)": "2"}
+fact3 = {"memory_dot_memtotal": "16048360", "lscpu_dot_cpu_socket(s)": "4", "lscpu_dot_cpu(s)": "4"}
+facts = [fact1, fact2, fact3]
 
 # Each mac address pattern below will be used by the
 # instances assigned to 1 rhic.
@@ -188,7 +189,7 @@ class ReportDataGenerator(object):
             contract='3879847', 
             support_level='ss', 
             sla='na',
-            products=['RHEL Server for Education',],
+            products=['RHEL Server for Education'],
             engineering_ids=['69'])
         
         r4 = RHICData(
