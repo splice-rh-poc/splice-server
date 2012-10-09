@@ -122,7 +122,7 @@ def mocked_candlepin_client_request_method(host, port, url, installed_product,
     response_body = json.loads(data)
     return 200, response_body
 
-def mocked_rhic_serve_client_request_method(host, port, url, last_sync=None, offset=None, limit=None, debug=False):
+def mocked_rhic_serve_client_request_method(host, port, url, last_sync=None, offset=None, limit=None, debug=False, accept_gzip=False):
     example_data = os.path.join(TEST_DATA_DIR, "example_rhic_serve_data.json")
     f = open(example_data, "r")
     try:
