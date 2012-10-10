@@ -70,8 +70,8 @@ def parse_cmdline():
     Parse and validate the command line options.
     """
     parser = optparse.OptionParser()
-    parser.add_option('-I', '--install', action='store_true', help='install pulp development files')
-    parser.add_option('-U', '--uninstall', action='store_true', help='uninstall pulp development files')
+    parser.add_option('-I', '--install', action='store_true', help='install splice development files')
+    parser.add_option('-U', '--uninstall', action='store_true', help='uninstall splice development files')
     parser.set_defaults(install=False, uninstall=False)
     opts, args = parser.parse_args()
     if opts.install and opts.uninstall:
