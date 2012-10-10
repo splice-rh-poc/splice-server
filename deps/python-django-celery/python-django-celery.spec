@@ -11,6 +11,7 @@ BuildArch:      noarch
 Requires:       python-celery >= 3.0.9
 Requires:       Django >= 1.4.1
 Requires:       python-ordereddict >= 1.1
+Requires:       django-picklefield
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 
