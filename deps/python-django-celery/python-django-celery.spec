@@ -1,6 +1,6 @@
 Name:           python-django-celery
 Version:        3.0.9
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Celery integration with Django
 
 Group:          Development/Libraries
@@ -40,6 +40,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/*
 
 %changelog
+* Wed Oct 10 2012 John Matthews <jmatthews@redhat.com> 3.0.9-11
+- Added dep for django-picklefield for django-celery (jmatthews@redhat.com)
+
 * Tue Sep 18 2012 John Matthews <jmatthews@redhat.com> 3.0.9-10
 - Adding a runtime requires for 'python-ordereddict' (jmatthews@redhat.com)
 
