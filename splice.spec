@@ -123,14 +123,14 @@ fi
 # Spacewalk saw same issue and filed BZ here: https://bugzilla.redhat.com/show_bug.cgi?id=505066
 %posttrans selinux
 if /usr/sbin/selinuxenabled ; then
- %{_datadir}/pulp/selinux/server/relabel.sh %{_datadir}
+ %{_datadir}/%{name}/selinux/server/relabel.sh %{_datadir}
 fi
 
 %preun selinux
 # Clean up after package removal
 if [ $1 -eq 0 ]; then
-  %{_datadir}/pulp/selinux/server/uninstall.sh
-  %{_datadir}/pulp/selinux/server/relabel.sh
+  %{_datadir}/%{name}/selinux/server/uninstall.sh
+  %{_datadir}/%{name}/selinux/server/relabel.sh
 fi
 exit 0
 
