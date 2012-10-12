@@ -52,6 +52,7 @@ BuildRequires:  rpm-python
 BuildRequires:  make
 BuildRequires:  checkpolicy
 BuildRequires:  selinux-policy-devel
+# el6, selinux-policy-doc is the required RPM which will bring below 'policyhelp'
 BuildRequires:  /usr/share/selinux/devel/policyhelp
 BuildRequires:  hardlink
 Requires: selinux-policy >= %{selinux_policyver}
@@ -157,10 +158,10 @@ exit 0
 
 %files selinux
 %defattr(-,root,root,-)
-%doc selinux/%{name}.fc selinux/%{name}.if selinux/%{name}.te
+%doc selinux/%{name}-server.fc selinux/%{name}-server.if selinux/%{name}-server.te
 %{_datadir}/%{name}/selinux/*
-%{_datadir}/selinux/*/%{name}.pp
-%{_datadir}/selinux/devel/include/apps/%{name}.if
+%{_datadir}/selinux/*/%{name}-server.pp
+%{_datadir}/selinux/devel/include/apps/%{name}-server.if
 
 %changelog
 * Fri Oct 05 2012 John Matthews <jmatthews@redhat.com> 0.49-1
