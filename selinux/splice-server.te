@@ -1,0 +1,14 @@
+# When built from RPM, the below version of "0.0.0" will be 
+# replaced with the version in the spec file
+policy_module(splice-server,0.0.0)
+require {
+    type httpd_t;
+}
+
+type splice_cert_t;
+miscfiles_cert_type(splice_cert_t)
+manage_files_pattern(httpd_t, splice_cert_t, splice_cert_t)
+manage_dirs_pattern(httpd_t, splice_cert_t, splice_cert_t)
+read_lnk_files_pattern(httpd_t, splice_cert_t, splice_cert_t)
+
+

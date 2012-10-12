@@ -1,3 +1,6 @@
+#SELinux
+%define selinux_policyver %(sed -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp 2> /dev/null)
+
 Name:		splice
 Version:	0.49
 Release:	1%{?dist}
@@ -34,9 +37,30 @@ Requires: m2crypto >= 0.21.1.pulp-7
 # RPMs from Splice Project
 #
 Requires: rhic-serve-rcs >= 0.15
+#
+# Our own selinux RPM
+#
+Requires: %{name}-selinux = %{version}-%{release}
 
 %description
-Framework for tracking entitlement consumption
+Framework for metering entitlement consumption
+
+%package        selinux
+Summary:        Splice SELinux policy
+Group:          Development/Languages
+BuildRequires:  rpm-python
+BuildRequires:  make
+BuildRequires:  checkpolicy
+BuildRequires:  selinux-policy-devel
+BuildRequires:  hardlink
+Requires: selinux-policy >= %{selinux_policyver}
+Requires(post): policycoreutils-python 
+Requires(post): selinux-policy-targeted
+Requires(post): /usr/sbin/semodule, /sbin/fixfiles, /usr/sbin/semanage
+Requires(postun): /usr/sbin/semodule
+
+%description  selinux
+SELinux policy for Splice
 
 %prep
 %setup -q
@@ -45,6 +69,11 @@ Framework for tracking entitlement consumption
 pushd src
 %{__python} setup.py build
 popd
+# SELinux Configuration
+cd selinux
+perl -i -pe 'BEGIN { $VER = join ".", grep /^\d+$/, split /\./, "%{version}.%{release}"; } s!0.0.0!$VER!g;' splice-server.te
+./build.sh
+cd -
 
 %install
 rm -rf %{buildroot}
@@ -69,8 +98,40 @@ cp -R etc/pki/%{name} %{buildroot}/%{_sysconfdir}/pki/
 # Remove egg info
 rm -rf %{buildroot}/%{python_sitelib}/*.egg-info
 
+# Install SELinux policy modules
+cd selinux
+./install.sh %{buildroot}%{_datadir}
+mkdir -p %{buildroot}%{_datadir}/%{name}/selinux
+cp enable.sh %{buildroot}%{_datadir}/%{name}/selinux
+cp uninstall.sh %{buildroot}%{_datadir}/%{name}/selinux
+cp relabel.sh %{buildroot}%{_datadir}/%{name}/selinux
+cd -
+
 %clean
 rm -rf %{buildroot}
+
+%post selinux
+# Enable SELinux policy modules
+if /usr/sbin/selinuxenabled ; then
+ %{_datadir}/%{name}/selinux/enable.sh %{_datadir}
+fi
+
+# Continuing with using posttrans, as we did this for Pulp and it worked for us.
+# restorcecon wasn't reading new file contexts we added when running under 'post' so moved to 'posttrans'
+# Spacewalk saw same issue and filed BZ here: https://bugzilla.redhat.com/show_bug.cgi?id=505066
+%posttrans selinux
+if /usr/sbin/selinuxenabled ; then
+ %{_datadir}/pulp/selinux/server/relabel.sh %{_datadir}
+fi
+
+%preun selinux
+# Clean up after package removal
+if [ $1 -eq 0 ]; then
+  %{_datadir}/pulp/selinux/server/uninstall.sh
+  %{_datadir}/pulp/selinux/server/relabel.sh
+fi
+exit 0
+
 
 %files
 %defattr(-,root,root,-)
@@ -91,6 +152,14 @@ rm -rf %{buildroot}
 %dir %{_var}/log/%{name}
 /srv/%{name}/webservices.wsgi
 %doc
+
+
+%files selinux
+%defattr(-,root,root,-)
+%doc selinux/%{name}.fc selinux/%{name}.if selinux/%{name}.te
+%{_datadir}/%{name}/selinux/*
+%{_datadir}/selinux/*/%{name}.pp
+%{_datadir}/selinux/devel/include/apps/%{name}.if
 
 %changelog
 * Fri Oct 05 2012 John Matthews <jmatthews@redhat.com> 0.49-1
