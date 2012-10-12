@@ -1,19 +1,19 @@
 #SELinux
-%define selinux_policyver %(sed -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp 2> /dev/null)
+%global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
-Name:		splice
-Version:	0.49
-Release:	1%{?dist}
-Summary:	Framework for tracking entitlement consumption
+Name:       splice
+Version:    0.49
+Release:    1%{?dist}
+Summary:    Framework for tracking entitlement consumption
 
-Group:		Development/Languages
-License:	GPLv2
-URL:		https://github.com/splice/splice-server
-# Source0:	https://github.com/splice/splice-server/zipball/master/
+Group:      Development/Languages
+License:    GPLv2
+URL:        https://github.com/splice/splice-server
+# Source0:  https://github.com/splice/splice-server/zipball/master/
 Source0: %{name}-%{version}.tar.gz
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
-BuildRequires:	python2-devel
+BuildRequires:  python2-devel
 BuildRequires: python-setuptools
 BuildRequires: rpm-python
 Requires: mongodb-server
@@ -52,6 +52,7 @@ BuildRequires:  rpm-python
 BuildRequires:  make
 BuildRequires:  checkpolicy
 BuildRequires:  selinux-policy-devel
+BuildRequires:  /usr/share/selinux/devel/policyhelp
 BuildRequires:  hardlink
 Requires: selinux-policy >= %{selinux_policyver}
 Requires(post): policycoreutils-python 
