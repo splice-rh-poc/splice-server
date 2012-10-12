@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.50
+Version:    0.51
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -164,6 +164,11 @@ exit 0
 %{_datadir}/selinux/devel/include/apps/%{name}-server.if
 
 %changelog
+* Fri Oct 12 2012 John Matthews <jmatthews@redhat.com> 0.51-1
+- Fixes for selinux policy (jmatthews@redhat.com)
+- Remove steps of disabling selinux (jmatthews@redhat.com)
+- Update to reflect new build instance (jmatthews@redhat.com)
+
 * Fri Oct 12 2012 John Matthews <jmatthews@redhat.com> 0.50-1
 - SELinux policy (jmatthews@redhat.com)
 - Added dep for django-picklefield for django-celery (jmatthews@redhat.com)
