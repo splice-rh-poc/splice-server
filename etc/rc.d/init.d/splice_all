@@ -10,7 +10,15 @@ dropdatabase() {
     mongo 'checkin_service' --eval "db.dropDatabase();"
 }
 
+#
+# Hack to force the django log file is writeable by apache
+# 
+force_log_perms() {
+    chown -R apache:apache /var/log/splice/django.log
+}
+
 start() {
+    force_log_perms
     service httpd start
     service splice_celeryd start
     service splice_celerybeat start
