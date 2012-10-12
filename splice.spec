@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.49
+Version:    0.50
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -164,6 +164,10 @@ exit 0
 %{_datadir}/selinux/devel/include/apps/%{name}-server.if
 
 %changelog
+* Fri Oct 12 2012 John Matthews <jmatthews@redhat.com> 0.50-1
+- SELinux policy (jmatthews@redhat.com)
+- Added dep for django-picklefield for django-celery (jmatthews@redhat.com)
+
 * Fri Oct 05 2012 John Matthews <jmatthews@redhat.com> 0.49-1
 - Bumping number of RHICs to fetch on each pagination call
   (jmatthews@redhat.com)
