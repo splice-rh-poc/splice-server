@@ -37,6 +37,7 @@ stop() {
 }
 
 restart() {
+    force_log_perms
     service httpd restart
     service splice_celeryd restart
     service splice_celerybeat stop
