@@ -30,11 +30,12 @@ from mongoengine.connection import connect, disconnect
 from mongoengine.queryset import QuerySet
 from django.conf import settings
 
+from certutils.certutils import CertUtils
+
 from splice.common import candlepin_client
 from splice.common import config
 from splice.common import rhic_serve_client
 from splice.common import utils
-from splice.common.certs import CertUtils
 from splice.common.exceptions import UnsupportedDateFormatException, UnexpectedStatusCodeException, NotFoundConsumerIdentity
 from splice.common.identity import create_or_update_consumer_identity, sync_from_rhic_serve, \
         sync_from_rhic_serve_blocking, SyncRHICServeThread
@@ -218,11 +219,11 @@ class CertUtilsTest(BaseEntitlementTestCase):
         super(CertUtilsTest, self).tearDown()
 
     def test_validate_certificate_pem_valid(self):
-        self.assertTrue(self.cert_utils.validate_certificate_pem(
+        self.assertTrue(self.cert_utils.validate_certificate(
             self.valid_identity_cert_pem, self.root_ca_pem))
 
     def test_validate_certificate_pem_invalid(self):
-        self.assertFalse(self.cert_utils.validate_certificate_pem(
+        self.assertFalse(self.cert_utils.validate_certificate(
             self.invalid_identity_cert_pem, self.root_ca_pem))
 
     def test_get_subject_pieces(self):

@@ -34,6 +34,7 @@ pip-log.txt
 
 # vim
 *.swp
+*.swo
 
 # selinux build files
 selinux/*.pp.targeted

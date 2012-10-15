@@ -19,8 +19,9 @@ import pytz
 from datetime import datetime, timedelta
 from uuid import UUID
 
+from certutils.certutils import CertUtils
+
 from splice.common import candlepin_client, utils
-from splice.common.certs import CertUtils
 from splice.common.config import CONFIG, get_candlepin_config_info, get_splice_server_info
 from splice.common.exceptions import CheckinException, CertValidationException, UnallowedProductException, \
     UnknownConsumerIdentity, DeletedConsumerIdentityException, NotFoundConsumerIdentity, UnexpectedStatusCodeException
@@ -38,7 +39,8 @@ class CheckIn(object):
     will be implemented here.
     """
     def __init__(self):
-        self.cert_utils = CertUtils()
+        self.cert_utils = CertUtils(True, 100, True, 
+                                    CONFIG.get('crl', 'location'))
         f = None
         try:
             self.root_ca_path = CONFIG.get("security", "root_ca_cert")
@@ -119,7 +121,7 @@ class CheckIn(object):
         """
         _LOG.info("Validate the identity_certificate is signed by the expected CA from '%s'" % (self.root_ca_path))
         _LOG.debug(cert_pem)
-        return self.cert_utils.validate_certificate_pem(cert_pem, self.root_ca_cert_pem)
+        return self.cert_utils.validate_certificate(cert_pem, self.root_ca_cert_pem)
 
     def extract_id_from_identity_cert(self, identity_cert):
         subj_pieces = self.cert_utils.get_subject_pieces(identity_cert)
