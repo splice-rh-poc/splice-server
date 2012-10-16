@@ -1,6 +1,6 @@
 Name:           django-celery
 Version:        3.0.9
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Celery integration with Django
 
 Group:          Development/Libraries
@@ -40,6 +40,9 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/*
 
 %changelog
+* Tue Oct 16 2012 John Matthews <jmatthews@redhat.com> 3.0.9-12
+- Change name to django-celery from python-django so it matches what is in epel
+
 * Wed Oct 10 2012 John Matthews <jmatthews@redhat.com> 3.0.9-11
 - Added dep for django-picklefield for django-celery (jmatthews@redhat.com)
 
