@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.54
+Version:    0.55
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -165,6 +165,10 @@ exit 0
 %{_datadir}/selinux/devel/include/apps/%{name}-server.if
 
 %changelog
+* Tue Oct 16 2012 John Matthews <jmatthews@redhat.com> 0.55-1
+- Update for name change of python-django-celery to django-celery to match what
+  is in epel (jmatthews@redhat.com)
+
 * Mon Oct 15 2012 James Slagle <jslagle@redhat.com> 0.54-1
 - Migrate to python-certutils package (jslagle@redhat.com)
 
