@@ -1,4 +1,4 @@
-Name:           python-django-celery
+Name:           django-celery
 Version:        3.0.9
 Release:        11%{?dist}
 Summary:        Celery integration with Django
@@ -22,7 +22,7 @@ autodiscovery of task modules for applications listed in
 INSTALLED_APPS, and more
 
 %prep
-%setup -q -n django-celery-%{version}
+%setup -q -n %{name}-%{version}
 
 
 %build
