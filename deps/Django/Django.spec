@@ -32,9 +32,12 @@ BuildArch:      noarch
 # Note: No longer required in development version > 0.95
 # BuildRequires:  python-setuptools
 BuildRequires:  python-devel
-%if 0%{?rhel} > 4 || 0%{?fedora} > 12
+%if 0%{?rhel} > 4 
 BuildRequires:  python-sphinx10
+%else
+BuildRequires:  python-sphinx
 %endif
+
 # for testing
 BuildRequires:  python-simplejson
 
@@ -68,7 +71,9 @@ Python Web framework.
 %endif
 # patch tests to relax performance scalability requirements
 %patch1 -p1 -b .relax-scalability-req
+%if 0%{?rhel} > 4
 %patch2 -p1 -b .sphinx10-usage
+%endif
 
 # empty files
 for f in \
