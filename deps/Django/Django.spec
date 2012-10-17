@@ -8,7 +8,7 @@
 
 Name:           Django
 Version:        1.4.1
-Release:        5%{?dist}.splice
+Release:        6%{?dist}.splice
 Summary:        A high-level Python Web framework
 
 Group:          Development/Languages
@@ -263,6 +263,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Oct 17 2012 James Slagle <jslagle@redhat.com> 1.4.1-6.splice
+- Package is just called python-sphinx on fedora (jslagle@redhat.com)
+
 * Wed Sep 12 2012 John Matthews <jmatthews@redhat.com> 1.4.1-5.splice
 - Problem with running unit tests from this RPM build, commenting out for now
   (jmatthews@redhat.com)
