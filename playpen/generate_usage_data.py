@@ -288,7 +288,7 @@ class ReportDataGenerator(object):
                     # servers
                     splice_server = self.splice_servers[0]
                     self.record_rhic_usage(rhic, inst_index, usage_datetime,
-                                           splice_server)
+                                           splice_server.uuid)
                     num_generated += 1
             usage_datetime += self.interval
 
