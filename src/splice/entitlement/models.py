@@ -110,7 +110,8 @@ class ConsumerIdentity(RHIC):
 
 class ProductUsage(Document):
     consumer = StringField(required=True)
-    splice_server = ReferenceField(SpliceServer, required=True)
+    #splice_server = ReferenceField(SpliceServer, required=True)
+    splice_server = StringField(required=True) # uuid of Splice Server
     instance_identifier = StringField(required=True) # example: MAC Address
     allowed_product_info = ListField(StringField())
     unallowed_product_info = ListField(StringField())

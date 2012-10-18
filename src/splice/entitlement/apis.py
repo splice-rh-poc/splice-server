@@ -22,6 +22,7 @@ from tastypie.resources import Resource
 from tastypie.exceptions import NotFound, BadRequest
 
 from rhic_serve.rhic_rcs.api import rhic
+from report_server.report_import.api import productusage
 
 from splice.common import config
 from splice.entitlement.checkin import CheckIn
@@ -32,6 +33,26 @@ from splice.managers import identity_lookup
 
 import logging
 _LOG = logging.getLogger(__name__)
+
+class ModifiedProductUsageResource(productusage.ProductUsageResource):
+    class Meta(productusage.ProductUsageResource.Meta):
+        #
+        # We want our class to have the same URL pattern as the base class
+        # So...explicitly setting 'resource_name'
+        #
+        resource_name = 'productusage'
+
+    def __init__(self):
+        super(ModifiedProductUsageResource, self).__init__()
+
+    def import_hook(self, product_usages):
+        for pu in product_usages:
+            # Need to guard against duplicate entries being imported
+            #   Add a way to make a product usage to a splice server unique
+            #   then when we import we
+            # Need to measure performance, expect this API will receive heavy usage
+            _LOG.info("importing %s" % (pu))
+
 
 class RHICRCSModifiedResource(rhic.RHICRcsResource):
 

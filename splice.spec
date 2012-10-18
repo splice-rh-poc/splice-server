@@ -36,6 +36,7 @@ Requires: m2crypto >= 0.21.1.pulp-7
 #
 # RPMs from Splice Project
 #
+Requires: report-server-import
 Requires: rhic-serve-rcs >= 0.15
 Requires: python-certutils
 #

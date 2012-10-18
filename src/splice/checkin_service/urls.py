@@ -11,11 +11,14 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import sys
+import traceback
+
+from django.core.signals import got_request_exception
 
 from django.conf.urls import patterns, include, url
 from tastypie.api import Api
-from splice.common import identity
-from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource
+from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource, ModifiedProductUsageResource
 #
 
 # Uncomment the next two lines to enable the admin:
@@ -25,6 +28,7 @@ from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource
 v1_api = Api(api_name='v1')
 v1_api.register(EntitlementResource())
 v1_api.register(RHICRCSModifiedResource())
+v1_api.register(ModifiedProductUsageResource())
 
 urlpatterns = patterns('',
     # Examples:
@@ -38,3 +42,11 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     (r'^api/', include(v1_api.urls)),
 )
+
+
+
+# Print all exceptions to apache error log
+def exception_printer(sender, **kwargs):
+    print >> sys.stderr, ''.join(traceback.format_exception(*sys.exc_info()))
+
+got_request_exception.connect(exception_printer)
