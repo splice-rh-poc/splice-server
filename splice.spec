@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.55
+Version:    0.56
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -166,6 +166,17 @@ exit 0
 %{_datadir}/selinux/devel/include/apps/%{name}-server.if
 
 %changelog
+* Thu Oct 18 2012 John Matthews <jmatthews@redhat.com> 0.56-1
+- Integrate with new splice-certgen and update config for new rhic_serve
+  instance (jmatthews@redhat.com)
+- Beginning to integrate report server's product usage import API, needs more
+  work (jmatthews@redhat.com)
+- Experimenting with a way to force 500's to be logged/written to apache error
+  log, not yet working (jmatthews@redhat.com)
+- Automatic commit of package [Django] minor release [1.4.1-6.splice].
+  (jslagle@redhat.com)
+- Package is just called python-sphinx on fedora (jslagle@redhat.com)
+
 * Tue Oct 16 2012 John Matthews <jmatthews@redhat.com> 0.55-1
 - Update for name change of python-django-celery to django-celery to match what
   is in epel (jmatthews@redhat.com)
