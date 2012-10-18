@@ -79,7 +79,7 @@ def _request(host, port, url, requested_products,
     headers['Authorization'] = 'Basic ' + encoded
 
     query_params = {
-        "productIDs": requested_products,
+        "product": requested_products,
         "rhicUUID": identity,
     }
 
@@ -118,10 +118,12 @@ if __name__ == "__main__":
     end_date = (start_date + datetime.timedelta(minutes=15))
     print "Start Date: %s" % (start_date.isoformat())
     print "End Date: %s" % (end_date.isoformat())
-    print get_entitlement(host=cfg["host"], port=cfg["port"], url=cfg["url"],
+    certs =  get_entitlement(host=cfg["host"], port=cfg["port"], url=cfg["url"],
         requested_products=["69","83"],
         identity="1234",
         username=cfg["username"], password=cfg["password"],
         start_date=start_date.isoformat(),
         end_date=end_date.isoformat(),
         debug=True)
+    print "---\n\n"
+    print "certs = \n%s" % (certs)

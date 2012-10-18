@@ -225,6 +225,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'report_server': {
+            'handlers': ['log_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+            },
         'root': {
             'handlers': ['log_file'],
             'level': 'DEBUG'

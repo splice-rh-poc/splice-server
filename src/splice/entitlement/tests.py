@@ -206,31 +206,6 @@ class CandlepinClientTest(BaseEntitlementTestCase):
         self.assertEquals(cert_info[0][0], self.expected_cert)
         self.assertEquals(cert_info[0][1], self.expected_key)
 
-
-class CertUtilsTest(BaseEntitlementTestCase):
-    """
-    Tests to exercise splice.common.certs.CertUtils
-    """
-    def setUp(self):
-        super(CertUtilsTest, self).setUp()
-        self.cert_utils = CertUtils()
-
-    def tearDown(self):
-        super(CertUtilsTest, self).tearDown()
-
-    def test_validate_certificate_pem_valid(self):
-        self.assertTrue(self.cert_utils.validate_certificate(
-            self.valid_identity_cert_pem, self.root_ca_pem))
-
-    def test_validate_certificate_pem_invalid(self):
-        self.assertFalse(self.cert_utils.validate_certificate(
-            self.invalid_identity_cert_pem, self.root_ca_pem))
-
-    def test_get_subject_pieces(self):
-        pieces = self.cert_utils.get_subject_pieces(self.valid_identity_cert_pem)
-        self.assertEquals(len(pieces), 1)
-        self.assertEquals(pieces["CN"], self.expected_valid_identity_uuid)
-
 class EntitlementResourceTest(BaseEntitlementTestCase):
 
     def setUp(self):
