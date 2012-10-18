@@ -123,6 +123,8 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    # 'splice.common.middleware.WsgiLogErrors',
+    'splice.common.middleware.StandardExceptionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -130,7 +132,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-     'splice.common.middleware.ProfileMiddleware',
+    'splice.common.middleware.ProfileMiddleware',
 )
 
 ROOT_URLCONF = 'splice.checkin_service.urls'
@@ -162,6 +164,7 @@ INSTALLED_APPS = (
     'splice.entitlement',
     'djcelery',
     'rhic_serve.rhic_rcs',
+    'report_server.report_import',
 )
 
 LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "debug_logs")
@@ -213,7 +216,7 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['log_file'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -223,8 +226,8 @@ LOGGING = {
             'propagate': True,
         },
         'root': {
-            'handlers': ['console', 'mail_admins'],
-            'level': 'INFO'
+            'handlers': ['log_file'],
+            'level': 'DEBUG'
         },
     }
 }
