@@ -206,7 +206,9 @@ class CheckIn(object):
                 (identity, allowed_products, unallowed_products,
                  consumer_identifier, sanitized_facts))
             consumer_uuid_str = str(identity.uuid)
-            prod_usage = ProductUsage(consumer=consumer_uuid_str, splice_server=self.get_this_server(),
+            prod_usage = ProductUsage(
+                consumer=consumer_uuid_str,
+                splice_server=self.get_this_server().uuid,
                 instance_identifier=consumer_identifier,
                 allowed_product_info=allowed_products,
                 unallowed_product_info=unallowed_products,
