@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.56
+Version:    0.57
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -182,6 +182,10 @@ exit 0
 
 
 %changelog
+* Fri Oct 19 2012 John Matthews <jmatthews@redhat.com> 0.57-1
+- Create splice-common RPM and moving model definitions into it to make it
+  easier to consume in Report Server (jmatthews@redhat.com)
+
 * Thu Oct 18 2012 John Matthews <jmatthews@redhat.com> 0.56-1
 - Integrate with new splice-certgen and update config for new rhic_serve
   instance (jmatthews@redhat.com)
