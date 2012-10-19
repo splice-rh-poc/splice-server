@@ -27,7 +27,7 @@ import isodate
 from mongoengine.connection import register_connection
 import mongoengine
 
-from splice.entitlement.models import SpliceServer, ConsumerIdentity,  ProductUsage
+from splice.common.models import SpliceServer, ConsumerIdentity,  ProductUsage
 from rhic_serve.rhic_rest.models import RHIC
 
 

@@ -24,7 +24,7 @@ import pytz
 from splice.common import config
 from splice.common import rhic_serve_client
 from splice.common.utils import convert_to_datetime, sanitize_key_for_mongo
-from splice.entitlement.models import ConsumerIdentity, IdentitySyncInfo, RHICLookupTask
+from splice.common.models import ConsumerIdentity, IdentitySyncInfo, RHICLookupTask
 
 _LOG = logging.getLogger(__name__)
 
@@ -91,7 +91,7 @@ def get_current_rhic_lookup_tasks(uuid):
 
     @param uuid: uuid of a RHIC
     @return: a valid RHICLookupTask associated to this 'uuid' or None
-    @rtype: L{splice.entitlement.models.RHICLookupTask}
+    @rtype: L{splice.common.models.RHICLookupTask}
     """
     _LOG.info("get_current_rhic_lookup_tasks(rhic_uuid='%s')" % (uuid))
     current_task = RHICLookupTask.objects(uuid=uuid).first()
@@ -158,7 +158,7 @@ def convert_dict_to_consumer_identity(item):
                     required keys: 'uuid', 'engineering_ids'
     @type item: dict
     @return: instance of a consumer identity, note this instance has not yet been saved
-    @rtype: splice.entitlement.models.ConsumerIdentity
+    @rtype: splice.common.models.ConsumerIdentity
     """
     if not item.has_key("uuid"):
         raise Exception("Missing required parameter: 'uuid'")

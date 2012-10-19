@@ -40,9 +40,10 @@ Requires: report-server-import
 Requires: rhic-serve-rcs >= 0.15
 Requires: python-certutils
 #
-# Our own selinux RPM
+# Our own sub RPMs
 #
 Requires: %{name}-selinux = %{version}-%{release}
+Requires: %{name}-common = %{version}-%{release}
 
 %description
 Framework for metering entitlement consumption
@@ -65,6 +66,14 @@ Requires(postun): /usr/sbin/semodule
 
 %description  selinux
 SELinux policy for Splice
+
+%package        common
+Summary:        Splice common components
+Group:          Development/Languages
+
+%description    common
+Splice common components
+
 
 %prep
 %setup -q
@@ -136,10 +145,15 @@ if [ $1 -eq 0 ]; then
 fi
 exit 0
 
+%files common
+%defattr(-,root,root,-)
+%{python_sitelib}/%{name}/common
+%{python_sitelib}/%{name}/__init__.py*
 
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/%{name}
+
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 %config(noreplace) %{_sysconfdir}/splice/server.conf
 %config(noreplace) %{_sysconfdir}/splice/celery/celerybeat
@@ -164,6 +178,8 @@ exit 0
 %{_datadir}/%{name}/selinux/*
 %{_datadir}/selinux/*/%{name}-server.pp
 %{_datadir}/selinux/devel/include/apps/%{name}-server.if
+
+
 
 %changelog
 * Thu Oct 18 2012 John Matthews <jmatthews@redhat.com> 0.56-1

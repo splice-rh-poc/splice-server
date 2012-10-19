@@ -20,7 +20,7 @@ from dateutil.tz import tzutc
 
 from splice.common import identity
 
-from splice.entitlement.models import RHICLookupTask
+from splice.common.models import RHICLookupTask
 
 _LOG = getLogger(__name__)
 

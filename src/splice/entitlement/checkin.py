@@ -26,7 +26,7 @@ from splice.common.config import CONFIG, get_candlepin_config_info, get_splice_s
 from splice.common.exceptions import CheckinException, CertValidationException, UnallowedProductException, \
     UnknownConsumerIdentity, DeletedConsumerIdentityException, NotFoundConsumerIdentity, UnexpectedStatusCodeException
 from splice.common.identity import sync_from_rhic_serve
-from splice.entitlement.models import ConsumerIdentity, ProductUsage, SpliceServer
+from splice.common.models import ConsumerIdentity, ProductUsage, SpliceServer
 from splice.managers import identity_lookup
 
 _LOG = logging.getLogger(__name__)

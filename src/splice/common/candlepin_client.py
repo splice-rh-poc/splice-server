@@ -37,7 +37,7 @@ def get_entitlement(host, port, url, requested_products, identity,
     @param requested_products: list of engineering product ids
     @type requested_products: [str]
     @param identity: identity we are requesting an ent cert on behalf of
-    @type identity: checkin_service.entitlement.models.ConsumerIdentity
+    @type identity: checkin_service.common.models.ConsumerIdentity
     @param username: username for auth to entitlement service
     @param password: password for auth to entitlement service
     @param start_date:  optional param, if specified controls start date of certificate

@@ -39,8 +39,8 @@ from splice.common import utils
 from splice.common.exceptions import UnsupportedDateFormatException, UnexpectedStatusCodeException, NotFoundConsumerIdentity
 from splice.common.identity import create_or_update_consumer_identity, sync_from_rhic_serve, \
         sync_from_rhic_serve_blocking, SyncRHICServeThread
+from splice.common.models import ConsumerIdentity, IdentitySyncInfo, RHICLookupTask, ProductUsage
 from splice.entitlement.checkin import CheckIn
-from splice.entitlement.models import ConsumerIdentity, IdentitySyncInfo, RHICLookupTask, ProductUsage
 from splice.managers import identity_lookup
 
 from splice.common import identity
