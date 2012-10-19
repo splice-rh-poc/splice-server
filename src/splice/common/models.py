@@ -14,48 +14,11 @@
 from datetime import datetime
 from dateutil.tz import tzutc
 
-from mongoengine import DateTimeField, Document, ListField, ReferenceField, StringField, DictField, IntField, BooleanField
+from mongoengine import DateTimeField, Document, ListField, StringField, DictField, IntField, BooleanField
 from mongoengine import signals
 from rhic_serve.common.fields import IsoDateTimeField
 from rhic_serve.rhic_rcs.models import RHIC
-from splice.common.utils import sanitize_key_for_mongo
-
-
-
-
-
-###
-# Overview of what functionality will need to be supported:
-# 1) A splice-consumer will checkin with us and pass us: identifier + installed engineering products
-#    We will need to:
-#    - convert engineering products + identifier to marketing products
-#    - determine if identifier is allowed to access marketing products
-#    - request entitlement certificate for allowed engineering products
-#    - record usage of marketing products
-# 2) A splice-server will contact us to ask if we know of a consumer identity
-#    We will need to:
-#    - check our database to determine if consumer identity is known
-#      - if known, return the subscription information for the identity
-#    - query our parent for the identity information
-# 3) A splice-server will contact us to upload their reporting information
-#    We will need to:
-#    - accept reporting data, aggregate it with our own data and
-#      keep track of path of usage through splice servers
-# 4) Be able to import consumer identity information from a file based export or other splice-server
-#
-# Thoughts/Questions
-#  - How does a SpliceServer bootstrap itself on initial setup?
-#       - Would the top level entity issue a certificate with a splice server UUID
-#       on first-initialization certificate is parsed to determine splice-server UUID
-#
-#       OR
-#
-#       - Do we go with a more decentralized approach, where we create our own uuid, then propogate this UUID
-#       and the parent/child chain information with our reporting data?
-#           Question is from the perspective when we are looking at the reporting data, how do we determine where
-#           the usage came from.  Do we look at the chain of parent-child-child-...  or do we assume a splice-server
-#           UUID is sufficient?
-###
+from splice.common.utils import sanitize_key_for_mongo, convert_to_datetime
 
 class SpliceServer(Document):
     uuid = StringField(required=True, unique=True)
@@ -96,7 +59,6 @@ class IdentitySyncInfo(Document):
     def __str__(self):
         return "IdentitySyncInfo, server_hostname = %s, last_sync = %s" % (self.server_hostname, self.last_sync)
 
-
 class ConsumerIdentity(RHIC):
 
     def __str__(self):
@@ -110,15 +72,20 @@ class ConsumerIdentity(RHIC):
 
 class ProductUsage(Document):
     consumer = StringField(required=True)
-    #splice_server = ReferenceField(SpliceServer, required=True)
     splice_server = StringField(required=True) # uuid of Splice Server
-    instance_identifier = StringField(required=True) # example: MAC Address
+    date = DateTimeField(required=True)
+    instance_identifier = StringField(required=True, unique_with=['consumer', 'splice_server', 'date']) # example: MAC Address
+
     allowed_product_info = ListField(StringField())
     unallowed_product_info = ListField(StringField())
     facts = DictField()
-    date = DateTimeField(required=True)
-    
+
     meta = {'allow_inheritance': True}
+
+    @classmethod
+    def pre_save(cls, sender, document, **kwargs):
+        if isinstance(document.date, basestring):
+            document.date = convert_to_datetime(document.date)
 
     def __str__(self):
         return "Consumer '%s' on Splice Server '%s' from instance '%s' "" \
@@ -132,3 +99,4 @@ class ProductUsage(Document):
 
 # Signals
 signals.pre_save.connect(IdentitySyncInfo.pre_save, sender=IdentitySyncInfo)
+signals.pre_save.connect(ProductUsage.pre_save, sender=ProductUsage)

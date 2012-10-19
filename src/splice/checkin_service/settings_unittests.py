@@ -214,6 +214,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'report_server': {
+            'handlers': ['log_file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'splice': {
             'handlers': ['log_file'],
             'level': 'DEBUG',

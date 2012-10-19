@@ -12,6 +12,7 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 
+from mongoengine.queryset import OperationError
 from tastypie import fields
 from tastypie import http
 from tastypie.authentication import Authentication
@@ -46,12 +47,17 @@ class ModifiedProductUsageResource(productusage.ProductUsageResource):
         super(ModifiedProductUsageResource, self).__init__()
 
     def import_hook(self, product_usages):
+        errors = []
+        _LOG.debug("Importing %s ProductUsage objects" % (len(product_usages)))
         for pu in product_usages:
-            # Need to guard against duplicate entries being imported
-            #   Add a way to make a product usage to a splice server unique
-            #   then when we import we
-            # Need to measure performance, expect this API will receive heavy usage
-            _LOG.info("importing %s" % (pu))
+            try:
+                pu.save()
+            except OperationError, e:
+                _LOG.warning("Error on attempting to save: %s.\nException: %s" % (pu, e))
+                errors.append(pu)
+        _LOG.debug("%s ProductUsage objects successfully imported, %s were duplicates or had errors" % \
+                   (len(product_usages)- len(errors), len(errors)))
+
 
 
 class RHICRCSModifiedResource(rhic.RHICRcsResource):

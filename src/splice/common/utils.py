@@ -15,9 +15,46 @@ from logging import getLogger
 
 from splice.common.exceptions import UnsupportedDateFormatException
 
+from datetime import datetime
 import isodate
+import json
 
 _LOG = getLogger(__name__)
+
+
+class MongoEncoder(json.JSONEncoder):
+    def default(self, obj, **kwargs):
+        from pymongo.objectid import ObjectId
+        import mongoengine
+        import types
+        if isinstance(obj, (mongoengine.Document, mongoengine.EmbeddedDocument)):
+            out = dict(obj._data)
+            if out.has_key(None):
+                # Remove the "null":null entry caused with a MongoEngine ObjectId has not been
+                # saved or initialized
+                del out[None]
+            for k,v in out.items():
+                if isinstance(v, ObjectId):
+                    out[k] = str(v)
+            return out
+        elif isinstance(obj, mongoengine.queryset.QuerySet):
+            return list(obj)
+        elif isinstance(obj, types.ModuleType):
+            return None
+        elif isinstance(obj, (list,dict)):
+            return obj
+        elif isinstance(obj, datetime):
+            return str(obj)
+        else:
+            return json.JSONEncoder.default(obj, **kwargs)
+
+def obj_to_json(obj, indent=None):
+    """
+    Converts a mongoengine object to json
+    @param obj:
+    @return:
+    """
+    return json.dumps(obj, cls=MongoEncoder, indent=indent)
 
 def sanitize_key_for_mongo(input):
     def _sanitize(input_str):

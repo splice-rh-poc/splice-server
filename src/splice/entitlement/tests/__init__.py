@@ -4,5 +4,6 @@ from entitlement_resource import *
 from identity import *
 from identity_lookup import *
 from mongotests import *
+from productusage import *
 from utils import *
 
