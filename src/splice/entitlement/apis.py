@@ -54,10 +54,11 @@ class ModifiedProductUsageResource(productusage.ProductUsageResource):
                 pu.save()
             except OperationError, e:
                 _LOG.warning("Error on attempting to save: %s.\nException: %s" % (pu, e))
+                # TODO:  Need to distinguish between duplicate imports and an actual error
                 errors.append(pu)
         _LOG.debug("%s ProductUsage objects successfully imported, %s were duplicates or had errors" % \
                    (len(product_usages)- len(errors), len(errors)))
-
+        return errors
 
 
 class RHICRCSModifiedResource(rhic.RHICRcsResource):

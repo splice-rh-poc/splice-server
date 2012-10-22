@@ -133,6 +133,9 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.expected_valid_identity_uuid = "fb647f68-aa01-4171-b62b-35c2984a5328"
         self.dummy_uuid = "11a1aa11-a11a-1a11-111a-a11111111111"
 
+    def get_test_data_dir(self):
+        return TEST_DATA_DIR
+
     def load_rhic_data(self):
         item = {}
         item["uuid"] = self.valid_identity_uuid

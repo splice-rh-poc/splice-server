@@ -11,11 +11,17 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import ConfigParser
+import logging
+import os
+
 from datetime import datetime
 from dateutil.tz import tzutc
-import logging
 from mongoengine.queryset import OperationError
+from StringIO import StringIO
 
+from splice.common import config
+from splice.common.exceptions import BadConfigurationException
 from splice.common.models import ProductUsage
 
 # Unit test imports
@@ -133,8 +139,9 @@ class ProductUsageTest(BaseEntitlementTestCase):
         LOG.info("Calling api for productusage import with post data: '%s'" % (post_data))
         resp = self.api_client.post('/api/v1/productusage/', format='json', data=post_data)
         LOG.info("Response for productusage import: Status Code: %s, Response: %s" % (resp.status_code, resp))
-        self.assertEquals(resp.status_code, 202)
+        self.assertEquals(resp.status_code, 409)
         # Now check that the server api saved the object as expected
+        found = ProductUsage.objects()
         found = ProductUsage.objects()
         self.assertEquals(len(found), 1)
 
@@ -160,3 +167,53 @@ class ProductUsageTest(BaseEntitlementTestCase):
         found = ProductUsage.objects()
         self.assertEquals(len(found), 2)
 
+    def test_config_single_endpoint(self):
+        raw_config_data = """
+[reporting]
+servers = 255.255.255.255:443:/splice/api/v1/productusage
+"""
+        parser = ConfigParser.SafeConfigParser()
+        parser.readfp(StringIO(raw_config_data))
+        data = config.get_reporting_config_info(cfg=parser)
+        self.assertTrue(data.has_key("servers"))
+        self.assertEquals(len(data["servers"]), 1)
+        self.assertEquals(data["servers"][0][0], "255.255.255.255")
+        self.assertEquals(data["servers"][0][1], 443)
+        self.assertEquals(data["servers"][0][2], "/splice/api/v1/productusage")
+
+    def test_config_multiple_endpoints(self):
+        # Test config parsing with bad values
+        raw_config_data = """
+[reporting]
+servers = 255.255.255.255:443:/splice/api/v1/productusage, 192.168.1.1:443:/splice/api/v1/productusage, test.example.com:443:/api/v1/productusage
+        """
+        parser = ConfigParser.SafeConfigParser()
+        parser.readfp(StringIO(raw_config_data))
+        data = config.get_reporting_config_info(cfg=parser)
+        self.assertTrue(data.has_key("servers"))
+        self.assertEquals(len(data["servers"]), 3)
+        self.assertEquals(data["servers"][0][0], "255.255.255.255")
+        self.assertEquals(data["servers"][0][1], 443)
+        self.assertEquals(data["servers"][0][2], "/splice/api/v1/productusage")
+
+        self.assertEquals(data["servers"][1][0], "192.168.1.1")
+        self.assertEquals(data["servers"][1][1], 443)
+        self.assertEquals(data["servers"][1][2], "/splice/api/v1/productusage")
+
+        self.assertEquals(data["servers"][2][0], "test.example.com")
+        self.assertEquals(data["servers"][2][1], 443)
+        self.assertEquals(data["servers"][2][2], "/api/v1/productusage")
+
+    def test_config_bad_data(self):
+        raw_config_data = """
+[reporting]
+servers = 255.255.255.255:/splice/api/v1/productusage 192.168.1.1:443:/splice/api/v1/productusage, test.example.com:443:/api/v1/productusage
+        """
+        parser = ConfigParser.SafeConfigParser()
+        parser.readfp(StringIO(raw_config_data))
+        caught = False
+        try:
+            data = config.get_reporting_config_info(cfg=parser)
+        except BadConfigurationException, e:
+            caught = True
+        self.assertTrue(caught)

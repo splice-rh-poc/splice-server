@@ -13,15 +13,16 @@
 
 import ConfigParser
 from splice.common import constants
+from splice.common.exceptions import BadConfigurationException
 
 CONFIG = None
 
 #TODO:  Add logic to validate configuration entries and log/throw exception early to warn user of issues
 
 
-def init(config_file=None):
+def init(config_file=None, reinit=False):
     global CONFIG
-    if CONFIG:
+    if CONFIG and not reinit:
         return CONFIG
     if not config_file:
         config_file = constants.SPLICE_CONFIG_FILE
@@ -30,6 +31,7 @@ def init(config_file=None):
     return CONFIG
 
 def get_candlepin_config_info():
+
     return {
         "host": CONFIG.get("entitlement", "host"),
         "port": CONFIG.get("entitlement", "port"),
@@ -51,6 +53,25 @@ def get_rhic_serve_config_info():
         "sync_all_rhics_bool" : CONFIG.getboolean("tasks", "sync_all_rhics_bool"),
         "sync_all_rhics_pagination_limit_per_call" : CONFIG.getint("tasks", "sync_all_rhics_pagination_limit_per_call"),
     }
+
+def get_reporting_config_info(cfg=None):
+    if not cfg:
+        cfg = CONFIG
+    raw_servers = cfg.get("reporting", "servers")
+    raw_servers = raw_servers.split(",")
+    servers = []
+    for s in raw_servers:
+        pieces = s.split(":")
+        if len(pieces) != 3:
+            raise BadConfigurationException("unable to parse '%s' for reporting server info, expected in format of address:port:url" % (s))
+        addr = pieces[0].strip()
+        try:
+            port = int(pieces[1].strip())
+        except:
+            raise BadConfigurationException("unable to convert '%s' to an integer port for server info line of '%s'" % (pieces[1], s))
+        url = pieces[2].strip()
+        servers.append((addr, port, url))
+    return {"servers": servers}
 
 def get_logging_config_file():
     return CONFIG.get("logging", "config")

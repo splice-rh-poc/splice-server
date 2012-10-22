@@ -42,7 +42,7 @@ def get_entitlement(host, port, url, requested_products, identity,
     @param password: password for auth to entitlement service
     @param start_date:  optional param, if specified controls start date of certificate
                         expected to be in isoformat as: datetime.datetime.now().isoformat()
-    @param end_date:    optional param, if specificed controls end date of certificate
+    @param end_date:    optional param, if specified controls end date of certificate
                         expected to be in isoformat similar to 'start_date'
     @param debug:       optional param, default to False, if True will print more debug information
     @return:

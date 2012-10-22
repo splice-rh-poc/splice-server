@@ -14,6 +14,16 @@
 import httplib
 from django.http import HttpResponse
 
+class BadConfigurationException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+        self.response = HttpResponse(
+            content=self.__str__(),
+            status=httplib.INTERNAL_SERVER_ERROR)
+
+    def __str__(self):
+        return "Server configuration error: %s" % self.msg
+
 class CheckinException(Exception):
     pass
 
