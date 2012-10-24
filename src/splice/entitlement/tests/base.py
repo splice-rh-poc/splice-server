@@ -14,36 +14,26 @@
 import json
 import os
 import time
-import uuid
 
-from datetime import timedelta
-from datetime import datetime
-from dateutil.tz import tzutc
-import pytz
 
 from logging import getLogger
 
 from tastypie.test import ResourceTestCase
 
-from mongoengine import Document, StringField
 from mongoengine.connection import connect, disconnect
 from mongoengine.queryset import QuerySet
 from django.conf import settings
+from django.test.client import RequestFactory
 
-from certutils.certutils import CertUtils
 
 from splice.common import candlepin_client
 from splice.common import config
 from splice.common import rhic_serve_client
-from splice.common import utils
-from splice.common.exceptions import UnsupportedDateFormatException, UnexpectedStatusCodeException, NotFoundConsumerIdentity
-from splice.common.identity import create_or_update_consumer_identity, sync_from_rhic_serve, \
-        sync_from_rhic_serve_blocking, SyncRHICServeThread
-from splice.common.models import ConsumerIdentity, IdentitySyncInfo, RHICLookupTask, ProductUsage
+from splice.common.identity import create_or_update_consumer_identity, SyncRHICServeThread
 from splice.entitlement.checkin import CheckIn
-from splice.managers import identity_lookup
 
 from splice.common import identity
+
 
 TEST_DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "..", "test_data")
 LOG = getLogger(__name__)
@@ -130,8 +120,10 @@ class BaseEntitlementTestCase(MongoTestCase):
         self.valid_products = ["40", "41"]
         self.valid_identity_uuid = self.checkin.extract_id_from_identity_cert(self.valid_identity_cert_pem)
         self.deleted_identity_uuid = self.checkin.extract_id_from_identity_cert(self.deleted_identity_cert_pem)
-        self.expected_valid_identity_uuid = "fb647f68-aa01-4171-b62b-35c2984a5328"
+        self.expected_valid_identity_uuid = "74d36605-b9b2-4caf-b269-7bc2290596f7"
+        self.expected_valid_account_num = "1190457"
         self.dummy_uuid = "11a1aa11-a11a-1a11-111a-a11111111111"
+        self.request_factory = RequestFactory()
 
     def get_test_data_dir(self):
         return TEST_DATA_DIR
