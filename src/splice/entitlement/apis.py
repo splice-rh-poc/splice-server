@@ -29,6 +29,7 @@ from splice.common import config
 from splice.entitlement.checkin import CheckIn
 from splice.entitlement import tasks
 from splice.common import certs
+from splice.common.auth import X509CertificateAuthentication
 from splice.common.identity import get_current_rhic_lookup_tasks
 from splice.managers import identity_lookup
 
@@ -129,7 +130,7 @@ class EntitlementResource(Resource):
         list_allowed_methods = []
         detail_allowed_methods = ["post", "put"]
         always_return_data = True
-        authentication = Authentication()
+        authentication = X509CertificateAuthentication(verification_ca=certs.get_identity_ca_pem())
         authorization = Authorization()
 
     # To support a 'POST' on a 'detail', we need to override the tastypies 'post_detail' implementation

@@ -83,3 +83,10 @@ def get_splice_server_info():
     ret_val["uuid"] = CONFIG.get("info", "uuid")
     ret_val["hostname"] = CONFIG.get("info", "hostname")
     return ret_val
+
+def get_identity_ca_path():
+    return CONFIG.get("security", "root_ca_cert")
+
+def get_crl_path():
+    return CONFIG.get("crl", "location")
+

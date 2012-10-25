@@ -11,44 +11,19 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import httplib
 import logging
+
+from django.http import HttpResponse
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
 
 from certutils.certutils import CertUtils
+from splice.common.certs import get_client_cert_from_request, get_identifier_from_cert
 
 _LOG = logging.getLogger(__name__)
 
-def get_client_cert_from_request(request):
-    """
-    @param request
-    @type django.http.HttpRequest
 
-    @return certificate as a string or None if no cert data was found
-            looks for request.META["SSL_CLIENT_CERT"] which is inserted by mod_wsgi
-    @rtype: str
-    """
-    if request.META.has_key("SSL_CLIENT_CERT"):
-        cert_string = request.META["SSL_CLIENT_CERT"]
-        return cert_string
-    return None
-
-def get_identifier_from_cert(x509_cert):
-    """
-    Returns the 'CN' and 'O' pieces of the passed in Certificate if available
-    @param x509_cert:
-    @return: (str, str)
-    """
-    cn = None
-    o = None
-    cert_utils = CertUtils()
-    subj_pieces = cert_utils.get_subject_pieces(x509_cert)
-    if subj_pieces:
-        if subj_pieces.has_key("CN"):
-            cn = subj_pieces["CN"]
-        if subj_pieces.has_key("O"):
-            o = subj_pieces["O"]
-    return (cn, o)
 
 class X509CertificateAuthentication(Authentication):
     """
@@ -82,7 +57,9 @@ class X509CertificateAuthentication(Authentication):
         if x509_cert_from_request:
             if self.cert_utils.validate_certificate(x509_cert_from_request, self.verification_ca):
                 return True
-        return False
+        return HttpResponse(
+            content="Unable to verify consumer's identity certificate was signed by configured CA",
+            status=httplib.UNAUTHORIZED)
 
     # Optional but recommended
     def get_identifier(self, request):

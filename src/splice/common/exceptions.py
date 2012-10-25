@@ -31,7 +31,7 @@ class CertValidationException(CheckinException):
     def __init__(self):
         self.response = HttpResponse(
             content="Unable to verify consumer's identity certificate was signed by configured CA",
-            status=httplib.FORBIDDEN)
+            status=httplib.UNAUTHORIZED)
 
 class UnallowedProductException(CheckinException):
     def __init__(self, consumer_uuid, products):

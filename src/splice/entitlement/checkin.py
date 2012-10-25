@@ -22,16 +22,15 @@ from uuid import UUID
 from certutils.certutils import CertUtils
 
 from splice.common import candlepin_client, utils
-from splice.common.config import CONFIG, get_candlepin_config_info, get_splice_server_info
-from splice.common.exceptions import CheckinException, CertValidationException, UnallowedProductException, \
-    UnknownConsumerIdentity, DeletedConsumerIdentityException, NotFoundConsumerIdentity, UnexpectedStatusCodeException
-from splice.common.identity import sync_from_rhic_serve
+from splice.common import certs, config
+from splice.common.exceptions import    UnknownConsumerIdentity, DeletedConsumerIdentityException, \
+    NotFoundConsumerIdentity, UnexpectedStatusCodeException
 from splice.common.models import ConsumerIdentity, ProductUsage, SpliceServer
 from splice.managers import identity_lookup
 
 _LOG = logging.getLogger(__name__)
 
-SPLICE_SERVER_INFO = get_splice_server_info()
+SPLICE_SERVER_INFO = config.get_splice_server_info()
 
 class CheckIn(object):
     """
@@ -39,16 +38,8 @@ class CheckIn(object):
     will be implemented here.
     """
     def __init__(self):
-        self.cert_utils = CertUtils(True, 100, True, 
-                                    CONFIG.get('crl', 'location'))
-        f = None
-        try:
-            self.root_ca_path = CONFIG.get("security", "root_ca_cert")
-            f = open(self.root_ca_path, "r")
-            self.root_ca_cert_pem = f.read()
-        finally:
-            if f:
-                f.close()
+        self.cert_utils = CertUtils(True, 100, True, config.get_crl_path())
+        self.root_ca_cert_pem = certs.get_identity_ca_pem()
 
     def get_this_server(self):
         # parse a configuration file and determine our splice server identifier
@@ -94,9 +85,6 @@ class CheckIn(object):
                     entitlement service took to process the call
         @rtype: [(str,str)], int
         """
-        if not self.validate_cert(identity_cert):
-            raise CertValidationException()
-
         identity = self.get_identity(identity_cert)
 
         # installed_products - product certificates installed on consumer
@@ -110,18 +98,6 @@ class CheckIn(object):
         cert_info, ent_call_time = self.request_entitlement(identity, cert_length_in_min)
         self.record_usage(identity, consumer_identifier, facts, allowed_products, unallowed_products)
         return cert_info, ent_call_time
-
-    def validate_cert(self, cert_pem):
-        """
-        @param cert_pem: x509 encoded pem certificate as a string
-        @param cert_pem: str
-
-        @return: true if 'cert_pem' was signed by the configured root CA, false otherwise
-        @rtype: bool
-        """
-        _LOG.info("Validate the identity_certificate is signed by the expected CA from '%s'" % (self.root_ca_path))
-        _LOG.debug(cert_pem)
-        return self.cert_utils.validate_certificate(cert_pem, self.root_ca_cert_pem)
 
     def extract_id_from_identity_cert(self, identity_cert):
         subj_pieces = self.cert_utils.get_subject_pieces(identity_cert)
@@ -233,7 +209,7 @@ class CheckIn(object):
         @return: Certificate and the time it took for entitlement server to process the call
         @rtype: str, int
         """
-        cp_config = get_candlepin_config_info()
+        cp_config = config.get_candlepin_config_info()
         start_date=None
         end_date=None
         if cert_length_in_min:

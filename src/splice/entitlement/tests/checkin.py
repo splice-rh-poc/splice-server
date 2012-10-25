@@ -36,12 +36,6 @@ class CheckInTest(BaseEntitlementTestCase):
     def tearDown(self):
         super(CheckInTest, self).tearDown()
 
-    def test_validate_cert_valid(self):
-        self.assertTrue(self.checkin.validate_cert(self.valid_identity_cert_pem))
-
-    def test_validate_cert_invalid(self):
-        self.assertFalse(self.checkin.validate_cert(self.invalid_identity_cert_pem))
-
     def test_extract_id_from_identity_cert(self):
         # below is example of subject from test data
         # $ openssl x509 -subject -in test_data/valid_cert/sample_rhic_valid.pem
