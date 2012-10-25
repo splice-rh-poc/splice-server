@@ -13,7 +13,7 @@
 import logging
 
 from splice.common import config
-from certutils.certutils import CertUtils, CertFileUtils
+from certutils.certutils import CertUtils, CertFileUtils, CertificateParseException
 
 _LOG = logging.getLogger(__name__)
 
@@ -46,7 +46,10 @@ def get_identifier_from_cert(x509_cert):
     cn = None
     o = None
     cert_utils = CertUtils()
-    subj_pieces = cert_utils.get_subject_pieces(x509_cert)
+    try:
+        subj_pieces = cert_utils.get_subject_pieces(x509_cert)
+    except CertificateParseException:
+        return None, None
     if subj_pieces:
         if subj_pieces.has_key("CN"):
             cn = subj_pieces["CN"]
