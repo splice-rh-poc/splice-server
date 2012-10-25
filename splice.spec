@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.57
+Version:    0.58
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -182,6 +182,19 @@ exit 0
 
 
 %changelog
+* Thu Oct 25 2012 John Matthews <jmatthews@redhat.com> 0.58-1
+- Update for CertificateParseException thrown by python-certutils
+  (jmatthews@redhat.com)
+- Moved location of HTTPS certs to use what python-certutils generates
+  (jmatthews@redhat.com)
+- Update checkin.py to remove cert validation and rely on
+  X509CertificateAuthentication, some refactoring and cleanup to support this
+  (jmatthews@redhat.com)
+- Added unique constraint to product usage data and unit tests for product
+  usage import API (jmatthews@redhat.com)
+- ProductUsage.splice_server is now a string, set it to the splice server's
+  uuid (jslagle@redhat.com)
+
 * Fri Oct 19 2012 John Matthews <jmatthews@redhat.com> 0.57-1
 - Create splice-common RPM and moving model definitions into it to make it
   easier to consume in Report Server (jmatthews@redhat.com)
