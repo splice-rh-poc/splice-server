@@ -16,7 +16,7 @@ dropdatabase() {
 # Hack to force the django log file is writeable by apache
 # 
 force_log_perms() {
-    if [ -f ${LOG_FILE} ] 
+    if [ ! -f ${LOG_FILE} ] 
     then
         touch ${LOG_FILE}
     fi
