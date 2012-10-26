@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.58
+Version:    0.59
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -186,6 +186,14 @@ exit 0
 
 
 %changelog
+* Fri Oct 26 2012 John Matthews <jmatthews@redhat.com> 0.59-1
+- Fixes while testing with latest report-server-import & rhic-serve RPMs
+  report-server-import is importing rhic-serve-rest, creating a problem where
+  requests aren't served the rhic-serve-rest models.py is requiring some
+  certificate settings in settings.py, we needed to add them to allow things to
+  proceed, this should be re-examined later and changed so we can get all
+  values from config file (jmatthews@redhat.com)
+
 * Thu Oct 25 2012 John Matthews <jmatthews@redhat.com> 0.58-1
 - Update for CertificateParseException thrown by python-certutils
   (jmatthews@redhat.com)
