@@ -164,7 +164,7 @@ fi
 #
 if [ ! -f /etc/etc/pki/splice/generated/Splice_identity.cert ]
 then
-    splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.crt --outcert /etc/pki/splice/generated/Splice_identity.cert --outkey /etc/pki/splice/generated/Splice_identity.key
+    splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.key --outcert /etc/pki/splice/generated/Splice_identity.cert --outkey /etc/pki/splice/generated/Splice_identity.key
 fi
 
 
