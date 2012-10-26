@@ -44,7 +44,11 @@ Requires: python-certutils
 #
 Requires: %{name}-selinux = %{version}-%{release}
 Requires: %{name}-common = %{version}-%{release}
-
+#
+# rhic-serve's mod_wsgi configuration will cause Splice to be unusable
+#
+Conflicts: rhic-serve
+#
 %description
 Framework for metering entitlement consumption
 
