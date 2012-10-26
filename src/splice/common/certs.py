@@ -17,8 +17,14 @@ from certutils.certutils import CertUtils, CertFileUtils, CertificateParseExcept
 
 _LOG = logging.getLogger(__name__)
 
-def get_identity_ca_pem():
-    ca_path = config.get_identity_ca_path()
+def get_rhic_ca_pem():
+    ca_path = config.get_rhic_ca_path()
+    cert_utils = CertFileUtils()
+    ca_pem = cert_utils.read_pem(pem_path=ca_path)
+    return ca_pem
+
+def get_splice_server_identity_ca_pem():
+    ca_path = config.get_splice_server_identity_ca_path()
     cert_utils = CertFileUtils()
     ca_pem = cert_utils.read_pem(pem_path=ca_path)
     return ca_pem

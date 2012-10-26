@@ -43,6 +43,8 @@ class ModifiedProductUsageResource(productusage.ProductUsageResource):
         # So...explicitly setting 'resource_name'
         #
         resource_name = 'productusage'
+        # This resource will be secured by the Splice Server Identity Certificate
+        authentication = X509CertificateAuthentication(verification_ca=certs.get_splice_server_identity_ca_pem())
 
     def __init__(self):
         super(ModifiedProductUsageResource, self).__init__()
@@ -130,7 +132,8 @@ class EntitlementResource(Resource):
         list_allowed_methods = []
         detail_allowed_methods = ["post", "put"]
         always_return_data = True
-        authentication = X509CertificateAuthentication(verification_ca=certs.get_identity_ca_pem())
+        # This resource will be secured by the RHIC
+        authentication = X509CertificateAuthentication(verification_ca=certs.get_rhic_ca_pem())
         authorization = Authorization()
 
     # To support a 'POST' on a 'detail', we need to override the tastypies 'post_detail' implementation

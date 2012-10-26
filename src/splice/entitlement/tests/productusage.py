@@ -101,7 +101,8 @@ class ProductUsageTest(BaseEntitlementTestCase):
 
         post_data = [pu_a._data]
         LOG.info("Calling api for productusage import with post data: '%s'" % (post_data))
-        resp = self.api_client.post('/api/v1/productusage/', format='json', data=post_data)
+        resp = self.api_client.post('/api/v1/productusage/', format='json', data=post_data,
+            SSL_CLIENT_CERT=self.expected_valid_splice_server_identity_pem)
         LOG.info("Response for productusage import: Status Code: %s, Response: %s" % (resp.status_code, resp))
         self.assertEquals(resp.status_code, 202)
         # Now check that the server api saved the object as expected
@@ -137,7 +138,8 @@ class ProductUsageTest(BaseEntitlementTestCase):
 
         post_data = [pu_a._data, pu_b._data]
         LOG.info("Calling api for productusage import with post data: '%s'" % (post_data))
-        resp = self.api_client.post('/api/v1/productusage/', format='json', data=post_data)
+        resp = self.api_client.post('/api/v1/productusage/', format='json', data=post_data,
+            SSL_CLIENT_CERT=self.expected_valid_splice_server_identity_pem)
         LOG.info("Response for productusage import: Status Code: %s, Response: %s" % (resp.status_code, resp))
         self.assertEquals(resp.status_code, 409)
         # Now check that the server api saved the object as expected
@@ -160,7 +162,8 @@ class ProductUsageTest(BaseEntitlementTestCase):
 
         post_data = [pu_a._data, pu_b._data]
         LOG.info("Calling api for productusage import with post data: '%s'" % (post_data))
-        resp = self.api_client.post('/api/v1/productusage/', format='json', data=post_data)
+        resp = self.api_client.post('/api/v1/productusage/', format='json', data=post_data,
+            SSL_CLIENT_CERT=self.expected_valid_splice_server_identity_pem)
         LOG.info("Response for productusage import: Status Code: %s, Response: %s" % (resp.status_code, resp))
         self.assertEquals(resp.status_code, 202)
         # Now check that the server api saved the object as expected

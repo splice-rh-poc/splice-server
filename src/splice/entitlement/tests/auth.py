@@ -23,8 +23,7 @@ class X509CertificateAuthenticationTest(BaseEntitlementTestCase):
 
     def setUp(self):
         super(X509CertificateAuthenticationTest, self).setUp()
-        self.x509_auth = X509CertificateAuthentication(verification_ca=self.root_ca_pem)
-
+        self.x509_auth = X509CertificateAuthentication(verification_ca=self.splice_server_identity_ca_pem)
     def tearDown(self):
         super(X509CertificateAuthenticationTest, self).tearDown()
 
@@ -40,8 +39,8 @@ class X509CertificateAuthenticationTest(BaseEntitlementTestCase):
     def test_with_valid_certificate(self):
         req = self.request_factory.request(SSL_CLIENT_CERT=self.valid_identity_cert_pem)
         CN, O = self.x509_auth.get_identifier(req)
-        self.assertEqual(CN, self.expected_valid_identity_uuid)
-        self.assertEqual(O, self.expected_valid_account_num)
+        self.assertEqual(CN, self.expected_valid_splice_server_identity_uuid)
+        self.assertEqual(O, self.expected_valid_splice_server_identity_num)
         self.assertTrue(self.x509_auth.is_authenticated(request=req))
 
     def test_with_invalid_certificate(self):
