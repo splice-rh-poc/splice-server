@@ -40,7 +40,7 @@ Requires: m2crypto >= 0.21.1.pulp-7
 #
 Requires: report-server-import
 Requires: rhic-serve-rcs >= 0.15
-Requires: python-certutils
+Requires: python-certutils >= 0.12
 #
 # Our own sub RPMs
 #
@@ -157,6 +157,17 @@ if [ ! -f /etc/pki/splice/generated/Splice_HTTPS_server.cert ]
 then
     splice_cert_gen_setup.py /etc/httpd/conf.d/splice.conf
 fi
+#
+# If there is no Splice Server identity certificate, generate a new one for testing
+# This step will be removed during production, the splice server cert must come from
+# access.redhat.com eventually
+#
+if [ ! -f /etc/etc/pki/splice/generated/Splice_identity.cert ]
+then
+    splice_cert_gen_identity --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.crt --outcert /etc/pki/splice/generated/Splice_identity.cert --outkey /etc/pki/splice/generated/Splice_identity.key
+fi
+
+
 
 %post selinux
 # Enable SELinux policy modules
