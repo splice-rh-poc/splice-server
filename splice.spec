@@ -16,6 +16,8 @@ BuildArch: noarch
 BuildRequires:  python2-devel
 BuildRequires: python-setuptools
 BuildRequires: rpm-python
+BuildRequires: python-sphinx
+BuildRequires: python-sphinxcontrib-httpdomain
 Requires: mongodb-server
 Requires: pymongo
 Requires: pymongo-gridfs
@@ -78,6 +80,16 @@ Group:          Development/Languages
 %description    common
 Splice common components
 
+%package doc
+Summary:    Splice documentation
+Group:      Development/Languages
+
+BuildRequires:  python-sphinx
+BuildRequires:  python-sphinxcontrib-httpdomain
+
+%description doc
+Splice documentation
+
 
 %prep
 %setup -q
@@ -123,6 +135,11 @@ cp enable.sh %{buildroot}%{_datadir}/%{name}/selinux
 cp uninstall.sh %{buildroot}%{_datadir}/%{name}/selinux
 cp relabel.sh %{buildroot}%{_datadir}/%{name}/selinux
 cd -
+
+# Documentation
+mkdir -p %{buildroot}/%{_docdir}/%{name}
+cp LICENSE %{buildroot}/%{_docdir}/%{name}
+cp -R doc/_build/html %{buildroot}/%{_docdir}/%{name}
 
 %clean
 rm -rf %{buildroot}
@@ -192,6 +209,9 @@ exit 0
 %{_datadir}/selinux/*/%{name}-server.pp
 %{_datadir}/selinux/devel/include/apps/%{name}-server.if
 
+
+%files doc
+%doc %{_docdir}/%{name}
 
 
 %changelog
