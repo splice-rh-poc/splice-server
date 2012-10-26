@@ -127,6 +127,15 @@ cd -
 %clean
 rm -rf %{buildroot}
 
+%post
+#
+# If https certs haven't been generated, generate them and update https config file
+# 
+if [ ! -f /etc/pki/splice/generated/Splice_HTTPS_server.cert ]
+then
+    splice_cert_gen_setup.py /etc/httpd/conf.d/splice.conf
+fi
+
 %post selinux
 # Enable SELinux policy modules
 if /usr/sbin/selinuxenabled ; then
