@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.62
+Version:    0.63
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -231,6 +231,9 @@ exit 0
 
 
 %changelog
+* Fri Oct 26 2012 John Matthews <jmatthews@redhat.com> 0.63-1
+- Fix for correct name of splice_cert_gen_setup.py (jmatthews@redhat.com)
+
 * Fri Oct 26 2012 John Matthews <jmatthews@redhat.com> 0.62-1
 - Generate Splice Server identity certificate now on a new install in %%post
   (jmatthews@redhat.com)
