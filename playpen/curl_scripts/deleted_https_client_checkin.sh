@@ -7,7 +7,7 @@ fi
 export SERVER_ADDR=`hostname`
 export PORT=443
 export CONSUMER_IDENTITY="playpenscript_sample_rhic" # Server doesn't use this value, so putting a dummy value in to identify we are testing for logs
-export CA_CERT=/etc/pki/splice/generated/Splice_CA.cert
+export CA_CERT=/etc/pki/splice/generated/Splice_HTTPS_CA.cert
 export DATA="{\"consumer_identifier\":\"F0:DE:F1:DE:88:2B\", \"products\": [\"69\", \"83\", \"183\"], \"system_facts\": {\"tbd\":\"values\"}}"
 
 echo "Using RHIC from ${SAMPLE_RHIC}"

@@ -6,7 +6,7 @@ else
 fi
 export SERVER_ADDR=`hostname`
 export PORT=443
-export CA_CERT=/etc/pki/splice/generated/Splice_CA.cert
+export CA_CERT=/etc/pki/splice/generated/Splice_HTTPS_CA.cert
 export CONSUMER_IDENTITY="dbcbc8e1-5b37-4a77-9db1-faf4ef29307d"
 export DATA="{\"consumer_identifier\":\"F0:DE:F1:DE:88:2B\", \"products\": [\"69\", \"83\", \"183\"], \"system_facts\": {\"tbd\":\"values\"}, \"minutes\":15}"
 
