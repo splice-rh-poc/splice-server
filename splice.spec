@@ -104,6 +104,11 @@ perl -i -pe 'BEGIN { $VER = join ".", grep /^\d+$/, split /\./, "%{version}.%{re
 ./build.sh
 cd -
 
+# Sphinx documentation
+pushd doc
+make html
+popd
+
 %install
 rm -rf %{buildroot}
 pushd src
