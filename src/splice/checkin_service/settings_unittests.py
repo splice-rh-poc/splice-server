@@ -284,3 +284,13 @@ CELERY_TIMEZONE = 'UTC'
 #
 # End of Celery Configuration
 #############################
+#
+# TODO: See if we can work out a better solution and not need to set
+#       real values to the below cert settings for 'rhic-serve'
+#       RCS is not specifically using the functionality requiring these settings, yet if they are
+#       not defined, and not pointing to a real file to read then an exception is thrown immediately and
+#       requests will not be processed
+#
+CA_CERT_PATH="/etc/pki/splice/Splice_testing_root_CA.crt"
+CA_KEY_PATH="/etc/pki/splice/Splice_testing_root_CA.key"
+CERT_DAYS="1"
