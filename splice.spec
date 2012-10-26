@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.61
+Version:    0.62
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -231,6 +231,17 @@ exit 0
 
 
 %changelog
+* Fri Oct 26 2012 John Matthews <jmatthews@redhat.com> 0.62-1
+- Generate Splice Server identity certificate now on a new install in %%post
+  (jmatthews@redhat.com)
+- Split verification CAs into verify RHIC and verify Splice Server Identity,
+  changed productusage API to use x509authentication (jmatthews@redhat.com)
+- Update so unittests work with rhic_server.rcs requirement
+  (jmatthews@redhat.com)
+- Add step to actually build the documentation (jslagle@redhat.com)
+- Update sphinx conf.py (jslagle@redhat.com)
+- Add doc build and packaging (jslagle@redhat.com)
+
 * Fri Oct 26 2012 John Matthews <jmatthews@redhat.com> 0.61-1
 - Updated for new location of HTTPS SSL CA Cert (jmatthews@redhat.com)
 - Adding %%post step that will auto generate https ssl certs if they don't
