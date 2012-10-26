@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.59
+Version:    0.60
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -186,6 +186,10 @@ exit 0
 
 
 %changelog
+* Fri Oct 26 2012 John Matthews <jmatthews@redhat.com> 0.60-1
+- Update for init.d script to fix a problem see on initial start
+  (jmatthews@redhat.com)
+
 * Fri Oct 26 2012 John Matthews <jmatthews@redhat.com> 0.59-1
 - Fixes while testing with latest report-server-import & rhic-serve RPMs
   report-server-import is importing rhic-serve-rest, creating a problem where
