@@ -53,6 +53,7 @@ LINKS = (
             ('etc/rc.d/init.d/splice_celeryd', '/etc/rc.d/init.d/splice_celeryd'),
             ('etc/rc.d/init.d/splice_all', '/etc/rc.d/init.d/splice_all'),
             ('etc/splice/celery/celerybeat', '/etc/splice/celery/celerybeat'),
+            ('etc/splice/logging', '/etc/splice/logging'),
             ('etc/splice/server.conf', '/etc/splice/server.conf'),
             ('srv/splice/webservices.wsgi', '/srv/splice/webservices.wsgi'),
         )
@@ -194,6 +195,10 @@ def update_permissions():
     cmd = "chown -R apache:apache /var/log/splice"
     run_command(cmd)
     cmd = "chmod 3775 /var/log/splice"
+    run_command(cmd)
+    cmd = "chmod g+s /var/log/splice"
+    run_command(cmd)
+    cmd = "setfacl -d -m g::rwx /var/log/splice"
     run_command(cmd)
 
 def run_command(cmd, verbose=True):

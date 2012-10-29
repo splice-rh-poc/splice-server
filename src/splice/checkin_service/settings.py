@@ -13,16 +13,23 @@
 
 
 # Django settings for checkin_service project.
+import logging
+import logging.config
 import os
 import pwd
 
 
-from logging import getLogger
-_LOG = getLogger(__name__)
-
-# Initialize Splice Config
+# Initialize Splice Config & Logging
 from splice.common import config
 config.init()
+splice_log_cfg = config.get_logging_config_file()
+if splice_log_cfg:
+    if not os.path.exists(splice_log_cfg):
+        print "Unable to read '%s' for logging configuration" % (splice_log_cfg)
+    else:
+        logging.config.fileConfig(splice_log_cfg)
+from logging import getLogger
+_LOG = getLogger(__name__)
 
 
 def get_username():
@@ -167,75 +174,6 @@ INSTALLED_APPS = (
     'report_server.report_import',
 )
 
-LOG_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "debug_logs")
-if DEPLOYED:
-    LOG_DIR = "/var/log/splice"
-if not os.path.exists(LOG_DIR):
-    os.makedirs(LOG_DIR)
-
-
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error when DEBUG=False.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        }
-    },
-    'handlers': {
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler'
-        },
-        'console':{
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'log_file':{
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOG_DIR, 'django.log'),
-            'maxBytes': '16777216',
-            'formatter': 'verbose'
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['log_file'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'splice': {
-            'handlers': ['log_file'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'report_server': {
-            'handlers': ['log_file'],
-            'level': 'DEBUG',
-            'propagate': True,
-            },
-        'root': {
-            'handlers': ['log_file'],
-            'level': 'DEBUG'
-        },
-    }
-}
 
 ##
 ## Adding mongoengine specifics ##

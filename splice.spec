@@ -167,6 +167,11 @@ then
     splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.key --outcert /etc/pki/splice/generated/Splice_identity.cert --outkey /etc/pki/splice/generated/Splice_identity.key
 fi
 
+%post common
+chown -R apache:apache %{buildroot}/%{_var}/log/%{name}
+chmod g+s %{buildroot}/%{_var}/log/%{name}
+setfacl -d -m g::rwx %{buildroot}/%{_var}/log/%{name}
+setfacl -d -m o::rx %{buildroot}/%{_var}/log/%{name}
 
 
 %post selinux
@@ -196,6 +201,7 @@ exit 0
 %{python_sitelib}/%{name}/common
 %{python_sitelib}/%{name}/__init__.py*
 %config(noreplace) %{_sysconfdir}/splice/server.conf
+%config(noreplace) %{_sysconfdir}/splice/logging
 %defattr(-,apache,apache,-)
 %dir %{_sysconfdir}/pki/%{name}
 %{_sysconfdir}/pki/%{name}

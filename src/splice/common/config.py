@@ -110,3 +110,6 @@ def get_splice_server_identity_key_path():
 def get_crl_path():
     return CONFIG.get("crl", "location")
 
+def get_logging_config_file():
+    return CONFIG.get("logging", "config")
+
