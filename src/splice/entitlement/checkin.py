@@ -41,17 +41,17 @@ class CheckIn(object):
         self.cert_utils = CertUtils(True, 100, True, config.get_crl_path())
 
     def get_this_server(self):
-        # parse a configuration file and determine our splice server identifier
-        # TODO  read in a SSL cert that identifies our splice server.
-        server_uuid = SPLICE_SERVER_INFO["uuid"]
+        server_uuid = certs.get_splice_server_identity()
         environment = SPLICE_SERVER_INFO["environment"]
         description = SPLICE_SERVER_INFO["description"]
+        hostname = SPLICE_SERVER_INFO["hostname"]
         server = SpliceServer.objects(uuid=server_uuid).first()
         if not server:
             server = SpliceServer(
                 uuid=server_uuid,
                 description=description,
-                environment=environment
+                environment=environment,
+                hostname=hostname
             )
             try:
                 server.save()

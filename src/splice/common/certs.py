@@ -29,6 +29,18 @@ def get_splice_server_identity_cert_path():
 def get_splice_server_identity_key_path():
     return config.get_splice_server_identity_key_path()
 
+def get_splice_server_identity(cert_pem = None):
+    if not cert_pem:
+        cert_pem = get_splice_server_identity_cert_pem()
+    (cn, o) = get_identifier_from_cert(cert_pem)
+    return cn
+
+def get_splice_server_identity_cert_pem():
+    cert_path = get_splice_server_identity_cert_path()
+    cert_utils = CertFileUtils()
+    cert_pem = cert_utils.read_pem(pem_path=cert_path)
+    return cert_pem
+
 def get_splice_server_identity_ca_pem():
     ca_path = config.get_splice_server_identity_ca_path()
     cert_utils = CertFileUtils()
