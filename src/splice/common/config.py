@@ -55,7 +55,7 @@ def get_rhic_serve_config_info():
     return {
         "host": CONFIG.get("rhic_serve", "host"),
         "port": CONFIG.get("rhic_serve", "port"),
-        "get_all_rhics_url": CONFIG.get("rhic_serve", "get_all_rhics_url"),
+        "rhics_url": CONFIG.get("rhic_serve", "rhics_url"),
         "sync_all_rhics_in_minutes": CONFIG.getint("tasks", "sync_all_rhics_in_minutes"),
         "single_rhic_lookup_cache_unknown_in_hours": CONFIG.getint("tasks", "single_rhic_lookup_cache_unknown_in_hours"),
         "single_rhic_lookup_timeout_in_minutes": CONFIG.getint("tasks", "single_rhic_lookup_timeout_in_minutes"),

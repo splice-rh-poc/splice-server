@@ -267,7 +267,7 @@ def sync_single_rhic_blocking(uuid):
     host = cfg["host"]
     port = cfg["port"]
     # URL is based on URL for 'all_rhics', we add the RHIC uuid to it to form a single URL
-    url = cfg["get_all_rhics_url"]
+    url = cfg["rhics_url"]
     status_code, data = rhic_serve_client.get_single_rhic(host=host, port=port, url=url, uuid=uuid)
     _LOG.info("Received '%s' from %s:%s:%s for RHIC '%s'. Response = \n%s" % (status_code, host, port, url, uuid, data))
     if status_code == 202:
@@ -293,12 +293,12 @@ def sync_from_rhic_serve_blocking():
     sync_loop = True
     while sync_loop:
         data, meta = rhic_serve_client.get_all_rhics(host=server_hostname, port=cfg["port"],
-            url=cfg["get_all_rhics_url"], last_sync=last_sync, offset=current_offset, limit=current_limit)
+            url=cfg["rhics_url"], last_sync=last_sync, offset=current_offset, limit=current_limit)
         if not data:
-            _LOG.info("Received no data from %s:%s%s" % (cfg["host"], cfg["port"], cfg["get_all_rhics_url"]))
+            _LOG.info("Received no data from %s:%s%s" % (cfg["host"], cfg["port"], cfg["rhics_url"]))
             return True
         _LOG.info("Fetched %s RHICs from %s:%s%s with last_sync=%s, offset=%s, limit=%s" % (len(data),
-             cfg["host"], cfg["port"], cfg["get_all_rhics_url"], last_sync, current_offset, current_limit))
+             cfg["host"], cfg["port"], cfg["rhics_url"], last_sync, current_offset, current_limit))
         syncd_uuids = process_data(data)
         current_offset = current_offset + len(syncd_uuids)
         if current_offset >= meta["total_count"]:

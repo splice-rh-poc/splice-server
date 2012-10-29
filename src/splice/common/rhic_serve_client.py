@@ -102,7 +102,7 @@ if __name__ == "__main__":
     last_sync = datetime.now(tzutc()) - timedelta(days=30)
     config.init()
     cfg = config.get_rhic_serve_config_info()
-    data, meta = get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"],
+    data, meta = get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["rhics_url"],
         offset=0, limit=1000,
         last_sync=last_sync, debug=True, accept_gzip=True)
     print "--- Test Sync all RHICs ---"
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     if len(data) > 0:
         uuid = data[0]["uuid"]
         print "\n---Test A Single RHIC ---\n"
-        print get_single_rhic(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], uuid=uuid)
+        print get_single_rhic(host=cfg["host"], port=cfg["port"], url=cfg["rhics_url"], uuid=uuid)
     print "\n -- Test an unknown RHIC ---\n"
     uuid = "1a1aa1aa-f6f4-45be-9d86-deb97a79d181"
-    print get_single_rhic(host=cfg["host"], port=cfg["port"], url=cfg["get_all_rhics_url"], uuid=uuid)
+    print get_single_rhic(host=cfg["host"], port=cfg["port"], url=cfg["rhics_url"], uuid=uuid)
