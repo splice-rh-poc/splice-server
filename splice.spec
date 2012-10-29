@@ -168,10 +168,10 @@ then
 fi
 
 %post common
-chown -R apache:apache %{buildroot}/%{_var}/log/%{name}
-chmod g+s %{buildroot}/%{_var}/log/%{name}
-setfacl -d -m g::rwx %{buildroot}/%{_var}/log/%{name}
-setfacl -d -m o::rx %{buildroot}/%{_var}/log/%{name}
+chown -R apache:apache %{_var}/log/%{name}
+chmod g+s %{_var}/log/%{name}
+setfacl -d -m g::rwx %{_var}/log/%{name}
+setfacl -d -m o::rx %{_var}/log/%{name}
 
 
 %post selinux
