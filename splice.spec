@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.64
+Version:    0.65
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -228,6 +228,12 @@ exit 0
 
 
 %changelog
+* Mon Oct 29 2012 John Matthews <jmatthews@redhat.com> 0.65-1
+- Move /etc/splice/server.conf to splice-common so we can share between splice
+  applications (jmatthews@redhat.com)
+- Update for client side of X509 authentication with syncing RHICs
+  (jmatthews@redhat.com)
+
 * Fri Oct 26 2012 John Matthews <jmatthews@redhat.com> 0.64-1
 - Correct for cakey in %%post (jmatthews@redhat.com)
 
