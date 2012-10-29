@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.67
+Version:    0.68
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -235,6 +235,9 @@ exit 0
 
 
 %changelog
+* Mon Oct 29 2012 John Matthews <jmatthews@redhat.com> 0.68-1
+- packaging fix for %%post in splice-common (jmatthews@redhat.com)
+
 * Mon Oct 29 2012 John Matthews <jmatthews@redhat.com> 0.67-1
 - Get SpliceServer uuid from Splice Server identity certificate, also fix so
   'hostname' is recorded on SpliceServer object (jmatthews@redhat.com)
