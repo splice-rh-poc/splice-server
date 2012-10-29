@@ -72,6 +72,7 @@ class RHICRCSModifiedResource(rhic.RHICRcsResource):
         # So...explicitly setting 'resource_name'
         #
         resource_name = 'rhicrcs'
+        authentication = X509CertificateAuthentication(verification_ca=certs.get_splice_server_identity_ca_pem())
 
     def __init__(self):
         super(RHICRCSModifiedResource, self).__init__()

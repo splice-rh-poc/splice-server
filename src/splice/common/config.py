@@ -41,6 +41,16 @@ def get_candlepin_config_info():
     }
 
 def get_rhic_serve_config_info():
+    client_cert = None
+    client_key = None
+    try:
+        client_cert = CONFIG.get("rhic_serve", "client_cert")
+    except Exception:
+        pass
+    try:
+        client_key = CONFIG.get("rhic_serve", "client_key")
+    except Exception:
+        pass
 
     return {
         "host": CONFIG.get("rhic_serve", "host"),
@@ -52,6 +62,8 @@ def get_rhic_serve_config_info():
         "single_rhic_retry_lookup_tasks_in_minutes": CONFIG.getint("tasks", "single_rhic_retry_lookup_tasks_in_minutes"),
         "sync_all_rhics_bool" : CONFIG.getboolean("tasks", "sync_all_rhics_bool"),
         "sync_all_rhics_pagination_limit_per_call" : CONFIG.getint("tasks", "sync_all_rhics_pagination_limit_per_call"),
+        "client_cert": client_cert,
+        "client_key": client_key,
     }
 
 def get_reporting_config_info(cfg=None):
@@ -91,6 +103,9 @@ def get_splice_server_identity_ca_path():
 
 def get_splice_server_identity_cert_path():
     return CONFIG.get("security", "splice_server_identity_cert")
+
+def get_splice_server_identity_key_path():
+    return CONFIG.get("security", "splice_server_identity_key")
 
 def get_crl_path():
     return CONFIG.get("crl", "location")

@@ -29,19 +29,24 @@ from splice.common.exceptions import RequestException
 _LOG = logging.getLogger(__name__)
 
 def get_single_rhic(host, port, url, uuid, debug=False):
+    cfg = config.get_rhic_serve_config_info()
     url = url + uuid + "/"
-    status, data = _request(host, port, url, last_sync=None, debug=debug)
+    status, data = _request(host, port, url, last_sync=None, debug=debug,
+        key_file=cfg["client_key"], cert_file=cfg["client_cert"])
     return status, data
 
 def get_all_rhics(host, port, url, last_sync=None, offset=None, limit=None, debug=False, accept_gzip=True):
-    status, data = _request(host, port, url, last_sync, offset=offset, limit=limit, debug=debug, accept_gzip=accept_gzip)
+    cfg = config.get_rhic_serve_config_info()
+    status, data = _request(host, port, url, last_sync, offset=offset, limit=limit, debug=debug,
+        accept_gzip=accept_gzip, key_file=cfg["client_key"], cert_file=cfg["client_key"])
     if status == 200:
         # Newer rhic_serves support pagination and will return data under ["objects"]
         return data["objects"], data["meta"]
     raise RequestException(status, data)
 
-def _request(host, port, url, last_sync=None, offset=None, limit=None, debug=False, accept_gzip=True):
-    connection = httplib.HTTPSConnection(host, port)
+def _request(host, port, url, last_sync=None, offset=None, limit=None, debug=False, accept_gzip=True,
+             key_file=None, cert_file=None):
+    connection = httplib.HTTPSConnection(host, port, cert_file=cert_file, key_file=key_file)
     if debug:
         connection.set_debuglevel(100)
     method = 'GET'

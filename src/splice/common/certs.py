@@ -23,6 +23,12 @@ def get_rhic_ca_pem():
     ca_pem = cert_utils.read_pem(pem_path=ca_path)
     return ca_pem
 
+def get_splice_server_identity_cert_path():
+    return config.get_splice_server_identity_cert_path()
+
+def get_splice_server_identity_key_path():
+    return config.get_splice_server_identity_key_path()
+
 def get_splice_server_identity_ca_pem():
     ca_path = config.get_splice_server_identity_ca_path()
     cert_utils = CertFileUtils()
