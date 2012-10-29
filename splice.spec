@@ -196,6 +196,9 @@ exit 0
 %{python_sitelib}/%{name}/common
 %{python_sitelib}/%{name}/__init__.py*
 %config(noreplace) %{_sysconfdir}/splice/server.conf
+%defattr(-,apache,apache,-)
+%dir %{_sysconfdir}/pki/%{name}
+%{_sysconfdir}/pki/%{name}
 
 %files
 %defattr(-,root,root,-)
@@ -207,8 +210,6 @@ exit 0
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celeryd
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_all
 %defattr(-,apache,apache,-)
-%dir %{_sysconfdir}/pki/%{name}
-%{_sysconfdir}/pki/%{name}
 %dir /srv/%{name}
 %dir %{_var}/log/%{name}
 /srv/%{name}/webservices.wsgi
