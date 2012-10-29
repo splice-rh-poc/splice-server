@@ -195,20 +195,17 @@ exit 0
 %defattr(-,root,root,-)
 %{python_sitelib}/%{name}/common
 %{python_sitelib}/%{name}/__init__.py*
+%config(noreplace) %{_sysconfdir}/splice/server.conf
 
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/%{name}
-
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
-%config(noreplace) %{_sysconfdir}/splice/server.conf
 %config(noreplace) %{_sysconfdir}/splice/celery/celerybeat
 %config(noreplace) %{_sysconfdir}/splice/celery/celeryd
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celerybeat
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celeryd
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_all
-
-
 %defattr(-,apache,apache,-)
 %dir %{_sysconfdir}/pki/%{name}
 %{_sysconfdir}/pki/%{name}
