@@ -58,7 +58,7 @@ class X509CertificateAuthentication(Authentication):
             if self.cert_utils.validate_certificate(x509_cert_from_request, self.verification_ca):
                 return True
         return HttpResponse(
-            content="Unable to verify consumer's identity certificate was signed by configured CA",
+            content="Unable to verify SSL client's identity certificate was signed by configured CA",
             status=httplib.UNAUTHORIZED)
 
     # Optional but recommended
