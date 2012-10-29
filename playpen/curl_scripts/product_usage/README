@@ -1,0 +1,9 @@
+To run:
+
+1) 'source source_me'
+2) './timed_upload_product_usage.py'
+
+To see options available for testing run:
+ ./timed_upload_product_usage.py --help
+
+

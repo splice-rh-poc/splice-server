@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+import logging
+import logging.config
+import os
 import random
 import string
 import time
@@ -8,13 +11,16 @@ from datetime import datetime
 from dateutil.tz import tzutc
 from optparse import OptionParser
 
-from splice.common import splice_server_client
+from splice.common import config, splice_server_client
 from splice.common.models import ProductUsage
 
 CONSUMER = str(uuid4())
 SPLICE_SERVER = str(uuid4())
 INSTANCE_IDENTIFIER = "A0:A0:A0:A0:00:A0"
 
+LOG_CONFIG_FILE=os.path.join(os.path.abspath(os.path.dirname(__file__)), "logging_config")
+logging.config.fileConfig(LOG_CONFIG_FILE)
+_LOG = logging.getLogger(__name__)
 
 def create_random_facts(num_entries=30, length_of_key=10):
     facts = {}
@@ -64,7 +70,7 @@ if __name__ == "__main__":
     port = int(opts.port)
     url = '/splice/api/v1/productusage/'
     num = int(opts.num)
-
+    config.init()
     data = create_data(num)
     print "Created %s ProductUsage objects" % (len(data))
     start = time.time()

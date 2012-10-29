@@ -17,7 +17,7 @@ import logging
 import time
 
 
-from splice.common import config, utils
+from splice.common import certs, config, utils
 from splice.common.exceptions import RequestException
 
 _LOG = logging.getLogger(__name__)
@@ -29,15 +29,16 @@ def parse_data(data):
     return []
 
 def upload_product_usage_data(host, port, url, pu_data, debug=False):
+    key_file = certs.get_splice_server_identity_key_path()
+    cert_file = certs.get_splice_server_identity_cert_path()
     serialized_data = utils.obj_to_json(pu_data)
-    status, data = _request(host, port, url, serialized_data, debug=debug)
+    status, data = _request(host, port, url, serialized_data, debug=debug, key_file=key_file, cert_file=cert_file)
     if status in [200, 202]:
         return parse_data(data)
     raise RequestException(status, data)
 
-def _request(host, port, url, body, debug=False):
-
-    connection = httplib.HTTPSConnection(host, port)
+def _request(host, port, url, body, debug=False, key_file=None, cert_file=None):
+    connection = httplib.HTTPSConnection(host, port, key_file=key_file, cert_file=cert_file)
     if debug:
         connection.set_debuglevel(100)
     method = 'POST'
@@ -45,7 +46,7 @@ def _request(host, port, url, body, debug=False):
         'Accept': 'application/json',
         'Content-Type': 'application/json'
     }
-    _LOG.info("Sending HTTP request to: %s:%s%s with headers:%s" % (host, port, url, headers))
+    _LOG.info("Sending HTTP request with (key=%s, cert=%s) to: %s:%s%s with headers:%s" % (key_file, cert_file, host, port, url, headers))
     connection.request(method, url, body=body, headers=headers)
 
     response = connection.getresponse()
