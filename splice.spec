@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.66
+Version:    0.67
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -235,6 +235,19 @@ exit 0
 
 
 %changelog
+* Mon Oct 29 2012 John Matthews <jmatthews@redhat.com> 0.67-1
+- Get SpliceServer uuid from Splice Server identity certificate, also fix so
+  'hostname' is recorded on SpliceServer object (jmatthews@redhat.com)
+- Logging configuration is now controlled by /etc/splice/logging/basic.cfg,
+  specified in /etc/splice/server.conf (jmatthews@redhat.com)
+- Update config value name for rhic serve URL (jmatthews@redhat.com)
+- Update client side scripts to test X509 auth for syncing rhics
+  (jmatthews@redhat.com)
+- Update client side of product usage to use the Splice Server Identity
+  Certificate for SSL communication (jmatthews@redhat.com)
+- Fix type in config for identity certificate private key
+  (jmatthews@redhat.com)
+
 * Mon Oct 29 2012 John Matthews <jmatthews@redhat.com> 0.66-1
 - Add Splice_testing_root_CA.cert/key to splice-common RPM
   (jmatthews@redhat.com)
