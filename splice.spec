@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.65
+Version:    0.66
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -229,6 +229,10 @@ exit 0
 
 
 %changelog
+* Mon Oct 29 2012 John Matthews <jmatthews@redhat.com> 0.66-1
+- Add Splice_testing_root_CA.cert/key to splice-common RPM
+  (jmatthews@redhat.com)
+
 * Mon Oct 29 2012 John Matthews <jmatthews@redhat.com> 0.65-1
 - Move /etc/splice/server.conf to splice-common so we can share between splice
   applications (jmatthews@redhat.com)
