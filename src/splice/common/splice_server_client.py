@@ -16,6 +16,7 @@ import json
 import logging
 import time
 
+from django.conf import settings
 
 from splice.common import certs, config, utils
 from splice.common.exceptions import RequestException
@@ -79,7 +80,7 @@ if __name__ == "__main__":
     pu.facts = {"tbd": "values"}
     pu.date = datetime.now(tzutc())
 
-    config.init()
+    config.init(settings.SPLICE_CONFIG_FILE)
     cfg = config.get_reporting_config_info()
     remote_server = cfg["servers"][0]
     host = remote_server[0]

@@ -19,6 +19,7 @@ import json
 import logging
 import time
 import urllib
+from django.conf import settings
 
 from splice.common import config
 from splice.common.exceptions import RequestException
@@ -111,7 +112,7 @@ def _request(host, port, url, requested_products,
 if __name__ == "__main__":
     import datetime
     import pytz
-    config.init()
+    config.init(settings.SPLICE_CONFIG_FILE)
     cfg = config.get_candlepin_config_info()
 
     start_date = datetime.datetime.now(tz=pytz.utc)

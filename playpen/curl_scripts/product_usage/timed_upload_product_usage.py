@@ -9,7 +9,9 @@ from uuid import uuid4
 from datetime import timedelta
 from datetime import datetime
 from dateutil.tz import tzutc
+from django.conf import settings
 from optparse import OptionParser
+
 
 from splice.common import config, splice_server_client
 from splice.common.models import ProductUsage
@@ -18,9 +20,13 @@ CONSUMER = str(uuid4())
 SPLICE_SERVER = str(uuid4())
 INSTANCE_IDENTIFIER = "A0:A0:A0:A0:00:A0"
 
-LOG_CONFIG_FILE=os.path.join(os.path.abspath(os.path.dirname(__file__)), "logging_config")
-logging.config.fileConfig(LOG_CONFIG_FILE)
-_LOG = logging.getLogger(__name__)
+_LOG = None
+def init_logging():
+    global _LOG
+    log_config_file=os.path.join(os.path.abspath(os.path.dirname(__file__)), "logging_config")
+    logging.config.fileConfig(log_config_file, disable_existing_loggers=True)
+    _LOG = logging.getLogger(__name__)
+    print "Reinitialized logging with: %s" % (log_config_file)
 
 def create_random_facts(num_entries=30, length_of_key=10):
     facts = {}
@@ -70,7 +76,8 @@ if __name__ == "__main__":
     port = int(opts.port)
     url = '/splice/api/v1/productusage/'
     num = int(opts.num)
-    config.init()
+    config.init(settings.SPLICE_CONFIG_FILE)
+    init_logging() # Redo logging config so we can control where we log data for these runs
     data = create_data(num)
     print "Created %s ProductUsage objects" % (len(data))
     start = time.time()

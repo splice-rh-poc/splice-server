@@ -22,13 +22,17 @@ import pwd
 # Initialize Splice Config & Logging
 SPLICE_CONFIG_FILE = '/etc/splice/server.conf'
 from splice.common import config
-config.init()
+config.init(SPLICE_CONFIG_FILE)
 splice_log_cfg = config.get_logging_config_file()
 if splice_log_cfg:
     if not os.path.exists(splice_log_cfg):
         print "Unable to read '%s' for logging configuration" % (splice_log_cfg)
     else:
-        logging.config.fileConfig(splice_log_cfg)
+        try:
+            logging.config.fileConfig(splice_log_cfg)
+        except Exception, e:
+            print e
+            print "Unable to initialize logging config with: %s" % (splice_log_cfg)
 from logging import getLogger
 _LOG = getLogger(__name__)
 

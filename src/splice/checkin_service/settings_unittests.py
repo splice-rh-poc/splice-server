@@ -13,13 +13,28 @@
 
 
 # Django settings for checkin_service project.
+import logging
+import logging.config
 import os
 import pwd
 
 # Initialize Splice Config
-from splice.common import config
-config.init()
+SPLICE_CONFIG_FILE = '/etc/splice/server.conf'
+DEBUG_LOG_CONFIG_FILE = "src/splice/test_data/log_unittests.cfg"
+# Logging config file requires /tmp/splice exists
+if not os.path.exists("/tmp/splice"):
+    os.makedirs("/tmp/splice")
 
+from splice.common import config
+config.init(SPLICE_CONFIG_FILE)
+splice_log_cfg = DEBUG_LOG_CONFIG_FILE
+if splice_log_cfg:
+    if not os.path.exists(splice_log_cfg):
+        print "Unable to read '%s' for logging configuration" % (splice_log_cfg)
+    else:
+        logging.config.fileConfig(splice_log_cfg)
+from logging import getLogger
+_LOG = getLogger(__name__)
 
 def get_username():
     return pwd.getpwuid( os.getuid() )[ 0 ]
@@ -173,7 +188,8 @@ if not os.path.exists(LOG_DIR):
 # the site admins on every HTTP 500 error when DEBUG=False.
 # See http://docs.djangoproject.com/en/dev/topics/logging for
 # more details on how to customize your logging configuration.
-LOGGING = {
+#LOGGING = {
+UNUSED= {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {

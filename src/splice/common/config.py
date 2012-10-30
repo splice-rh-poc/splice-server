@@ -13,9 +13,6 @@
 
 import ConfigParser
 
-from django.conf import settings
-
-from splice.common import constants
 from splice.common.exceptions import BadConfigurationException
 
 CONFIG = None
@@ -23,12 +20,12 @@ CONFIG = None
 #TODO:  Add logic to validate configuration entries and log/throw exception early to warn user of issues
 
 
-def init(config_file=None, reinit=False):
+def init(config_file, reinit=False):
     global CONFIG
     if CONFIG and not reinit:
         return CONFIG
-    if not config_file:
-        config_file = settings.SPLICE_CONFIG_FILE
+    #if not config_file:
+    #    config_file = settings.SPLICE_CONFIG_FILE
     CONFIG = ConfigParser.SafeConfigParser()
     CONFIG.read(config_file)
     return CONFIG

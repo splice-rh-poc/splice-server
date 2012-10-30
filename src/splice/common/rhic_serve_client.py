@@ -23,6 +23,8 @@ import time
 import urllib
 import StringIO
 
+from django.conf import settings
+
 from splice.common import config
 from splice.common.exceptions import RequestException
 
@@ -38,7 +40,7 @@ def get_single_rhic(host, port, url, uuid, debug=False):
 def get_all_rhics(host, port, url, last_sync=None, offset=None, limit=None, debug=False, accept_gzip=True):
     cfg = config.get_rhic_serve_config_info()
     status, data = _request(host, port, url, last_sync, offset=offset, limit=limit, debug=debug,
-        accept_gzip=accept_gzip, key_file=cfg["client_key"], cert_file=cfg["client_key"])
+        accept_gzip=accept_gzip, key_file=cfg["client_key"], cert_file=cfg["client_cert"])
     if status == 200:
         # Newer rhic_serves support pagination and will return data under ["objects"]
         return data["objects"], data["meta"]
@@ -100,7 +102,7 @@ if __name__ == "__main__":
     from datetime import datetime
     from dateutil.tz import tzutc
     last_sync = datetime.now(tzutc()) - timedelta(days=30)
-    config.init()
+    config.init(settings.SPLICE_CONFIG_FILE)
     cfg = config.get_rhic_serve_config_info()
     data, meta = get_all_rhics(host=cfg["host"], port=cfg["port"], url=cfg["rhics_url"],
         offset=0, limit=1000,
