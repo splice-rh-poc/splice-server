@@ -20,6 +20,7 @@ import pwd
 
 
 # Initialize Splice Config & Logging
+SPLICE_CONFIG_FILE = '/etc/splice/server.conf'
 from splice.common import config
 config.init()
 splice_log_cfg = config.get_logging_config_file()

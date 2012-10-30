@@ -12,6 +12,9 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import ConfigParser
+
+from django.conf import settings
+
 from splice.common import constants
 from splice.common.exceptions import BadConfigurationException
 
@@ -25,7 +28,7 @@ def init(config_file=None, reinit=False):
     if CONFIG and not reinit:
         return CONFIG
     if not config_file:
-        config_file = constants.SPLICE_CONFIG_FILE
+        config_file = settings.SPLICE_CONFIG_FILE
     CONFIG = ConfigParser.SafeConfigParser()
     CONFIG.read(config_file)
     return CONFIG
