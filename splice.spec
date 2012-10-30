@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.68
+Version:    0.69
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -235,6 +235,9 @@ exit 0
 
 
 %changelog
+* Mon Oct 29 2012 James Slagle <jslagle@redhat.com> 0.69-1
+- Read config file path from settings (jslagle@redhat.com)
+
 * Mon Oct 29 2012 John Matthews <jmatthews@redhat.com> 0.68-1
 - packaging fix for %%post in splice-common (jmatthews@redhat.com)
 
