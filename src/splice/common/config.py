@@ -86,7 +86,13 @@ def get_reporting_config_info(cfg=None):
             raise BadConfigurationException("unable to convert '%s' to an integer port for server info line of '%s'" % (pieces[1], s))
         url = pieces[2].strip()
         servers.append((addr, port, url))
-    return {"servers": servers}
+    upload_interval = cfg.getint("tasks", "upload_product_usage_interval_minutes")
+    limit_per_call = cfg.getint("tasks", "upload_product_usage_limit_per_call")
+    return {
+        "servers": servers,
+        "upload_interval_minutes": upload_interval,
+        "limit_per_call": limit_per_call
+    }
 
 def get_logging_config_file():
     return CONFIG.get("logging", "config")

@@ -67,6 +67,14 @@ class MongoTestCase(ResourceTestCase):
         if reconnect:
             self.db = connect(self.db_name)
 
+    def assertDateTimeIsEqual(self, left, right):
+        self.assertEquals(left.year, right.year)
+        self.assertEquals(left.month, right.month)
+        self.assertEquals(left.day, right.day)
+        self.assertEquals(left.hour, right.hour)
+        self.assertEquals(left.minute, right.minute)
+        self.assertEquals(left.second, right.second)
+
 
 
 def mocked_candlepin_client_request_method(host, port, url, installed_product,

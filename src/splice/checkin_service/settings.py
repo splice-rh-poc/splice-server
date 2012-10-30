@@ -247,6 +247,15 @@ if sync_all_rhics_bool:
         'schedule': timedelta(minutes=sync_all_rhics_in_minutes),
         'args': None,
     }
+
+report_info = config.get_reporting_config_info()
+if report_info["servers"]:
+    CELERYBEAT_SCHEDULE['upload_product_usage'] = {
+        'task': '%s.upload_product_usage' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+        'schedule': timedelta(minutes=report_info["upload_interval_minutes"]),
+        'args': None,
+    }
+_LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
 #
 # End of Celery Configuration
 #############################

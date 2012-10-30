@@ -101,3 +101,8 @@ def process_running_rhic_lookup_tasks():
 @celery.task(name="%s.log_time" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
 def log_time():
     _LOG.info("Celery task: log_time invoked.  Current time is: %s" % datetime.now())
+
+@celery.task(name="%s.upload_product_usage" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
+def upload_product_usage():
+    _LOG.info("Celery task upload_product_usage invoked")
+

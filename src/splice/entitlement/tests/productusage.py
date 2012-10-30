@@ -37,6 +37,18 @@ class ProductUsageTest(BaseEntitlementTestCase):
     def tearDown(self):
         super(ProductUsageTest, self).tearDown()
 
+    def create_config_parser(self, servers):
+        raw_config_data = """
+[reporting]
+servers = %s
+[tasks]
+upload_product_usage_interval_minutes = 720
+upload_product_usage_limit_per_call = 5000
+        """ % (servers)
+        parser = ConfigParser.SafeConfigParser()
+        parser.readfp(StringIO(raw_config_data))
+        return parser
+
     def create_product_usage(self, consumer, splice_server, instance_identifier, date=None,
                              allowed_product_info=None, unallowed_product_info=None, facts=None):
         if not date:
@@ -171,12 +183,8 @@ class ProductUsageTest(BaseEntitlementTestCase):
         self.assertEquals(len(found), 2)
 
     def test_config_single_endpoint(self):
-        raw_config_data = """
-[reporting]
-servers = 255.255.255.255:443:/splice/api/v1/productusage
-"""
-        parser = ConfigParser.SafeConfigParser()
-        parser.readfp(StringIO(raw_config_data))
+        servers = "255.255.255.255:443:/splice/api/v1/productusage"
+        parser = self.create_config_parser(servers)
         data = config.get_reporting_config_info(cfg=parser)
         self.assertTrue(data.has_key("servers"))
         self.assertEquals(len(data["servers"]), 1)
@@ -186,12 +194,8 @@ servers = 255.255.255.255:443:/splice/api/v1/productusage
 
     def test_config_multiple_endpoints(self):
         # Test config parsing with bad values
-        raw_config_data = """
-[reporting]
-servers = 255.255.255.255:443:/splice/api/v1/productusage, 192.168.1.1:443:/splice/api/v1/productusage, test.example.com:443:/api/v1/productusage
-        """
-        parser = ConfigParser.SafeConfigParser()
-        parser.readfp(StringIO(raw_config_data))
+        servers = "255.255.255.255:443:/splice/api/v1/productusage, 192.168.1.1:443:/splice/api/v1/productusage, test.example.com:443:/api/v1/productusage"
+        parser = self.create_config_parser(servers)
         data = config.get_reporting_config_info(cfg=parser)
         self.assertTrue(data.has_key("servers"))
         self.assertEquals(len(data["servers"]), 3)
