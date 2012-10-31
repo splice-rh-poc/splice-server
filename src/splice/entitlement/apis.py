@@ -12,7 +12,7 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 
-from mongoengine.queryset import OperationError
+from mongoengine.queryset import OperationError, NotUniqueError
 from tastypie import fields
 from tastypie import http
 from tastypie.authentication import Authentication
@@ -51,16 +51,19 @@ class ModifiedProductUsageResource(productusage.ProductUsageResource):
 
     def import_hook(self, product_usages):
         errors = []
+        dups = []
         _LOG.debug("Importing %s ProductUsage objects" % (len(product_usages)))
         for pu in product_usages:
             try:
                 pu.save()
+            except NotUniqueError, e:
+                # This is fine, don't count as an error, skip this item and proceed
+                dups.append(pu)
             except OperationError, e:
                 _LOG.warning("Error on attempting to save: %s.\nException: %s" % (pu, e))
-                # TODO:  Need to distinguish between duplicate imports and an actual error
                 errors.append(pu)
-        _LOG.debug("%s ProductUsage objects successfully imported, %s were duplicates or had errors" % \
-                   (len(product_usages)- len(errors), len(errors)))
+        _LOG.debug("%s ProductUsage objects successfully imported, %s were duplicates and %s were errors" % \
+                   (len(product_usages)- len(errors) - len(dups), len(dups), len(errors)))
         return errors
 
 

@@ -23,7 +23,7 @@ from logging import getLogger
 from splice.common.constants import SPLICE_ENTITLEMENT_BASE_TASK_NAME
 from splice.common import identity
 from splice.common import celeryconfig
-from splice.managers import identity_lookup
+from splice.managers import identity_lookup, upload
 
 _LOG = getLogger(__name__)
 
@@ -51,11 +51,11 @@ def sync_single_rhic(uuid):
     @return:
     """
     start = time.time()
-    _LOG.info("Celery task: sync_single_rhic(%s) invoked" % (uuid))
+    _LOG.info("invoked uuid=%s" % (uuid))
     status_code  = identity.sync_single_rhic_blocking(uuid)
     identity_lookup.complete_rhic_lookup_task(uuid, status_code)
     end = time.time()
-    _LOG.info("Celery task: sync_single_rhic(%s) completed with status_code '%s' in %s seconds" % \
+    _LOG.info("completed with status_code '%s' in %s seconds" % \
               (uuid, status_code, end-start))
     return status_code
 
@@ -69,34 +69,34 @@ def sync_rhics():
     @rtype:  (bool,str)
     """
     start = time.time()
-    _LOG.info("Celery task: sync_all_rhics invoked")
+    _LOG.info("invoked")
     retval = identity.sync_from_rhic_serve_blocking()
     end = time.time()
-    _LOG.info("Celery task: sync_all_rhics finished in %s seconds" % (end-start))
+    _LOG.info("finished in %s seconds" % (end-start))
     return retval
 
 @celery.task(name="%s.process_running_rhic_lookup_tasks" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
 def process_running_rhic_lookup_tasks():
     start = time.time()
-    _LOG.info("Celery task: process_running_rhic_lookup_tasks invoked")
+    _LOG.info("invoked")
     identity.purge_expired_rhic_lookups()
     in_progress_tasks = identity.get_in_progress_rhic_lookups()
-    _LOG.info("Celery task: process_running_rhic_lookup_tasks %s in progress tasks exist" % (len(in_progress_tasks)))
+    _LOG.info("%s in progress tasks exist" % (len(in_progress_tasks)))
     for t in in_progress_tasks:
         if t.task_id:
             result = AsyncResult(t.task_id)
             if result.state in ["RUNNING", "PENDING"]:
-                _LOG.info("Celery task: process_running_rhic_lookup_tasks skipped '%s' since it is %s" % (t, result.state))
+                _LOG.info("skipped '%s' since it is %s" % (t, result.state))
                 continue
             else:
-                _LOG.info("Celery task: process_running_rhic_lookup_tasks found existing "
+                _LOG.info("found existing "
                           "celery task with id '%s' and state '%s'.  Will issue a new task "
                           "since state was not RUNNING or PENDING." % (t.task_id, result.state))
         new_result = sync_single_rhic.apply_async((t.uuid,))
         new_task = identity_lookup.update_rhic_lookup_task(t.uuid, new_result.task_id)
-        _LOG.info("Celery task: process_running_rhic_lookup_tasks initiated new task: %s" % (new_task))
+        _LOG.info("initiated new task: %s" % (new_task))
     end = time.time()
-    _LOG.info("Celery task: process_running_rhic_lookup_tasks completed in %s seconds" % (end-start))
+    _LOG.info("completed in %s seconds" % (end-start))
 
 @celery.task(name="%s.log_time" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
 def log_time():
@@ -104,5 +104,7 @@ def log_time():
 
 @celery.task(name="%s.upload_product_usage" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
 def upload_product_usage():
-    _LOG.info("Celery task upload_product_usage invoked")
+    _LOG.info("invoked")
+    upload.upload_product_usage_data
+    _LOG.info("completed")
 
