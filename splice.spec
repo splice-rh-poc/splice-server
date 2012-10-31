@@ -157,6 +157,12 @@ if [ ! -f /etc/pki/splice/generated/Splice_HTTPS_server.cert ]
 then
     splice_cert_gen_setup.py /etc/httpd/conf.d/splice.conf
 fi
+
+%post common
+chown -R apache:apache %{_var}/log/%{name}
+chmod g+s %{_var}/log/%{name}
+setfacl -d -m g::rwx %{_var}/log/%{name}
+setfacl -d -m o::rx %{_var}/log/%{name}
 #
 # If there is no Splice Server identity certificate, generate a new one for testing
 # This step will be removed during production, the splice server cert must come from
@@ -166,12 +172,6 @@ if [ ! -f /etc/etc/pki/splice/generated/Splice_identity.cert ]
 then
     splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.key --outcert /etc/pki/splice/generated/Splice_identity.cert --outkey /etc/pki/splice/generated/Splice_identity.key
 fi
-
-%post common
-chown -R apache:apache %{_var}/log/%{name}
-chmod g+s %{_var}/log/%{name}
-setfacl -d -m g::rwx %{_var}/log/%{name}
-setfacl -d -m o::rx %{_var}/log/%{name}
 
 
 %post selinux
