@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.74
+Version:    0.75
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -235,6 +235,10 @@ exit 0
 
 
 %changelog
+* Wed Oct 31 2012 John Matthews <jmatthews@redhat.com> 0.75-1
+- Fixes for upload product usage task (jmatthews@redhat.com)
+- Fix typo in upload product usage task (jmatthews@redhat.com)
+
 * Wed Oct 31 2012 John Matthews <jmatthews@redhat.com> 0.74-1
 - Allow product usage upload task to not run if 'servers' is commented out in
   config, also added more exception handling in other client pieces
