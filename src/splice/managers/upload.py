@@ -53,6 +53,7 @@ def _process_product_usage_upload(addr, port, url, limit, since=None):
         return True
     last_timestamp = pu_data[-1].date
     try:
+        _LOG.info("Uploading %s Product Usage items to %s:%s/%s" % (len(pu_data), addr, port, url))
         splice_server_client.upload_product_usage_data(addr, port, url, pu_data)
     except RequestException, e:
         _LOG.exception("Received exception attempting to send %s records from %s to %s:%s\%s" % (len(pu_data), last_timestamp, addr, port, url))
