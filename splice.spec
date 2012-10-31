@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.71
+Version:    0.72
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -235,6 +235,9 @@ exit 0
 
 
 %changelog
+* Wed Oct 31 2012 John Matthews <jmatthews@redhat.com> 0.72-1
+- Bump requires of python-certutils (jmatthews@redhat.com)
+
 * Wed Oct 31 2012 John Matthews <jmatthews@redhat.com> 0.71-1
 - Fix typo in %%post of splice-common (jmatthews@redhat.com)
 - Added check of essential configuration certificates to startup, will LOG a
