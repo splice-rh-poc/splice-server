@@ -105,6 +105,6 @@ def log_time():
 @celery.task(name="%s.upload_product_usage" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
 def upload_product_usage():
     _LOG.info("invoked")
-    upload.upload_product_usage_data
+    upload.upload_product_usage_data()
     _LOG.info("completed")
 
