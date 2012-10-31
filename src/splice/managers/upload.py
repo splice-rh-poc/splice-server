@@ -50,6 +50,7 @@ def _process_product_usage_upload(addr, port, url, limit, since=None):
     cursor = _get_product_usage_data(addr, limit, since)
     pu_data = list(cursor)
     if not pu_data:
+        _LOG.info("No new product usage data to upload")
         return True
     last_timestamp = pu_data[-1].date
     try:
@@ -88,6 +89,7 @@ def _get_product_usage_data(addr, limit, since=None):
         prod_usage_data = ProductUsage.objects()
     if limit:
         prod_usage_data = prod_usage_data.order_by("date").limit(limit)
+    _LOG.info("Retrieved %s items to send to %s, since last timestamp of %s" % (len(prod_usage_data), addr, last_timestamp))
     return prod_usage_data
 
 
