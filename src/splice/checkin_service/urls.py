@@ -19,11 +19,14 @@ from django.core.signals import got_request_exception
 from django.conf.urls import patterns, include, url
 from tastypie.api import Api
 from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource, ModifiedProductUsageResource
+from splice.entitlement import on_startup
 #
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
+
+on_startup.run()
 
 v1_api = Api(api_name='v1')
 v1_api.register(EntitlementResource())

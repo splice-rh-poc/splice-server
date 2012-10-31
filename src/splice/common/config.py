@@ -12,13 +12,13 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import ConfigParser
+import os
 
 from splice.common.exceptions import BadConfigurationException
 
 CONFIG = None
 
 #TODO:  Add logic to validate configuration entries and log/throw exception early to warn user of issues
-
 
 def init(config_file, reinit=False):
     global CONFIG

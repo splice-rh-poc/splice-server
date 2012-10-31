@@ -33,14 +33,22 @@ _LOG = logging.getLogger(__name__)
 def get_single_rhic(host, port, url, uuid, debug=False):
     cfg = config.get_rhic_serve_config_info()
     url = url + uuid + "/"
-    status, data = _request(host, port, url, last_sync=None, debug=debug,
-        key_file=cfg["client_key"], cert_file=cfg["client_cert"])
+    try:
+        status, data = _request(host, port, url, last_sync=None, debug=debug,
+            key_file=cfg["client_key"], cert_file=cfg["client_cert"])
+    except Exception, e:
+        _LOG.exception("Caught exception from 'get_single_rhic' with config info: %s"  % (cfg))
+        raise
     return status, data
 
 def get_all_rhics(host, port, url, last_sync=None, offset=None, limit=None, debug=False, accept_gzip=True):
     cfg = config.get_rhic_serve_config_info()
-    status, data = _request(host, port, url, last_sync, offset=offset, limit=limit, debug=debug,
-        accept_gzip=accept_gzip, key_file=cfg["client_key"], cert_file=cfg["client_cert"])
+    try:
+        status, data = _request(host, port, url, last_sync, offset=offset, limit=limit, debug=debug,
+            accept_gzip=accept_gzip, key_file=cfg["client_key"], cert_file=cfg["client_cert"])
+    except Exception, e:
+        _LOG.exception("Caught exception from 'get_all_rhics' with config info: %s" % (cfg))
+        raise
     if status == 200:
         # Newer rhic_serves support pagination and will return data under ["objects"]
         return data["objects"], data["meta"]
@@ -68,7 +76,7 @@ def _request(host, port, url, last_sync=None, offset=None, limit=None, debug=Fal
     if query_params:
         data = urllib.urlencode(query_params, True)
         url = url +"?" + data
-    _LOG.info("Sending HTTP request to: %s:%s%s with headers:%s" % (host, port, url, headers))
+    _LOG.info("Sending HTTPS request to: %s:%s%s with headers:%s" % (host, port, url, headers))
     start = time.time()
     connection.request(method, url, body=None, headers=headers)
     response = connection.getresponse()
