@@ -40,7 +40,7 @@ Requires: m2crypto >= 0.21.1.pulp-7
 #
 Requires: report-server-import
 Requires: rhic-serve-rcs >= 0.15
-Requires: python-certutils >= 0.12
+Requires: python-certutils >= 0.15
 #
 # Our own sub RPMs
 #
