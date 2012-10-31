@@ -259,6 +259,9 @@ if report_info["servers"]:
         'schedule': timedelta(minutes=report_info["upload_interval_minutes"]),
         'args': None,
     }
+else:
+    _LOG.warning("Skipped configuring a periodic task to upload Product Usage since no servers were configured.")
+
 _LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
 #
 # End of Celery Configuration

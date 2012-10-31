@@ -69,20 +69,25 @@ def get_rhic_serve_config_info():
 def get_reporting_config_info(cfg=None):
     if not cfg:
         cfg = CONFIG
-    raw_servers = cfg.get("reporting", "servers")
-    raw_servers = raw_servers.split(",")
-    servers = []
-    for s in raw_servers:
-        pieces = s.split(":")
-        if len(pieces) != 3:
-            raise BadConfigurationException("unable to parse '%s' for reporting server info, expected in format of address:port:url" % (s))
-        addr = pieces[0].strip()
-        try:
-            port = int(pieces[1].strip())
-        except:
-            raise BadConfigurationException("unable to convert '%s' to an integer port for server info line of '%s'" % (pieces[1], s))
-        url = pieces[2].strip()
-        servers.append((addr, port, url))
+    try:
+        raw_servers = cfg.get("reporting", "servers")
+    except Exception, e:
+        servers = raw_servers = None
+
+    if raw_servers:
+        raw_servers = raw_servers.split(",")
+        servers = []
+        for s in raw_servers:
+            pieces = s.split(":")
+            if len(pieces) != 3:
+                raise BadConfigurationException("unable to parse '%s' for reporting server info, expected in format of address:port:url" % (s))
+            addr = pieces[0].strip()
+            try:
+                port = int(pieces[1].strip())
+            except:
+                raise BadConfigurationException("unable to convert '%s' to an integer port for server info line of '%s'" % (pieces[1], s))
+            url = pieces[2].strip()
+            servers.append((addr, port, url))
     upload_interval = cfg.getint("tasks", "upload_product_usage_interval_minutes")
     limit_per_call = cfg.getint("tasks", "upload_product_usage_limit_per_call")
     return {

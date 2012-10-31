@@ -33,9 +33,14 @@ def upload_product_usage_data(host, port, url, pu_data, debug=False):
     key_file = certs.get_splice_server_identity_key_path()
     cert_file = certs.get_splice_server_identity_cert_path()
     serialized_data = utils.obj_to_json(pu_data)
-    status, data = _request(host, port, url, serialized_data, debug=debug, key_file=key_file, cert_file=cert_file)
-    if status in [200, 202]:
-        return parse_data(data)
+    try:
+        status, data = _request(host, port, url, serialized_data, debug=debug, key_file=key_file, cert_file=cert_file)
+        if status in [200, 202]:
+            return parse_data(data)
+    except Exception, e:
+        _LOG.exception("Caught exception attempting to send %s product usage objects to %s:%s/%s with key=%s, cert=%s" % \
+                       (len(pu_data), host, port, url, key_file, cert_file))
+        raise
     raise RequestException(status, data)
 
 def _request(host, port, url, body, debug=False, key_file=None, cert_file=None):

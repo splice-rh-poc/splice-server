@@ -153,7 +153,7 @@ upload_product_usage_limit_per_call = 5000
         resp = self.api_client.post('/api/v1/productusage/', format='json', data=post_data,
             SSL_CLIENT_CERT=self.expected_valid_splice_server_identity_pem)
         LOG.info("Response for productusage import: Status Code: %s, Response: %s" % (resp.status_code, resp))
-        self.assertEquals(resp.status_code, 409)
+        self.assertEquals(resp.status_code, 202)
         # Now check that the server api saved the object as expected
         found = ProductUsage.objects()
         found = ProductUsage.objects()

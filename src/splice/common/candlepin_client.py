@@ -48,12 +48,17 @@ def get_entitlement(host, port, url, requested_products, identity,
     @param debug:       optional param, default to False, if True will print more debug information
     @return:
     """
-    status, data = _request(host, port, url,
-        requested_products, identity,
-        username, password,
-        start_date=start_date, end_date=end_date, debug=debug)
-    if status == 200:
-        return parse_data(data)
+    try:
+        status, data = _request(host, port, url,
+            requested_products, identity,
+            username, password,
+            start_date=start_date, end_date=end_date, debug=debug)
+        if status == 200:
+            return parse_data(data)
+    except Exception, e:
+        _LOG.exception("Caught exception trying to request ent cert from %s:%s/%s for identity %s with products %s" % \
+            (host, port, url, identity, requested_products))
+        raise
     raise RequestException(status, data)
 
 def parse_data(data):
