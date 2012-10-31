@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.69
+Version:    0.70
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -235,6 +235,17 @@ exit 0
 
 
 %changelog
+* Wed Oct 31 2012 John Matthews <jmatthews@redhat.com> 0.70-1
+- Adding in logging configuration for unit tests (jmatthews@redhat.com)
+- Move generation of Splice Server identity certificate to splice-common
+  (jmatthews@redhat.com)
+- Update how we call config.init(), remove 'config' calling back into
+  settings.py to avoid any cyclical dep issues (jmatthews@redhat.com)
+- Update config so connections to rhic_serve are secured by the Splice Server
+  identity certificate (jmatthews@redhat.com)
+- Added celery task for uploading product usage data along with unit tests,
+  untested beyond unit tests (jmatthews@redhat.com)
+
 * Mon Oct 29 2012 James Slagle <jslagle@redhat.com> 0.69-1
 - Read config file path from settings (jslagle@redhat.com)
 
