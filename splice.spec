@@ -205,6 +205,7 @@ exit 0
 %defattr(-,apache,apache,-)
 %dir %{_sysconfdir}/pki/%{name}
 %{_sysconfdir}/pki/%{name}
+%dir %{_var}/log/%{name}
 
 %files
 %defattr(-,root,root,-)
@@ -217,7 +218,6 @@ exit 0
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_all
 %defattr(-,apache,apache,-)
 %dir /srv/%{name}
-%dir %{_var}/log/%{name}
 /srv/%{name}/webservices.wsgi
 %doc
 
