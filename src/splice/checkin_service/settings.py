@@ -175,10 +175,11 @@ INSTALLED_APPS = (
 ##
 ## Adding mongoengine specifics ##
 ##
-MONGO_DATABASE_NAME = 'checkin_service'
 import mongoengine
-mongoengine.connect(MONGO_DATABASE_NAME)
-mongoengine.register_connection("rhic_serve", MONGO_DATABASE_NAME)
+db_name = config.CONFIG.get('server', 'db_name')
+db_host = config.CONFIG.get('server', 'db_host')
+mongoengine.connect(db_name, host=db_host)
+mongoengine.register_connection("rhic_serve", db_name)
 
 AUTHENTICATION_BACKENDS = (
     'mongoengine.django.auth.MongoEngineBackend',

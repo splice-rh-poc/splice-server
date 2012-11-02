@@ -25,6 +25,13 @@ CONFIG = None
 # TODO:  Add logic to validate configuration entries and log/throw exception
 # early to warn user of issues
 
+defaults = {
+    'server': {
+        'db_name': 'checkin_service',
+        'db_host': 'localhost',
+    },
+}
+
 def init(config_file=None, reinit=False):
     global CONFIG
     if CONFIG and not reinit:
