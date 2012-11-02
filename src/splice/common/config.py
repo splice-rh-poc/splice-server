@@ -13,6 +13,7 @@
 
 import ConfigParser
 import logging
+import logging.config
 import os
 
 from django.conf import settings
