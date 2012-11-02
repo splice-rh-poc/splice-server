@@ -200,8 +200,7 @@ exit 0
 %defattr(-,root,root,-)
 %{python_sitelib}/%{name}/common
 %{python_sitelib}/%{name}/__init__.py*
-%config(noreplace) %{_sysconfdir}/splice/server.conf
-%config(noreplace) %{_sysconfdir}/splice/logging
+%config(noreplace) %{_sysconfdir}/splice
 %defattr(-,apache,apache,-)
 %dir %{_sysconfdir}/pki/%{name}
 %{_sysconfdir}/pki/%{name}
