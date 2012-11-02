@@ -69,14 +69,6 @@ class ModifiedProductUsageResource(productusage.ProductUsageResource):
 
 class RHICRCSModifiedResource(rhic.RHICRcsResource):
 
-    class Meta(rhic.RHICRcsResource.Meta):
-        #
-        # We want our class to have the same URL pattern as the base class
-        # So...explicitly setting 'resource_name'
-        #
-        resource_name = 'rhicrcs'
-        authentication = X509CertificateAuthentication(verification_ca=certs.get_splice_server_identity_ca_pem())
-
     def __init__(self):
         super(RHICRCSModifiedResource, self).__init__()
 

@@ -14,21 +14,35 @@
 import ConfigParser
 import os
 
+from django.conf import settings
+
 from splice.common.exceptions import BadConfigurationException
 
 CONFIG = None
 
-#TODO:  Add logic to validate configuration entries and log/throw exception early to warn user of issues
+# TODO:  Add logic to validate configuration entries and log/throw exception
+# early to warn user of issues
 
-def init(config_file, reinit=False):
+def init(config_file=None, reinit=False):
     global CONFIG
     if CONFIG and not reinit:
         return CONFIG
-    #if not config_file:
-    #    config_file = settings.SPLICE_CONFIG_FILE
+    if not config_file:
+        config_file = settings.SPLICE_CONFIG_FILE
     CONFIG = ConfigParser.SafeConfigParser()
     CONFIG.read(config_file)
+    read_config_files()
     return CONFIG
+
+
+def read_config_files():
+    global CONFIG
+    config_dir = CONFIG.get('main', 'config_dir')
+    for config_file in os.listdir(config_dir):
+        if not config_file.endswith('.conf'):
+            continue
+        else:
+            CONFIG.read(os.path.join(config_dir, config_file))
 
 def get_candlepin_config_info():
 
@@ -96,9 +110,6 @@ def get_reporting_config_info(cfg=None):
         "limit_per_call": limit_per_call
     }
 
-def get_logging_config_file():
-    return CONFIG.get("logging", "config")
-
 def get_splice_server_info():
     ret_val = {}
     ret_val["description"] = CONFIG.get("info", "description")
@@ -123,4 +134,3 @@ def get_crl_path():
 
 def get_logging_config_file():
     return CONFIG.get("logging", "config")
-

@@ -21,20 +21,6 @@ import pwd
 
 # Initialize Splice Config & Logging
 SPLICE_CONFIG_FILE = '/etc/splice/server.conf'
-from splice.common import config
-config.init(SPLICE_CONFIG_FILE)
-splice_log_cfg = config.get_logging_config_file()
-if splice_log_cfg:
-    if not os.path.exists(splice_log_cfg):
-        print "Unable to read '%s' for logging configuration" % (splice_log_cfg)
-    else:
-        try:
-            logging.config.fileConfig(splice_log_cfg)
-        except Exception, e:
-            print e
-            print "Unable to initialize logging config with: %s" % (splice_log_cfg)
-from logging import getLogger
-_LOG = getLogger(__name__)
 
 
 def get_username():
@@ -214,66 +200,7 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
 }
 CELERY_ANNOTATIONS = {"%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME): {"rate_limit": "10/s"}}
 
-
-rhic_serve_cfg = config.get_rhic_serve_config_info()
-
-single_rhic_retry_lookup_tasks_in_minutes = 15
-if rhic_serve_cfg.has_key("single_rhic_retry_lookup_tasks_in_minutes"):
-    single_rhic_retry_lookup_tasks_in_minutes = int(rhic_serve_cfg["single_rhic_retry_lookup_tasks_in_minutes"])
-
-from datetime import timedelta
-CELERYBEAT_SCHEDULE = {
-    # Executes every 30 seconds
-    #'dummy_task_executes_every_hour': {
-    #    'task': '%s.log_time' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-    #    'schedule': timedelta(seconds=5),
-    #    'args': None,
-    #},
-    'process_running_rhic_lookup_tasks': {
-        'task': '%s.process_running_rhic_lookup_tasks' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-        'schedule': timedelta(minutes=single_rhic_retry_lookup_tasks_in_minutes),
-       'args': None,
-    }
-}
 CELERY_TIMEZONE = 'UTC'
-
-# Controls 'if' we will sync all rhics
-sync_all_rhics_bool = True
-if rhic_serve_cfg.has_key("sync_all_rhics_bool"):
-    sync_all_rhics_bool = rhic_serve_cfg["sync_all_rhics_bool"]
-if sync_all_rhics_bool:
-    # Controls 'when' we will run a full sync of rhics
-    sync_all_rhics_in_minutes = 60
-    if rhic_serve_cfg.has_key("sync_all_rhics_in_minutes"):
-        sync_all_rhics_in_minutes = int(rhic_serve_cfg["sync_all_rhics_in_minutes"])
-    CELERYBEAT_SCHEDULE['sync_all_rhics'] = {
-        'task': '%s.sync_all_rhics' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-        'schedule': timedelta(minutes=sync_all_rhics_in_minutes),
-        'args': None,
-    }
-
-report_info = config.get_reporting_config_info()
-if report_info["servers"]:
-    CELERYBEAT_SCHEDULE['upload_product_usage'] = {
-        'task': '%s.upload_product_usage' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-        'schedule': timedelta(minutes=report_info["upload_interval_minutes"]),
-        'args': None,
-    }
-else:
-    _LOG.warning("Skipped configuring a periodic task to upload Product Usage since no servers were configured.")
-
-_LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
 #
 # End of Celery Configuration
 #############################
-
-#
-# TODO: See if we can work out a better solution and not need to set
-#       real values to the below cert settings for 'rhic-serve'
-#       RCS is not specifically using the functionality requiring these settings, yet if they are
-#       not defined, and not pointing to a real file to read then an exception is thrown immediately and
-#       requests will not be processed
-#
-CA_CERT_PATH="/etc/pki/splice/Splice_testing_root_CA.crt"
-CA_KEY_PATH="/etc/pki/splice/Splice_testing_root_CA.key"
-CERT_DAYS="1"
