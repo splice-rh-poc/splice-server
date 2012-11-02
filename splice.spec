@@ -2,8 +2,8 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.77
-Release:    1%{?dist}
+Version:    0.78
+Release:    1.common_config%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
 Group:      Development/Languages
@@ -235,6 +235,9 @@ exit 0
 
 
 %changelog
+* Fri Nov 02 2012 James Slagle <jslagle@redhat.com> 0.78-1.common_config
+- Initial config refactoring (jslagle@redhat.com)
+
 * Wed Oct 31 2012 John Matthews <jmatthews@redhat.com> 0.77-1
 - splice-common now owns /var/log/splice (jmatthews@redhat.com)
 
