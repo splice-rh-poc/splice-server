@@ -12,6 +12,12 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 from splice.checkin_service.settings import *
+from splice.common import config
+
+# Reset configuration object just in case
+config.CONFIG = None
 
 SPLICE_CONFIG_FILE = 'dev/splice.conf'
+config.init(SPLICE_CONFIG_FILE)
+set_celerybeat_schedule()
 

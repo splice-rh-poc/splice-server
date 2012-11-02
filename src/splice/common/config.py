@@ -12,6 +12,7 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import ConfigParser
+import logging
 import os
 
 from django.conf import settings
@@ -32,17 +33,33 @@ def init(config_file=None, reinit=False):
     CONFIG = ConfigParser.SafeConfigParser()
     CONFIG.read(config_file)
     read_config_files()
+    init_logging()
     return CONFIG
 
 
 def read_config_files():
     global CONFIG
-    config_dir = CONFIG.get('main', 'config_dir')
-    for config_file in os.listdir(config_dir):
-        if not config_file.endswith('.conf'):
-            continue
+    if CONFIG.has_option('main', 'config_dir'):
+        config_dir = CONFIG.get('main', 'config_dir')
+        for config_file in os.listdir(config_dir):
+            if not config_file.endswith('.conf'):
+                continue
+            else:
+                CONFIG.read(os.path.join(config_dir, config_file))
+
+
+def init_logging():
+    splice_log_cfg = get_logging_config_file()
+    if splice_log_cfg:
+        if not os.path.exists(splice_log_cfg):
+            print "Unable to read '%s' for logging configuration" % (splice_log_cfg)
         else:
-            CONFIG.read(os.path.join(config_dir, config_file))
+            try:
+                logging.config.fileConfig(splice_log_cfg)
+            except Exception, e:
+                print e
+                print "Unable to initialize logging config with: %s" % (splice_log_cfg)
+
 
 def get_candlepin_config_info():
 
@@ -66,19 +83,24 @@ def get_rhic_serve_config_info():
     except Exception:
         pass
 
-    return {
-        "host": CONFIG.get("rhic_serve", "host"),
-        "port": CONFIG.get("rhic_serve", "port"),
-        "rhics_url": CONFIG.get("rhic_serve", "rhics_url"),
-        "sync_all_rhics_in_minutes": CONFIG.getint("tasks", "sync_all_rhics_in_minutes"),
-        "single_rhic_lookup_cache_unknown_in_hours": CONFIG.getint("tasks", "single_rhic_lookup_cache_unknown_in_hours"),
-        "single_rhic_lookup_timeout_in_minutes": CONFIG.getint("tasks", "single_rhic_lookup_timeout_in_minutes"),
-        "single_rhic_retry_lookup_tasks_in_minutes": CONFIG.getint("tasks", "single_rhic_retry_lookup_tasks_in_minutes"),
-        "sync_all_rhics_bool" : CONFIG.getboolean("tasks", "sync_all_rhics_bool"),
-        "sync_all_rhics_pagination_limit_per_call" : CONFIG.getint("tasks", "sync_all_rhics_pagination_limit_per_call"),
-        "client_cert": client_cert,
-        "client_key": client_key,
-    }
+    try:
+        rhic_serve_config = {
+            "host": CONFIG.get("rhic_serve", "host"),
+            "port": CONFIG.get("rhic_serve", "port"),
+            "rhics_url": CONFIG.get("rhic_serve", "rhics_url"),
+            "sync_all_rhics_in_minutes": CONFIG.getint("tasks", "sync_all_rhics_in_minutes"),
+            "single_rhic_lookup_cache_unknown_in_hours": CONFIG.getint("tasks", "single_rhic_lookup_cache_unknown_in_hours"),
+            "single_rhic_lookup_timeout_in_minutes": CONFIG.getint("tasks", "single_rhic_lookup_timeout_in_minutes"),
+            "single_rhic_retry_lookup_tasks_in_minutes": CONFIG.getint("tasks", "single_rhic_retry_lookup_tasks_in_minutes"),
+            "sync_all_rhics_bool" : CONFIG.getboolean("tasks", "sync_all_rhics_bool"),
+            "sync_all_rhics_pagination_limit_per_call" : CONFIG.getint("tasks", "sync_all_rhics_pagination_limit_per_call"),
+            "client_cert": client_cert,
+            "client_key": client_key,
+        }
+    except Exception:
+        rhic_serve_config = {}
+
+    return rhic_serve_config
 
 def get_reporting_config_info(cfg=None):
     if not cfg:
@@ -102,8 +124,16 @@ def get_reporting_config_info(cfg=None):
                 raise BadConfigurationException("unable to convert '%s' to an integer port for server info line of '%s'" % (pieces[1], s))
             url = pieces[2].strip()
             servers.append((addr, port, url))
-    upload_interval = cfg.getint("tasks", "upload_product_usage_interval_minutes")
-    limit_per_call = cfg.getint("tasks", "upload_product_usage_limit_per_call")
+    try:
+        upload_interval = cfg.getint("tasks", "upload_product_usage_interval_minutes")
+    except:
+        upload_interval = 240
+
+    try:
+        limit_per_call = cfg.getint("tasks", "upload_product_usage_limit_per_call")
+    except:
+        limit_per_call = 10000
+
     return {
         "servers": servers,
         "upload_interval_minutes": upload_interval,
@@ -133,4 +163,7 @@ def get_crl_path():
     return CONFIG.get("crl", "location")
 
 def get_logging_config_file():
-    return CONFIG.get("logging", "config")
+    if CONFIG.has_option('logging', 'config'):
+        return CONFIG.get("logging", "config")
+    else:
+        return None

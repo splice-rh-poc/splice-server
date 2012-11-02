@@ -12,16 +12,22 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 
-# Django settings for checkin_service project.
+"""
+Django settings for checkin_service project.
+"""
+
+from datetime import timedelta
 import logging
-import logging.config
 import os
 import pwd
 
 
 # Initialize Splice Config & Logging
+from splice.common import config
 SPLICE_CONFIG_FILE = '/etc/splice/splice.conf'
+config.init(SPLICE_CONFIG_FILE)
 
+_LOG = logging.getLogger(__name__)
 
 def get_username():
     return pwd.getpwuid( os.getuid() )[ 0 ]
@@ -201,6 +207,57 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
 CELERY_ANNOTATIONS = {"%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME): {"rate_limit": "10/s"}}
 
 CELERY_TIMEZONE = 'UTC'
+
+CELERYBEAT_SCHEDULE = {}
+
+def set_celerybeat_schedule():
+    global CELERYBEAT_SCHEDULE
+    CELERYBEAT_SCHEDULE = {}
+
+    rhic_serve_cfg = config.get_rhic_serve_config_info()
+
+    single_rhic_retry_lookup_tasks_in_minutes = 15
+    if rhic_serve_cfg.has_key("single_rhic_retry_lookup_tasks_in_minutes"):
+        single_rhic_retry_lookup_tasks_in_minutes = rhic_serve_cfg["single_rhic_retry_lookup_tasks_in_minutes"]
+
+    CELERYBEAT_SCHEDULE = {
+        # Executes every 30 seconds
+        'process_running_rhic_lookup_tasks': {
+            'task': '%s.process_running_rhic_lookup_tasks' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+            'schedule': timedelta(minutes=single_rhic_retry_lookup_tasks_in_minutes),
+           'args': None,
+        }
+    }
+
+    # Controls 'if' we will sync all rhics
+    sync_all_rhics_bool = True
+    if rhic_serve_cfg.has_key("sync_all_rhics_bool"):
+        sync_all_rhics_bool = rhic_serve_cfg["sync_all_rhics_bool"]
+    if sync_all_rhics_bool:
+        # Controls 'when' we will run a full sync of rhics
+        sync_all_rhics_in_minutes = 60
+        if rhic_serve_cfg.has_key("sync_all_rhics_in_minutes"):
+            sync_all_rhics_in_minutes = int(rhic_serve_cfg["sync_all_rhics_in_minutes"])
+        CELERYBEAT_SCHEDULE['sync_all_rhics'] = {
+            'task': '%s.sync_all_rhics' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+            'schedule': timedelta(minutes=sync_all_rhics_in_minutes),
+            'args': None,
+        }
+
+    report_info = config.get_reporting_config_info()
+    if report_info["servers"]:
+        CELERYBEAT_SCHEDULE['upload_product_usage'] = {
+            'task': '%s.upload_product_usage' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+            'schedule': timedelta(minutes=report_info["upload_interval_minutes"]),
+            'args': None,
+        }
+    else:
+        _LOG.warning("Skipped configuring a periodic task to upload Product Usage since no servers were configured.")
+
+    _LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
+
+set_celerybeat_schedule()
+
 #
 # End of Celery Configuration
 #############################

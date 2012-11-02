@@ -34,10 +34,6 @@ _LOG = logging.getLogger(__name__)
 
 def run():
 
-    config.init()
-    configure_logging()
-    configure_celery()
-
     if not check_certs():
         _LOG.warning("Please re-check the configuration file, there appears to be problems with how certificates have been configured")
 
@@ -51,72 +47,6 @@ def run():
                     "*****")
     _LOG.info("Configuration file was examined and certificate configuration is acceptable.")
 
-
-def configure_logging():
-    splice_log_cfg = config.get_logging_config_file()
-    if splice_log_cfg:
-        if not os.path.exists(splice_log_cfg):
-            print "Unable to read '%s' for logging configuration" % (splice_log_cfg)
-        else:
-            try:
-                logging.config.fileConfig(splice_log_cfg)
-            except Exception, e:
-                print e
-                print "Unable to initialize logging config with: %s" % (splice_log_cfg)
-
-
-def configure_celery():
-
-    CELERYBEAT_SCHEDULE = {}
-
-    rhic_serve_cfg = config.get_rhic_serve_config_info()
-
-    single_rhic_retry_lookup_tasks_in_minutes = 15
-    if rhic_serve_cfg.has_key("single_rhic_retry_lookup_tasks_in_minutes"):
-        single_rhic_retry_lookup_tasks_in_minutes = rhic_serve_cfg["single_rhic_retry_lookup_tasks_in_minutes"]
-
-    CELERYBEAT_SCHEDULE = {
-        # Executes every 30 seconds
-        #'dummy_task_executes_every_hour': {
-        #    'task': '%s.log_time' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-        #    'schedule': timedelta(seconds=5),
-        #    'args': None,
-        #},
-        'process_running_rhic_lookup_tasks': {
-            'task': '%s.process_running_rhic_lookup_tasks' % (settings.SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-            'schedule': timedelta(minutes=single_rhic_retry_lookup_tasks_in_minutes),
-           'args': None,
-        }
-    }
-
-    # Controls 'if' we will sync all rhics
-    sync_all_rhics_bool = True
-    if rhic_serve_cfg.has_key("sync_all_rhics_bool"):
-        sync_all_rhics_bool = rhic_serve_cfg["sync_all_rhics_bool"]
-    if sync_all_rhics_bool:
-        # Controls 'when' we will run a full sync of rhics
-        sync_all_rhics_in_minutes = 60
-        if rhic_serve_cfg.has_key("sync_all_rhics_in_minutes"):
-            sync_all_rhics_in_minutes = int(rhic_serve_cfg["sync_all_rhics_in_minutes"])
-        CELERYBEAT_SCHEDULE['sync_all_rhics'] = {
-            'task': '%s.sync_all_rhics' % (settings.SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-            'schedule': timedelta(minutes=sync_all_rhics_in_minutes),
-            'args': None,
-        }
-
-    report_info = config.get_reporting_config_info()
-    if report_info["servers"]:
-        CELERYBEAT_SCHEDULE['upload_product_usage'] = {
-            'task': '%s.upload_product_usage' % (settings.SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-            'schedule': timedelta(minutes=report_info["upload_interval_minutes"]),
-            'args': None,
-        }
-    else:
-        _LOG.warning("Skipped configuring a periodic task to upload Product Usage since no servers were configured.")
-
-    _LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
-
-    settings.CELERYBEAT_SCHEDULE = CELERYBEAT_SCHEDULE
 
 def check_valid_identity(cert, key, ca_cert):
     # Check that the identity certificate was signed by the configured identity CA
