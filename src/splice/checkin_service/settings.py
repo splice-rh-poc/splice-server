@@ -20,7 +20,7 @@ import pwd
 
 
 # Initialize Splice Config & Logging
-SPLICE_CONFIG_FILE = '/etc/splice/server.conf'
+SPLICE_CONFIG_FILE = '/etc/splice/splice.conf'
 
 
 def get_username():
