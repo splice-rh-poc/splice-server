@@ -16,6 +16,16 @@
 Django common settings for splice project.
 """
 
+import logging
+
+from splice.common import config
+
+# Initialize Splice Config & Logging
+SPLICE_CONFIG_FILE = '/etc/splice/splice.conf'
+config.init(SPLICE_CONFIG_FILE)
+
+_LOG = logging.getLogger(__name__)
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG

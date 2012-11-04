@@ -17,18 +17,10 @@ Django settings for checkin_service project.
 """
 
 from datetime import timedelta
-import logging
 import os
 import pwd
 
 from splice.common.settings import *
-
-# Initialize Splice Config & Logging
-from splice.common import config
-SPLICE_CONFIG_FILE = '/etc/splice/splice.conf'
-config.init(SPLICE_CONFIG_FILE)
-
-_LOG = logging.getLogger(__name__)
 
 def get_username():
     return pwd.getpwuid( os.getuid() )[ 0 ]
