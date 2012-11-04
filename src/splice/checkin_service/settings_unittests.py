@@ -41,7 +41,7 @@ _LOG = getLogger(__name__)
 ##
 ## Adding mongoengine specifics ##
 ##
-MONGO_DATABASE_NAME = 'TEST_checkin_service'
+MONGO_DATABASE_NAME = 'test_%s' % config.CONFIG.get('server', 'db_name')
 import mongoengine
 mongoengine.connect(MONGO_DATABASE_NAME)
 mongoengine.register_connection("rhic_serve", MONGO_DATABASE_NAME)
