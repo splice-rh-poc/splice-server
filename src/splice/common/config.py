@@ -15,6 +15,7 @@ import ConfigParser
 import logging
 import logging.config
 import os
+import sys
 
 from django.conf import settings
 
@@ -56,7 +57,14 @@ def read_config_files():
                 CONFIG.read(os.path.join(config_dir, config_file))
 
 
+def reset_logging():
+    # Not super elegant, but this is the easiest way to reset the python
+    # logging module.
+    logging.Logger.manager.loggerDict = {}
+
+
 def init_logging():
+    reset_logging()
     splice_log_cfg = get_logging_config_file()
     if splice_log_cfg:
         if not os.path.exists(splice_log_cfg):
