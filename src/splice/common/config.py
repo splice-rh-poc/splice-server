@@ -151,33 +151,25 @@ def get_candlepin_config_info():
     }
 
 def get_rhic_serve_config_info():
-    client_cert = None
-    client_key = None
-    try:
-        client_cert = CONFIG.get("rhic_serve", "client_cert")
-    except Exception:
-        pass
-    try:
-        client_key = CONFIG.get("rhic_serve", "client_key")
-    except Exception:
-        pass
-
-    try:
-        rhic_serve_config = {
-            "host": CONFIG.get("rhic_serve", "host"),
-            "port": CONFIG.get("rhic_serve", "port"),
-            "rhics_url": CONFIG.get("rhic_serve", "rhics_url"),
-            "sync_all_rhics_in_minutes": CONFIG.getint("tasks", "sync_all_rhics_in_minutes"),
-            "single_rhic_lookup_cache_unknown_in_hours": CONFIG.getint("tasks", "single_rhic_lookup_cache_unknown_in_hours"),
-            "single_rhic_lookup_timeout_in_minutes": CONFIG.getint("tasks", "single_rhic_lookup_timeout_in_minutes"),
-            "single_rhic_retry_lookup_tasks_in_minutes": CONFIG.getint("tasks", "single_rhic_retry_lookup_tasks_in_minutes"),
-            "sync_all_rhics_bool" : CONFIG.getboolean("tasks", "sync_all_rhics_bool"),
-            "sync_all_rhics_pagination_limit_per_call" : CONFIG.getint("tasks", "sync_all_rhics_pagination_limit_per_call"),
-            "client_cert": client_cert,
-            "client_key": client_key,
-        }
-    except Exception:
-        rhic_serve_config = {}
+    rhic_serve_config = {
+        "host": CONFIG.get("rhic_serve", "host"),
+        "port": CONFIG.get("rhic_serve", "port"),
+        "rhics_url": CONFIG.get("rhic_serve", "rhics_url"),
+        "sync_all_rhics_in_minutes": 
+            CONFIG.getint("tasks", "sync_all_rhics_in_minutes"),
+        "single_rhic_lookup_cache_unknown_in_hours": 
+            CONFIG.getint("tasks", "single_rhic_lookup_cache_unknown_in_hours"),
+        "single_rhic_lookup_timeout_in_minutes": 
+            CONFIG.getint("tasks", "single_rhic_lookup_timeout_in_minutes"),
+        "single_rhic_retry_lookup_tasks_in_minutes": 
+            CONFIG.getint("tasks", "single_rhic_retry_lookup_tasks_in_minutes"),
+        "sync_all_rhics_bool" : 
+            CONFIG.getboolean("tasks", "sync_all_rhics_bool"),
+        "sync_all_rhics_pagination_limit_per_call" : 
+            CONFIG.getint("tasks", "sync_all_rhics_pagination_limit_per_call"),
+        "client_cert": CONFIG.get("rhic_serve", "client_cert"),
+        "client_key": CONFIG.get("rhic_serve", "client_key"),
+    }
 
     return rhic_serve_config
 
@@ -195,23 +187,23 @@ def get_reporting_config_info(cfg=None):
         for s in raw_servers:
             pieces = s.split(":")
             if len(pieces) != 3:
-                raise BadConfigurationException("unable to parse '%s' for reporting server info, expected in format of address:port:url" % (s))
+                raise BadConfigurationException(
+                    "unable to parse '%s' for reporting server info, "
+                    "expected in format of address:port:url" % (s))
             addr = pieces[0].strip()
             try:
                 port = int(pieces[1].strip())
             except:
-                raise BadConfigurationException("unable to convert '%s' to an integer port for server info line of '%s'" % (pieces[1], s))
+                raise BadConfigurationException(
+                    "unable to convert '%s' to an integer port for server "
+                    "info line of '%s'" % (pieces[1], s))
             url = pieces[2].strip()
             servers.append((addr, port, url))
-    try:
-        upload_interval = cfg.getint("tasks", "upload_product_usage_interval_minutes")
-    except:
-        upload_interval = 240
 
-    try:
-        limit_per_call = cfg.getint("tasks", "upload_product_usage_limit_per_call")
-    except:
-        limit_per_call = 10000
+    upload_interval = cfg.getint("tasks", 
+                                 "upload_product_usage_interval_minutes")
+    limit_per_call = cfg.getint("tasks", 
+                                "upload_product_usage_limit_per_call")
 
     return {
         "servers": servers,
@@ -242,7 +234,4 @@ def get_crl_path():
     return CONFIG.get("crl", "location")
 
 def get_logging_config_file():
-    if CONFIG.has_option('logging', 'config'):
-        return CONFIG.get("logging", "config")
-    else:
-        return None
+    return CONFIG.get("logging", "config")
