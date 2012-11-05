@@ -34,12 +34,6 @@ if get_username().lower() == "apache":
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'g6oax61oxoljlw6koj4-d^%n0i_0-8n^inbi0kbhb2!58%pe*v'
 
-MIDDLEWARE_CLASSES = \
-    (# 'splice.common.middleware.WsgiLogErrors',
-    'splice.common.middleware.StandardExceptionMiddleware',) + \
-    MIDDLEWARE_CLASSES + \
-    ('splice.common.middleware.ProfileMiddleware',)
-
 ROOT_URLCONF = 'splice.checkin_service.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.

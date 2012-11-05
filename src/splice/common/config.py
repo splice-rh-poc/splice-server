@@ -57,6 +57,8 @@ defaults = \
         'host': 'ec2-54-242-25-138.compute-1.amazonaws.com',
         'port': '443',
         'rhics_url': '/api/v1/rhicrcs/',
+        'db_name': 'rhic_serve',
+        'db_host': 'localhost',
     },
     'security': {
         'rhic_ca_cert': '/etc/pki/splice/Splice_testing_root_CA.crt',
