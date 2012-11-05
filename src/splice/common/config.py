@@ -26,12 +26,63 @@ CONFIG = None
 # TODO:  Add logic to validate configuration entries and log/throw exception
 # early to warn user of issues
 
-defaults = {
+defaults = \
+{
+    'crl': {
+        'location': '/etc/pki/splice',
+    },
+    'entitlement': {
+        'host': 'ec2-107-20-23-80.compute-1.amazonaws.com',
+        'password': 'admin',
+        'port': '8080',
+        'url': '/splice',
+        'username': 'admin',
+    },
+    'info': {
+        'description': '"TBD"',
+        'environment': '"us-east-1"',
+        'hostname': '"test_splice_server.example.com"',
+    },
+    'logging': {
+        'config': '/etc/splice/logging/basic.cfg',
+    },
+    'main': {
+        'config_dir': '/etc/splice/conf.d',
+    },
+    'reporting': {
+    },
+    'rhic_serve': {
+        'client_cert': '/etc/pki/splice/generated/Splice_identity.cert',
+        'client_key': '/etc/pki/splice/generated/Splice_identity.key',
+        'host': 'ec2-54-242-25-138.compute-1.amazonaws.com',
+        'port': '443',
+        'rhics_url': '/api/v1/rhicrcs/',
+    },
+    'security': {
+        'rhic_ca_cert': '/etc/pki/splice/Splice_testing_root_CA.crt',
+        'rhic_ca_key': '/etc/pki/splice/Splice_testing_root_CA.key',
+        'rhic_ca_srl': '/etc/pki/splice/Splice_testing_root_CA.srl',
+        'sign_days': '1000',
+        'splice_server_identity_ca': '/etc/pki/splice/Splice_testing_root_CA.crt',
+        'splice_server_identity_cert': '/etc/pki/splice/generated/Splice_identity.cert',
+        'splice_server_identity_key': '/etc/pki/splice/generated/Splice_identity.key',
+    },
     'server': {
-        'db_name': 'checkin_service',
         'db_host': 'localhost',
+        'db_name': 'checkin_service',
+    },
+    'tasks': {
+        'single_rhic_lookup_cache_unknown_in_hours': '24',
+        'single_rhic_lookup_timeout_in_minutes': '30',
+        'single_rhic_retry_lookup_tasks_in_minutes': '2',
+        'sync_all_rhics_bool': 'true',
+        'sync_all_rhics_in_minutes': '60',
+        'sync_all_rhics_pagination_limit_per_call': '25000',
+        'upload_product_usage_interval_minutes': '240',
+        'upload_product_usage_limit_per_call': '10000',
     },
 }
+
 
 def init(config_file=None, reinit=False):
     global CONFIG
@@ -40,10 +91,20 @@ def init(config_file=None, reinit=False):
     if not config_file:
         config_file = settings.SPLICE_CONFIG_FILE
     CONFIG = ConfigParser.SafeConfigParser()
+    set_defaults()
     CONFIG.read(config_file)
     read_config_files()
     init_logging()
     return CONFIG
+
+
+def set_defaults():
+    global CONFIG
+    for section, configs in defaults.items():
+        if not CONFIG.has_section(section):
+            CONFIG.add_section(section)
+        for config, value in configs.items():
+            CONFIG.set(section, config, value)
 
 
 def read_config_files():
