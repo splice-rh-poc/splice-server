@@ -44,6 +44,7 @@ import traceback
 #http://djangosnippets.org/snippets/1731/
 class WsgiLogErrors(object):
     def process_exception(self, request, exception):
+        import epdb; epdb.st()  
         tb_text = traceback.format_exc()
         url = request.build_absolute_uri()
         request.META['wsgi.errors'].write(url + '\n' + str(tb_text) + '\n')
@@ -110,7 +111,7 @@ class StandardExceptionMiddleware(object):
     def _get_traceback(self, exc_info=None):
         """Helper function to return the traceback as a string"""
         import traceback
-        return '\n'.join(traceback.format_exception(*(exc_info or sys.exc_info())))
+        return ''.join(traceback.format_exception(*(exc_info or sys.exc_info())))
 
 
 
