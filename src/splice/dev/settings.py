@@ -21,5 +21,7 @@ config.init(SPLICE_CONFIG_FILE)
 
 from splice.checkin_service.settings import *
 
+TASTYPIE_FULL_DEBUG = True
+
 set_celerybeat_schedule()
 
