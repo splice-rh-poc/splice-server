@@ -35,9 +35,6 @@ if splice_log_cfg:
         config.reset_logging()
         logging.config.fileConfig(splice_log_cfg)
 
-from logging import getLogger
-_LOG = getLogger(__name__)
-
 ##
 ## Adding mongoengine specifics ##
 ##

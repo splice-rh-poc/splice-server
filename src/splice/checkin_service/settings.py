@@ -148,9 +148,9 @@ def set_celerybeat_schedule():
             'args': None,
         }
     else:
-        _LOG.warning("Skipped configuring a periodic task to upload Product Usage since no servers were configured.")
+        LOG.warning("Skipped configuring a periodic task to upload Product Usage since no servers were configured.")
 
-    _LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
+    LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
 
 set_celerybeat_schedule()
 
