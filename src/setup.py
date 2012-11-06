@@ -17,5 +17,5 @@ setup(
     author_email='splice-devel@redhat.com',
     description='Framework for tracking entitlement consumption',
     url='https://github.com/splice/splice-server.git',
-    packages=find_packages(),
+    packages=find_packages(exclude=['splice.dev']),
 )
