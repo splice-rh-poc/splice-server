@@ -30,6 +30,11 @@ LOG = logging.getLogger(__name__)
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+AUTHENTICATION_BACKENDS = (
+    'mongoengine.django.auth.MongoEngineBackend',
+)
+SESSION_ENGINE = 'mongoengine.django.sessions'
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
