@@ -2,7 +2,7 @@
 
 Name:           python-ordereddict
 Version:        1.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Implementation of Python 2.7's OrderedDict
 Group:          Development/Languages
 License:        MIT
@@ -36,6 +36,9 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/*
 
 %changelog
+* Mon Nov 12 2012 John Matthews <jmatthews@redhat.com> 1.1-6
+- new package built with tito
+
 * Sat Jul 21 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.1-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
 
