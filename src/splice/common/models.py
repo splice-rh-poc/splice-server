@@ -18,7 +18,7 @@ from mongoengine import DateTimeField, Document, ListField, StringField, DictFie
 from mongoengine import signals
 from rhic_serve.common.fields import IsoDateTimeField
 from rhic_serve.rhic_rcs.models import RHIC
-from splice.common.utils import sanitize_key_for_mongo, convert_to_datetime
+from splice.common.utils import sanitize_key_for_mongo, sanitize_dict_for_mongo, convert_to_datetime
 
 class SpliceServer(Document):
     uuid = StringField(required=True, unique=True)
@@ -101,6 +101,8 @@ class ProductUsage(Document):
     def pre_save(cls, sender, document, **kwargs):
         if isinstance(document.date, basestring):
             document.date = convert_to_datetime(document.date)
+        if document.facts:
+            document.facts = sanitize_dict_for_mongo(document.facts)
 
     def __str__(self):
         return "Consumer '%s' on Splice Server '%s' from instance '%s' "" \
