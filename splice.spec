@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.77
+Version:    0.78
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -235,6 +235,12 @@ exit 0
 
 
 %changelog
+* Tue Nov 13 2012 John Matthews <jmatthews@redhat.com>
+- Fix issue with rhic lookup tasks being marked as expired and not running
+  because of how we set a default value for 'initiated' (jmatthews@redhat.com)
+- Update ProductUsage to sanitize facts on save to mongo (jmatthews@redhat.com)
+- Add timing info for product usage import (jmatthews@redhat.com)
+
 * Wed Oct 31 2012 John Matthews <jmatthews@redhat.com> 0.77-1
 - splice-common now owns /var/log/splice (jmatthews@redhat.com)
 
