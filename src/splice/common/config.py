@@ -17,8 +17,6 @@ import logging.config
 import os
 import sys
 
-from django.conf import settings
-
 from splice.common.exceptions import BadConfigurationException
 
 CONFIG = None
@@ -90,8 +88,6 @@ def init(config_file=None, reinit=False):
     global CONFIG
     if CONFIG and not reinit:
         return CONFIG
-    if not config_file:
-        config_file = settings.SPLICE_CONFIG_FILE
     CONFIG = ConfigParser.SafeConfigParser()
     set_defaults()
     CONFIG.read(config_file)

@@ -76,9 +76,17 @@ SELinux policy for Splice
 %package        common
 Summary:        Splice common components
 Group:          Development/Languages
+Requires:       common-config
 
 %description    common
 Splice common components
+
+%package        common-config
+Summary:        Splice common config components
+Group:          Development/Languages
+
+%description    common-config
+Splice common config components
 
 %package doc
 Summary:    Splice documentation
@@ -196,16 +204,6 @@ if [ $1 -eq 0 ]; then
 fi
 exit 0
 
-%files common
-%defattr(-,root,root,-)
-%{python_sitelib}/%{name}/common
-%{python_sitelib}/%{name}/__init__.py*
-%config(noreplace) %{_sysconfdir}/splice
-%defattr(-,apache,apache,-)
-%dir %{_sysconfdir}/pki/%{name}
-%{_sysconfdir}/pki/%{name}
-%dir %{_var}/log/%{name}
-
 %files
 %defattr(-,root,root,-)
 %{python_sitelib}/%{name}
@@ -220,6 +218,24 @@ exit 0
 /srv/%{name}/webservices.wsgi
 %doc
 
+%files common
+%defattr(-,root,root,-)
+%{python_sitelib}/%{name}/common
+%exclude %{python_sitelib}/%{name}/common/__init__.py*
+%exclude %{python_sitelib}/%{name}/common/config.py*
+%{python_sitelib}/%{name}/__init__.py*
+%config(noreplace) %{_sysconfdir}/splice
+%defattr(-,apache,apache,-)
+%dir %{_sysconfdir}/pki/%{name}
+%{_sysconfdir}/pki/%{name}
+%dir %{_var}/log/%{name}
+
+%files common-config
+%defattr(-,root,root,-)
+%dir %{python_sitelib}/%{name}/common
+%{python_sitelib}/%{name}/common/__init__.py*
+%{python_sitelib}/%{name}/common/config.py*
+
 
 %files selinux
 %defattr(-,root,root,-)
@@ -227,7 +243,6 @@ exit 0
 %{_datadir}/%{name}/selinux/*
 %{_datadir}/selinux/*/%{name}-server.pp
 %{_datadir}/selinux/devel/include/apps/%{name}-server.if
-
 
 %files doc
 %doc %{_docdir}/%{name}
