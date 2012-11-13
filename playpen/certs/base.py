@@ -34,7 +34,7 @@ def run_command(cmd, verbose=True):
         print "Error running: %s" % (cmd)
         print "stdout:\n%s" % (out_msg)
         print "stderr:\n%s" % (err_msg)
-        return False
+        return False, out_msg, err_msg
     return True, out_msg, err_msg
 
 def get_config(filename='config_splice_certs.cfg', section='certs'):

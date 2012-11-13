@@ -11,23 +11,18 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import time
 
 from mongoengine.queryset import OperationError, NotUniqueError
 from tastypie import fields
-from tastypie import http
-from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
-from tastypie.bundle import Bundle
-from tastypie.exceptions import NotFound
 from tastypie.resources import Resource
-from tastypie.exceptions import NotFound, BadRequest
+from tastypie.exceptions import BadRequest
 
 from rhic_serve.rhic_rcs.api import rhic
 from report_server.report_import.api import productusage
 
-from splice.common import config
 from splice.entitlement.checkin import CheckIn
-from splice.entitlement import tasks
 from splice.common import certs
 from splice.common.auth import X509CertificateAuthentication
 from splice.common.identity import get_current_rhic_lookup_tasks
@@ -53,6 +48,7 @@ class ModifiedProductUsageResource(productusage.ProductUsageResource):
         errors = []
         dups = []
         _LOG.debug("Importing %s ProductUsage objects" % (len(product_usages)))
+        start = time.time()
         for pu in product_usages:
             try:
                 pu.save()
@@ -62,8 +58,9 @@ class ModifiedProductUsageResource(productusage.ProductUsageResource):
             except OperationError, e:
                 _LOG.warning("Error on attempting to save: %s.\nException: %s" % (pu, e))
                 errors.append(pu)
-        _LOG.debug("%s ProductUsage objects successfully imported, %s were duplicates and %s were errors" % \
-                   (len(product_usages)- len(errors) - len(dups), len(dups), len(errors)))
+        end = time.time()
+        _LOG.debug("%s ProductUsage objects successfully imported, %s were duplicates and %s were errors, process in %s seconds" % \
+                   (len(product_usages)- len(errors) - len(dups), len(dups), len(errors), (end-start)))
         return errors
 
 
