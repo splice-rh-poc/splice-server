@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.78
+Version:    0.79
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -235,6 +235,23 @@ exit 0
 
 
 %changelog
+* Tue Nov 13 2012 John Matthews <jmatthews@redhat.com>
+- Problem tagging 0.78, manual bump of version and will retry
+  (jmatthews@redhat.com)
+- Fix issue with rhic lookup tasks being marked as expired and not running
+  because of how we set a default value for 'initiated' (jmatthews@redhat.com)
+- Example to gather system facts (jmatthews@redhat.com)
+- Update ProductUsage to sanitize facts on save to mongo (jmatthews@redhat.com)
+- Add timing info for product usage import (jmatthews@redhat.com)
+- Update script to generate simulated data with valid system facts
+  (jmatthews@redhat.com)
+- Automatic commit of package [python-ordereddict] minor release [1.1-6].
+  (jmatthews@redhat.com)
+- Adding python-orderreddict 1.1 version from fedora 18, needed by django-
+  celery (jmatthews@redhat.com)
+- Update script to upload fake product usage data for X number of instances and
+  X entries (jmatthews@redhat.com)
+
 * Tue Nov 13 2012 John Matthews <jmatthews@redhat.com>
 - Fix issue with rhic lookup tasks being marked as expired and not running
   because of how we set a default value for 'initiated' (jmatthews@redhat.com)
