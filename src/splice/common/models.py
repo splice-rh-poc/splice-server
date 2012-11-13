@@ -20,6 +20,9 @@ from rhic_serve.common.fields import IsoDateTimeField
 from rhic_serve.rhic_rcs.models import RHIC
 from splice.common.utils import sanitize_key_for_mongo, sanitize_dict_for_mongo, convert_to_datetime
 
+def get_now():
+    return datetime.now(tzutc())
+
 class SpliceServer(Document):
     uuid = StringField(required=True, unique=True)
     description = StringField() # Example what datacenter is this deployed to, i.e. us-east-1
@@ -34,8 +37,8 @@ class RHICLookupTask(Document):
     }
     uuid = StringField(required=True, unique=True)
     task_id = StringField()
-    initiated = IsoDateTimeField(default=datetime.now(tzutc()))
-    modified = IsoDateTimeField(default=datetime.now(tzutc()))
+    initiated = IsoDateTimeField(required=True, default=get_now)
+    modified = IsoDateTimeField(required=True, default=get_now)
     completed = BooleanField(default=False)
     status_code = IntField()
 
