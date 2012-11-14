@@ -64,7 +64,7 @@ def update_rhic_lookup_task(uuid, task_id):
     _LOG.info("update_rhic_lookup_task(rhic_uuid='%s', task_id='%s')" % (uuid, task_id))
     current_task = identity.get_current_rhic_lookup_tasks(uuid)
     if not current_task:
-        current_task = RHICLookupTask(uuid=uuid)
+        current_task = RHICLookupTask(uuid=uuid, initiated=datetime.now(tzutc()))
     current_task.task_id = task_id
     current_task.modified = datetime.now(tzutc())
     current_task.completed = False
