@@ -17,12 +17,19 @@ import logging.config
 import os
 import sys
 
-from splice.common.exceptions import BadConfigurationException
 
 CONFIG = None
 
 # TODO:  Add logic to validate configuration entries and log/throw exception
 # early to warn user of issues
+
+class BadConfigurationException(Exception):
+    def __init__(self, msg):
+        self.msg = msg
+
+    def __str__(self):
+        return "Server configuration error: %s" % self.msg
+
 
 defaults = \
 {
