@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.80.common_config
+Version:    0.81.common_config
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -249,6 +249,30 @@ exit 0
 
 
 %changelog
+* Wed Nov 14 2012 James Slagle <jslagle@redhat.com> 0.81.common_config-1
+- Set branch name in version field instead of release (jslagle@redhat.com)
+- common-config subpackage (jslagle@redhat.com)
+- api doc update" (jslagle@redhat.com)
+- Exclude dev from packaging (jslagle@redhat.com)
+- Add mongoengine auth to common/settings.py (jslagle@redhat.com)
+- Don't need to check for existence of options as much now that defautls are
+  set (jslagle@redhat.com)
+- Set full tastypie debug in dev.settings (jslagle@redhat.com)
+- Config updates (jslagle@redhat.com)
+- Rename _LOG so that it gets imported via * (jslagle@redhat.com)
+- Add config for sign_days (jslagle@redhat.com)
+- Move logging config to splice.conf (jslagle@redhat.com)
+- initialize config from common settings (jslagle@redhat.com)
+- Set test db name dynamically (jslagle@redhat.com)
+- Common settings.py (jslagle@redhat.com)
+- Add missing dev logging config (jslagle@redhat.com)
+- Config updates to accomodate fact that CELERYBEAT_SCHEDULE must be set
+  directly in settings.py (jslagle@redhat.com)
+- Fix config file name (jslagle@redhat.com)
+- Include all config files under /etc/splice in common subpackage
+  (jslagle@redhat.com)
+- Initial config refactoring (jslagle@redhat.com)
+
 * Tue Nov 13 2012 John Matthews <jmatthews@redhat.com> 0.80-1
 - Again saw collision with 0.79 (jmatthews@redhat.com)
 - Problem tagging 0.78, manual bump of version and will retry
