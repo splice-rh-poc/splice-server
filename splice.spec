@@ -76,7 +76,7 @@ SELinux policy for Splice
 %package        common
 Summary:        Splice common components
 Group:          Development/Languages
-Requires:       common-config
+Requires:       %{name}-common-config = %{version}-%{release}
 
 %description    common
 Splice common components
