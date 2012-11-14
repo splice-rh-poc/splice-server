@@ -18,7 +18,7 @@ from dateutil.tz import tzutc
 from StringIO import StringIO
 
 from splice.common import splice_server_client
-from splice.common.exceptions import BadConfigurationException
+from splice.common.config import BadConfigurationException
 from splice.common.models import ProductUsage, ProductUsageTransferInfo
 
 # Unit test imports

@@ -21,7 +21,7 @@ from mongoengine.queryset import OperationError
 from StringIO import StringIO
 
 from splice.common import config
-from splice.common.exceptions import BadConfigurationException
+from splice.common.config import BadConfigurationException
 from splice.common.models import ProductUsage
 
 # Unit test imports
