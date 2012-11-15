@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.81.common_config
+Version:    0.81
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
