@@ -20,7 +20,7 @@ from logging import getLogger
 
 from tastypie.test import ResourceTestCase
 
-from mongoengine.connection import connect, disconnect
+from mongoengine.connection import connect, disconnect, register_connection
 from mongoengine.queryset import QuerySet
 from django.conf import settings
 from django.test.client import RequestFactory
@@ -58,6 +58,7 @@ class MongoTestCase(ResourceTestCase):
 
     def drop_database_and_reconnect(self, reconnect=True):
         disconnect()
+        disconnect('rhic_serve')
         self.db.drop_database(self.db_name)
         # Mongoengine sometimes doesn't recreate unique indexes
         # in between test runs, adding the below 'reset' to fix this
@@ -65,6 +66,7 @@ class MongoTestCase(ResourceTestCase):
         QuerySet._reset_already_indexed()
         if reconnect:
             self.db = connect(self.db_name)
+            register_connection('rhic_serve', self.db_name)
 
     def assertDateTimeIsEqual(self, left, right):
         self.assertEquals(left.year, right.year)
