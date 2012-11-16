@@ -12,5 +12,5 @@ then
 TO_TEST=${TO_TEST}.$1
 fi
 
-python src/splice/manage.py test ${TO_TEST} --settings=checkin_service.settings_unittests
+python src/splice/manage.py test ${TO_TEST} 
 

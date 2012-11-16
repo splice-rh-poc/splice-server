@@ -11,13 +11,21 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import os
+
 from splice.common import config
+
+
+curr_dir = os.path.dirname(__file__)
+source_dir = os.path.join(curr_dir, '..')
+os.chdir(source_dir)
+config_file = os.path.join(curr_dir, 'splice.conf')
 
 # Reset configuration object just in case
 config.CONFIG = None
 
 SPLICE_CONFIG_FILE = 'dev/splice.conf'
-config.init(SPLICE_CONFIG_FILE)
+config.init(config_file)
 
 from splice.checkin_service.settings import *
 

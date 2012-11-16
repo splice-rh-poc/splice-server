@@ -116,11 +116,12 @@ def read_config_files():
     global CONFIG
     if CONFIG.has_option('main', 'config_dir'):
         config_dir = CONFIG.get('main', 'config_dir')
-        for config_file in os.listdir(config_dir):
-            if not config_file.endswith('.conf'):
-                continue
-            else:
-                CONFIG.read(os.path.join(config_dir, config_file))
+        if os.path.exists(config_dir):
+            for config_file in os.listdir(config_dir):
+                if not config_file.endswith('.conf'):
+                    continue
+                else:
+                    CONFIG.read(os.path.join(config_dir, config_file))
 
 
 def reset_logging():
