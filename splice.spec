@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.81
+Version:    0.82
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -249,6 +249,10 @@ exit 0
 
 
 %changelog
+* Mon Nov 26 2012 John Matthews <jmatthews@redhat.com> 0.82-1
+- Test tag/build after splice-common work has been merged in
+
+
 * Wed Nov 14 2012 James Slagle <jslagle@redhat.com> 0.81.common_config-1
 - Set branch name in version field instead of release (jslagle@redhat.com)
 - common-config subpackage (jslagle@redhat.com)
