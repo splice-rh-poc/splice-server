@@ -139,6 +139,8 @@ def init_logging():
         else:
             try:
                 logging.config.fileConfig(splice_log_cfg)
+                l = logging.getLogger(__name__)
+                l.info("Logging configured from: %s" % (splice_log_cfg))
             except Exception, e:
                 print e
                 print "Unable to initialize logging config with: %s" % (splice_log_cfg)

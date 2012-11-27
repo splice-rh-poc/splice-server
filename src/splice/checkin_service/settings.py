@@ -21,6 +21,7 @@ import os
 import pwd
 
 from splice.common.settings import *
+from splice.entitlement import on_startup
 
 def get_username():
     return pwd.getpwuid( os.getuid() )[ 0 ]
@@ -146,8 +147,10 @@ def set_celerybeat_schedule():
 
     LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
 
-set_celerybeat_schedule()
-
+if on_startup.check_valid_identity():
+    set_celerybeat_schedule()
+else:
+    LOG.error("Skipping setup of Celery tasks since Server's Identity certificate is invalid.")
 #
 # End of Celery Configuration
 #############################

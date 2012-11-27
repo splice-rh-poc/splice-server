@@ -42,14 +42,20 @@ def run():
     if not errors:
         _LOG.info("Configuration file was examined and certificate configuration is acceptable.")
 
-def check_valid_identity(cert=None, key=None, ca_cert=None):
+def check_valid_identity():
     global SERVER_IDENTITY_VALID
-    if not cert:
-        cert = config.get_splice_server_identity_cert_path()
-    if not key:
-        key = config.get_splice_server_identity_key_path()
-    if not ca_cert:
-        ca_cert = config.get_splice_server_identity_ca_path()
+    # Allow override of cert/key/ca for testing.
+    cert = config.get_splice_server_identity_cert_path()
+    key = config.get_splice_server_identity_key_path()
+    ca_cert = config.get_splice_server_identity_ca_path()
+    # Verify paths exist
+    if not _check_path(cert, "[security].splice_server_identity_cert"):
+        return False
+    if not _check_path(ca_cert, "[security].splice_server_identity_ca"):
+        return False
+    if not _check_path(key, "[security].splice_server_identity_key"):
+        return False
+
     # Check that the identity certificate was signed by the configured identity CA
     certfu = CertFileUtils()
     if not certfu.validate_certificate(cert, ca_cert):
@@ -73,7 +79,7 @@ def check_certs():
 
 def _check_path(path, identifier):
     if not path:
-        _LOG.warning("%s is not set")
+        _LOG.warning("%s is not set" % (identifier))
         return False
     if not os.path.exists(path):
         _LOG.error("%s: path '%s' does not exist" % (identifier, path))
