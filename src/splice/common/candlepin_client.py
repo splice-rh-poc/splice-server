@@ -19,6 +19,7 @@ from django.conf import settings
 
 from splice.common import config
 from splice.common.connect import BaseConnection
+from splice.common.exceptions import RequestException
 
 _LOG = logging.getLogger(__name__)
 
@@ -49,8 +50,10 @@ def get_entitlement(host, port, url, requested_products, identity,
     try:
         conn = get_connection(host, port, username, password)
         url_with_params = _form_url(url, requested_products, identity, start_date, end_date)
-        data = conn.GET(url_with_params)
-        return parse_data(data)
+        status, data = conn.GET(url_with_params)
+        if status == 200:
+            return parse_data(data)
+        raise RequestException(status, data)
     except Exception, e:
         _LOG.exception("Caught exception trying to request ent cert from %s:%s/%s for identity %s with products %s" % \
             (host, port, url, identity, requested_products))
