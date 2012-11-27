@@ -224,7 +224,9 @@ exit 0
 %exclude %{python_sitelib}/%{name}/common/__init__.py*
 %exclude %{python_sitelib}/%{name}/common/config.py*
 %{python_sitelib}/%{name}/__init__.py*
-%config(noreplace) %{_sysconfdir}/splice
+%config(noreplace) %{_sysconfdir}/%{name}
+%exclude %{_sysconfdir}/%{name}/splice.conf
+%exclude %{_sysconfdir}/%{name}/logging/basic.cfg
 %defattr(-,apache,apache,-)
 %dir %{_sysconfdir}/pki/%{name}
 %{_sysconfdir}/pki/%{name}
@@ -235,6 +237,8 @@ exit 0
 %dir %{python_sitelib}/%{name}/common
 %{python_sitelib}/%{name}/common/__init__.py*
 %{python_sitelib}/%{name}/common/config.py*
+%config(noreplace) %{_sysconfdir}/%{name}
+%exclude %{_sysconfdir}/%{name}/conf.d
 
 
 %files selinux
