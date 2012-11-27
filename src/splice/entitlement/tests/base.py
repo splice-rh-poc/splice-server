@@ -29,6 +29,7 @@ from django.test.client import RequestFactory
 from splice.common import candlepin_client
 from splice.common import config
 from splice.common import rhic_serve_client
+from splice.common.connect import BaseConnection
 from splice.common.identity import create_or_update_consumer_identity, SyncRHICServeThread
 from splice.entitlement.checkin import CheckIn
 
@@ -77,10 +78,13 @@ class MongoTestCase(ResourceTestCase):
         self.assertEquals(left.second, right.second)
 
 
+class MockedConnection(BaseConnection):
+    def __init__(self, data):
+        self.data = data
+    def _request(self, request_type, method, body=None):
+        return self.data
 
-def mocked_candlepin_client_request_method(host, port, url, installed_product,
-                                           identity, username, password,
-                                           start_date=None, end_date=None, debug=False, key_file=None, cert_file=None):
+def mocked_candlepin_client_get_connection(host, port, username, password):
     example_data = os.path.join(TEST_DATA_DIR, "example_candlepin_data.json")
     f = open(example_data, "r")
     try:
@@ -88,7 +92,7 @@ def mocked_candlepin_client_request_method(host, port, url, installed_product,
     finally:
         f.close()
     response_body = json.loads(data)
-    return 200, response_body
+    return MockedConnection(response_body)
 
 
 def mocked_rhic_serve_client_request_method(host, port, url, last_sync=None, offset=None, limit=None, debug=False,
@@ -106,9 +110,9 @@ def mocked_rhic_serve_client_request_method(host, port, url, last_sync=None, off
 class BaseEntitlementTestCase(MongoTestCase):
     def setUp(self):
         super(BaseEntitlementTestCase, self).setUp()
-        self.saved_candlepin_client_request_method = candlepin_client._request
+        self.saved_candlepin_client_get_connection_method = candlepin_client.get_connection
         self.saved_rhic_serve_client_request_method = rhic_serve_client._request
-        candlepin_client._request = mocked_candlepin_client_request_method
+        candlepin_client.get_connection = mocked_candlepin_client_get_connection
         rhic_serve_client._request = mocked_rhic_serve_client_request_method
         # Test Certificate Data
         # invalid cert, signed by a CA other than 'rhic_ca_pem'
@@ -164,7 +168,7 @@ class BaseEntitlementTestCase(MongoTestCase):
                 break
             print "Waiting for %s to finish, is_alive() = %s" % (key, identity.JOBS[key].is_alive())
             time.sleep(.01)
-        candlepin_client._request = self.saved_candlepin_client_request_method
+        candlepin_client.get_connection = self.saved_candlepin_client_get_connection_method
         rhic_serve_client._request = self.saved_rhic_serve_client_request_method
         # NOTE:  There is a potential timing issue which requires us to drop the database
         #        after all identity.JOBS have completed.  Failure to do this can leave the database

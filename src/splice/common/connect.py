@@ -12,17 +12,21 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import base64
+import httplib
 import simplejson as json
 from M2Crypto import SSL, httpslib
 
+from splice.common.exceptions import RequestException
+
 class BaseConnection(object):
     def __init__(self, host, port, handler, username=None,
-                 password=None, cert_file=None, key_file=None, ca_cert=None):
+                 password=None, https=True, cert_file=None, key_file=None, ca_cert=None):
         self.host = host
-        self.port = port
+        self.port = int(port)
         self.handler = handler
         self.headers = {"Content-type":"application/json",
                         "Accept": "application/json"}
+        self.https = https
         self.username = username
         self.password = password
         self.cert_file = cert_file
@@ -30,9 +34,9 @@ class BaseConnection(object):
         self.ca_cert  = ca_cert
 
     def set_basic_auth(self):
-        encoded = base64.b64decode(':'.join((self.username, self.password)))
-        basic = 'Basic %s' % encoded
-        self.headers['Authorization'] = basic
+        raw = ':'.join((self.username, self.password))
+        encoded = base64.encodestring(raw)[:-1]
+        self.headers['Authorization'] = 'Basic ' + encoded
 
     def set_ssl_context(self):
         context = SSL.Context("tlsv1")
@@ -42,18 +46,26 @@ class BaseConnection(object):
             context.load_cert(self.cert_file, keyfile=self.cert_key)
         return context
 
+    def __get_connection(self):
+        conn = None
+        if self.https:
+            # initialize a context for ssl connection
+            context = self.set_ssl_context()
+            # ssl connection
+            conn = httpslib.HTTPSConnection(self.host, self.port, ssl_context=context)
+        else:
+            conn = httplib.HTTPConnection(self.host, self.port)
+        return conn
+
     def _request(self, request_type, method, body=None):
         if self.username and self.password:
             # add the basic auth info to headers
             self.set_basic_auth()
-        # initialize a context for ssl connection
-        context = self.set_ssl_context()
-        # ssl connection
-        conn = httpslib.HTTPSConnection(self.host, self.port, ssl_context=context)
+        conn = self.__get_connection()
         conn.request(request_type, self.handler + method, body=json.dumps(body), headers=self.headers)
         response = conn.getresponse()
         if response.status not in [200, 202]:
-            raise Exception()
+            raise RequestException(response.status, response.read())
         data = response.read()
         if not len(data):
             return None
