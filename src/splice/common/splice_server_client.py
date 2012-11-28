@@ -18,23 +18,27 @@ import time
 
 from django.conf import settings
 
-from splice.common import certs, config, utils
+from splice.common import certs, config
+from splice.common.connect import BaseConnection
 from splice.common.exceptions import RequestException
 
 _LOG = logging.getLogger(__name__)
 
+def get_connection(host, port, cert, key, accept_gzip=False):
+    # Note: this method will be mocked out in unit tests
+    return BaseConnection(host, port, handler="", https=True, cert_file=cert, key_file=key, accept_gzip=accept_gzip)
 
 def parse_data(data):
     # Placeholder, may want to parse response and identify objects that weren't successfully uploaded
     # Returns a list of objects to retry or an empty list on success
     return []
 
-def upload_product_usage_data(host, port, url, pu_data, debug=False):
+def upload_product_usage_data(host, port, url, pu_data, accept_gzip=False):
     key_file = certs.get_splice_server_identity_key_path()
     cert_file = certs.get_splice_server_identity_cert_path()
-    serialized_data = utils.obj_to_json(pu_data)
     try:
-        status, data = _request(host, port, url, serialized_data, debug=debug, key_file=key_file, cert_file=cert_file)
+        conn = get_connection(host, port, cert_file, key_file, accept_gzip)
+        status, data = conn.POST(url, pu_data)
         if status in [200, 202]:
             return parse_data(data)
     except Exception, e:
@@ -42,33 +46,6 @@ def upload_product_usage_data(host, port, url, pu_data, debug=False):
                        (len(pu_data), host, port, url, key_file, cert_file))
         raise
     raise RequestException(status, data)
-
-def _request(host, port, url, body, debug=False, key_file=None, cert_file=None):
-    connection = httplib.HTTPSConnection(host, port, key_file=key_file, cert_file=cert_file)
-    if debug:
-        connection.set_debuglevel(100)
-    method = 'POST'
-    headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-    _LOG.info("Sending HTTP request with (key=%s, cert=%s) to: %s:%s%s with headers:%s" % (key_file, cert_file, host, port, url, headers))
-    connection.request(method, url, body=body, headers=headers)
-
-    response = connection.getresponse()
-    response_body = response.read()
-    if response.status not in  [200, 202]:
-        _LOG.info("Response status '%s', '%s', '%s'" % (response.status, response.reason, response_body))
-    if response.status in [httplib.CONFLICT]:
-        response_body_raw = response_body
-        response_body = json.loads(response_body_raw)
-        if debug:
-            print "Response: %s %s" % (response.status, response.reason)
-            print "JSON: %s" % (json.dumps(response_body))
-            output = open("example_splice_server_client_%s.json" % (time.time()), "w")
-            output.write(response_body_raw)
-            output.close()
-    return response.status, response_body
 
 if __name__ == "__main__":
     from datetime import datetime
@@ -87,11 +64,14 @@ if __name__ == "__main__":
 
     config.init(settings.SPLICE_CONFIG_FILE)
     cfg = config.get_reporting_config_info()
-    remote_server = cfg["servers"][0]
+    if cfg["servers"]:
+        remote_server = cfg["servers"][0]
+    else:
+        remote_server = ("127.0.0.1", "443", "/splice/api/v1/productusage/")
     host = remote_server[0]
     port = remote_server[1]
     url = remote_server[2]
 
-    resp = upload_product_usage_data(host, port, url, [pu], debug=True)
+    resp = upload_product_usage_data(host, port, url, [pu])
     print "---\n\n"
     print "Response:\n%s" % (resp)

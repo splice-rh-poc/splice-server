@@ -13,52 +13,59 @@
 
 ####
 # Placeholder for functionality we want to run on startup
-#
-# We are checking & logging errors with config parsing here instead of the 'config' module
-# to avoid cyclic dependency issues, since we want to use logging, and logging is setup from
-# config files read from the 'config'.  Our plan is to allow config & logging to initialize
-# and only after they are initialized do we check config values and warn of issues
 ###
 
-
-from datetime import timedelta
 import logging
 import os
-
-from django.conf import settings
 
 from splice.common import config
 from certutils.certutils import CertFileUtils
 
 _LOG = logging.getLogger(__name__)
 
-def run():
+SERVER_IDENTITY_VALID=False
 
+def run():
+    errors = False
     if not check_certs():
         _LOG.warning("Please re-check the configuration file, there appears to be problems with how certificates have been configured")
+        errors = True
 
-    if not check_valid_identity(cert=config.get_splice_server_identity_cert_path(),
-        key=config.get_splice_server_identity_key_path(),
-        ca_cert=config.get_splice_server_identity_ca_path()):
+    if not check_valid_identity():
         _LOG.error("*****\n"
                     "Invalid configuration for Splice Server Identity Certificate/Key/CA.\n"
                     "Certificate information failed validation check.\n"
                     "Please re-check configuration and restart Splice.  Web Services will be inactive until this is resolved.\n"
                     "*****")
-    _LOG.info("Configuration file was examined and certificate configuration is acceptable.")
+        errors = True
 
+    if not errors:
+        _LOG.info("Configuration file was examined and certificate configuration is acceptable.")
 
-def check_valid_identity(cert, key, ca_cert):
+def check_valid_identity():
+    global SERVER_IDENTITY_VALID
+    # Allow override of cert/key/ca for testing.
+    cert = config.get_splice_server_identity_cert_path()
+    key = config.get_splice_server_identity_key_path()
+    ca_cert = config.get_splice_server_identity_ca_path()
+    # Verify paths exist
+    if not _check_path(cert, "[security].splice_server_identity_cert"):
+        return False
+    if not _check_path(ca_cert, "[security].splice_server_identity_ca"):
+        return False
+    if not _check_path(key, "[security].splice_server_identity_key"):
+        return False
+
     # Check that the identity certificate was signed by the configured identity CA
     certfu = CertFileUtils()
-    if not certfu.validate_certificate(config.get_splice_server_identity_cert_path(),
-        config.get_splice_server_identity_ca_path()):
+    if not certfu.validate_certificate(cert, ca_cert):
         _LOG.error("[security].splice_server_identity_cert failed validation against CA: [security].splice_server_identity_ca")
         return False
     if not certfu.validate_priv_key_to_certificate(key, cert):
         _LOG.error("[security].splice_server_identity_key is not matched to [security].splice_server_identity_cert")
         return False
-    return True
+    SERVER_IDENTITY_VALID = True
+    return SERVER_IDENTITY_VALID
 
 def check_certs():
     status = _check_path(config.get_splice_server_identity_cert_path(), "[security].splice_server_identity_cert")
@@ -72,7 +79,7 @@ def check_certs():
 
 def _check_path(path, identifier):
     if not path:
-        _LOG.warning("%s is not set")
+        _LOG.warning("%s is not set" % (identifier))
         return False
     if not os.path.exists(path):
         _LOG.error("%s: path '%s' does not exist" % (identifier, path))

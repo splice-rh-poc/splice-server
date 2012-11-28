@@ -13,25 +13,24 @@
 
 # Responsible for making a remote call to candlepin and retrieve an entitlement certificate
 
-import base64
-import httplib
-import json
 import logging
-import time
 import urllib
 from django.conf import settings
 
 from splice.common import config
+from splice.common.connect import BaseConnection
 from splice.common.exceptions import RequestException
 
 _LOG = logging.getLogger(__name__)
 
+def get_connection(host, port, username, password):
+    # Note: this method will be mocked out in unit tests
+    return BaseConnection(host, port, handler="", https=False, username=username, password=password)
+
 def get_entitlement(host, port, url, requested_products, identity,
                     username, password,
-                    start_date=None, end_date=None,
-                    debug=False):
+                    start_date=None, end_date=None):
     """
-
     @param host: entitlement server host address
     @param port: entitlement server host port
     @param url:  URL to access entitlement service
@@ -45,21 +44,32 @@ def get_entitlement(host, port, url, requested_products, identity,
                         expected to be in isoformat as: datetime.datetime.now().isoformat()
     @param end_date:    optional param, if specified controls end date of certificate
                         expected to be in isoformat similar to 'start_date'
-    @param debug:       optional param, default to False, if True will print more debug information
     @return:
+    @raise RequestException if a status code other than '200' or '202' is returned from remote server
     """
     try:
-        status, data = _request(host, port, url,
-            requested_products, identity,
-            username, password,
-            start_date=start_date, end_date=end_date, debug=debug)
+        conn = get_connection(host, port, username, password)
+        url_with_params = _form_url(url, requested_products, identity, start_date, end_date)
+        status, data = conn.GET(url_with_params)
         if status == 200:
             return parse_data(data)
+        raise RequestException(status, data)
     except Exception, e:
         _LOG.exception("Caught exception trying to request ent cert from %s:%s/%s for identity %s with products %s" % \
             (host, port, url, identity, requested_products))
         raise
-    raise RequestException(status, data)
+
+def _form_url(url, requested_products, identity, start_date=None, end_date=None):
+    query_params = {
+        "product": requested_products,
+        "rhicUUID": identity,
+        }
+    data = urllib.urlencode(query_params, True)
+    url = url +"?" + data
+    if start_date and end_date:
+        url += "&start=%s&end=%s" % (urllib.quote_plus(start_date),
+                                     urllib.quote_plus(end_date))
+    return url
 
 def parse_data(data):
     certs = []
@@ -67,52 +77,6 @@ def parse_data(data):
         item = (d["cert"], d["key"], d["serial"]["serial"])
         certs.append(item)
     return certs
-
-def _request(host, port, url, requested_products,
-                identity, username, password,
-                start_date=None, end_date=None,
-                debug=False):
-    connection = httplib.HTTPConnection(host, port)
-    if debug:
-        connection.set_debuglevel(100)
-    method = 'GET'
-    headers = {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-    raw = ':'.join((username, password))
-    encoded = base64.encodestring(raw)[:-1]
-    headers['Authorization'] = 'Basic ' + encoded
-
-    query_params = {
-        "product": requested_products,
-        "rhicUUID": identity,
-    }
-
-    data = urllib.urlencode(query_params, True)
-    url = url +"?" + data
-    if start_date and end_date:
-        url += "&start=%s&end=%s" % (urllib.quote_plus(start_date),
-                                     urllib.quote_plus(end_date))
-
-    _LOG.info("Sending HTTP request to: %s:%s%s with headers:%s" % (host, port, url, headers))
-    connection.request(method, url, body=None, headers=headers)
-
-    response = connection.getresponse()
-    response_body = response.read()
-    if response.status != 200:
-        _LOG.info("Response status '%s', '%s', '%s'" % (response.status, response.reason, response_body))
-    if response.status == 200:
-        response_body_raw = response_body
-        response_body = json.loads(response_body_raw)
-        if debug:
-            print "Response: %s %s" % (response.status, response.reason)
-            print "JSON: %s" % (json.dumps(response_body))
-            output = open("example_candlepin_data_%s.json" % (time.time()), "w")
-            output.write(response_body_raw)
-            output.close()
-    return response.status, response_body
-
 
 if __name__ == "__main__":
     import datetime
@@ -129,7 +93,6 @@ if __name__ == "__main__":
         identity="1234",
         username=cfg["username"], password=cfg["password"],
         start_date=start_date.isoformat(),
-        end_date=end_date.isoformat(),
-        debug=True)
+        end_date=end_date.isoformat())
     print "---\n\n"
     print "certs = \n%s" % (certs)

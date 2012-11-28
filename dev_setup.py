@@ -54,7 +54,8 @@ LINKS = (
             ('etc/rc.d/init.d/splice_all', '/etc/rc.d/init.d/splice_all'),
             ('etc/splice/celery/celerybeat', '/etc/splice/celery/celerybeat'),
             ('etc/splice/logging', '/etc/splice/logging'),
-            ('etc/splice/server.conf', '/etc/splice/server.conf'),
+            ('etc/splice/splice.conf', '/etc/splice/splice.conf'),
+            ('etc/splice/conf.d', '/etc/splice/conf.d'),
             ('srv/splice/webservices.wsgi', '/srv/splice/webservices.wsgi'),
         )
 
