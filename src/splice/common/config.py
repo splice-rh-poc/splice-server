@@ -145,7 +145,6 @@ def init_logging():
                 print e
                 print "Unable to initialize logging config with: %s" % (splice_log_cfg)
 
-
 def get_candlepin_config_info():
 
     return {

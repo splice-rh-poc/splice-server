@@ -19,7 +19,7 @@ import simplejson as json
 import StringIO
 from M2Crypto import SSL, httpslib
 
-from splice.common.exceptions import RequestException
+from splice.common import utils
 
 # Hack to work around M2Crypto.SSL.Checker.WrongHost
 # seen when a remote server's SSL cert does not match their hostname
@@ -76,7 +76,8 @@ class BaseConnection(object):
         conn = self.__get_connection()
         url = self.handler + method
         if body:
-            body = json.dumps(body)
+            # Use customized JSON encoder to handle Mongo objects
+            body = utils.obj_to_json(body)
         _LOG.info("'%s' to '%s' \n\twith headers '%s'\n\t body '%s'" % \
                   (request_type, url, self.headers, body))
         conn.request(request_type, url, body=body, headers=self.headers)
@@ -87,12 +88,12 @@ class BaseConnection(object):
             gzipper = gzip.GzipFile(fileobj=data)
             response_body = gzipper.read()
         _LOG.info("Received '%s' from '%s %s'" % (response.status, request_type, url))
-        if response.status in [200, 202]:
+        if response.status in [200, 202] and response_body:
             response_body = json.loads(response_body)
         return response.status, response_body
 
     def GET(self, method):
         return self._request("GET", method)
 
-    def POST(self, method, params=""):
+    def POST(self, method, params="", ):
         return self._request("POST", method, params)
