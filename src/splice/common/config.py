@@ -88,6 +88,10 @@ defaults = \
         'upload_product_usage_interval_minutes': '240',
         'upload_product_usage_limit_per_call': '10000',
     },
+    'report_server': {
+        'db_name': 'results',
+        'db_host': 'localhost',              
+    }
 }
 
 

@@ -24,7 +24,6 @@ config_file = os.path.join(curr_dir, 'splice.conf')
 # Reset configuration object just in case
 config.CONFIG = None
 
-SPLICE_CONFIG_FILE = 'dev/splice.conf'
 config.init(config_file)
 
 from splice.checkin_service.settings import *
