@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.82
+Version:    0.83
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -253,6 +253,28 @@ exit 0
 
 
 %changelog
+* Wed Nov 28 2012 John Matthews <jmatthews@redhat.com> 0.83-1
+- Update client piece of uploading product usage data to use common
+  BaseConnection (jmatthews@redhat.com)
+- Moved rhic_serve_client code to use BaseConnection (jmatthews@redhat.com)
+- Adding support for 'gzip' encoding to BaseConnection, also changed to return
+  (status_code, response_body) (jmatthews@redhat.com)
+- Update candlepin_client.py to reuse BaseConnection from common/connect, added
+  HTTP option to BaseConnection (jmatthews@redhat.com)
+- Spec change: splice-common-config now includes /etc/splice/splice.conf and
+  /etc/splice/logging/basic.cfg (jmatthews@redhat.com)
+- Set propagate back to 0 to avoid duplicate messages being logged
+  (jmatthews@redhat.com)
+- Celery tasks will no longer be scheduled if the Splice Server Identity
+  Certificate is invalid (jmatthews@redhat.com)
+- Remove Splice Server Identity cert/key for now and leave in
+  conf.d/server.conf (jmatthews@redhat.com)
+- Update dev_setup.py to account for /etc/splice/conf.d (jmatthews@redhat.com)
+- Return a '500' with an error message if the servers Identity Certificate is
+  invalid (jmatthews@redhat.com)
+- Adding Splice Server's identity cert/key to config file so it's explicit and
+  easy to modify (jmatthews@redhat.com)
+
 * Mon Nov 26 2012 John Matthews <jmatthews@redhat.com> 0.82-1
 - Test tag/build after splice-common work has been merged in
 
