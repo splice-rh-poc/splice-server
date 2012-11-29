@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.84
+Version:    0.85
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -261,6 +261,12 @@ exit 0
 
 
 %changelog
+* Thu Nov 29 2012 John Matthews <jmatthews@redhat.com> 0.85-1
+- Update for splice-certmaker conf for temporary product_data location Spec
+  update for selinux rules for splice server identity certificate context
+  labeling (jmatthews@redhat.com)
+- Fix spec (jmatthews@redhat.com)
+
 * Thu Nov 29 2012 John Matthews <jmatthews@redhat.com> 0.84-1
 - Update to work with co-located splice-certmaker (jmatthews@redhat.com)
 - Update location of Splice Server identity certificate (jmatthews@redhat.com)
