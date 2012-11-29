@@ -37,11 +37,12 @@ defaults = \
         'location': '/etc/pki/splice',
     },
     'entitlement': {
-        'host': 'ec2-107-20-23-80.compute-1.amazonaws.com',
+        'host': '127.0.0.1',
         'password': 'admin',
         'port': '8080',
-        'url': '/splice',
+        'url': '/cert',
         'username': 'admin',
+        'product_json': '/tmp/test.json',
     },
     'info': {
         'description': '"TBD"',
@@ -57,8 +58,8 @@ defaults = \
     'reporting': {
     },
     'rhic_serve': {
-        'client_cert': '/etc/pki/splice/generated/Splice_identity.cert',
-        'client_key': '/etc/pki/splice/generated/Splice_identity.key',
+        'client_cert': '/etc/pki/consumer/Splice_identity.cert',
+        'client_key': '/etc/pki/consumer/Splice_identity.key',
         'host': 'ec2-54-242-25-138.compute-1.amazonaws.com',
         'port': '443',
         'rhics_url': '/api/v1/rhicrcs/',
@@ -71,8 +72,8 @@ defaults = \
         'rhic_ca_srl': '/etc/pki/splice/Splice_testing_root_CA.srl',
         'sign_days': '1000',
         'splice_server_identity_ca': '/etc/pki/splice/Splice_testing_root_CA.crt',
-        'splice_server_identity_cert': '/etc/pki/splice/generated/Splice_identity.cert',
-        'splice_server_identity_key': '/etc/pki/splice/generated/Splice_identity.key',
+        'splice_server_identity_cert': '/etc/pki/consumer/Splice_identity.cert',
+        'splice_server_identity_key': '/etc/pki/consumer/Splice_identity.key',
     },
     'server': {
         'db_host': 'localhost',
