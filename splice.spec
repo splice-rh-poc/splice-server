@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.83
+Version:    0.84
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -258,6 +258,12 @@ exit 0
 
 
 %changelog
+* Thu Nov 29 2012 John Matthews <jmatthews@redhat.com> 0.84-1
+- Update to work with co-located splice-certmaker (jmatthews@redhat.com)
+- Update location of Splice Server identity certificate (jmatthews@redhat.com)
+- Merge branch 'master' of github.com:splice/splice-server (jslagle@redhat.com)
+- A few config updates (jslagle@redhat.com)
+
 * Wed Nov 28 2012 John Matthews <jmatthews@redhat.com> 0.83-1
 - Update client piece of uploading product usage data to use common
   BaseConnection (jmatthews@redhat.com)
