@@ -179,6 +179,7 @@ setfacl -d -m o::rx %{_var}/log/%{name}
 if [ ! -f /etc/pki/consumer/Splice_identity.cert ]
 then
     if [ ! -d /etc/pki/consumer ]
+    then
         mkdir /etc/pki/consumer
     fi
     splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.key --outcert /etc/pki/consumer/Splice_identity.cert --outkey /etc/pki/consumer/Splice_identity.key
