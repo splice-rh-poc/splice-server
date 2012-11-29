@@ -183,8 +183,6 @@ then
         mkdir /etc/pki/consumer
     fi
     splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.key --outcert /etc/pki/consumer/Splice_identity.cert --outkey /etc/pki/consumer/Splice_identity.key
-    semanage fcontext -a -t splice_cert_t "/etc/pki/consumer/Splice(.*)?"
-    restorecon /etc/pki/consumer/Splice*
 fi
 
 
@@ -200,6 +198,10 @@ fi
 %posttrans selinux
 if /usr/sbin/selinuxenabled ; then
  %{_datadir}/%{name}/selinux/relabel.sh %{_datadir}
+    # TODO:
+    # **Remove for Production**:  This is only to aid test/development
+    semanage fcontext -a -t splice_cert_t "/etc/pki/consumer/Splice(.*)?"
+    restorecon /etc/pki/consumer/Splice*
 fi
 
 %preun selinux
