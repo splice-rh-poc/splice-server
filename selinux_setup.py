@@ -25,6 +25,7 @@ LABELS = {
         ],
         "splice_cert_t": [
                 ("%s(/.*)?", os.path.join(BASE_DIR, "etc/pki/splice")),
+                ("%s(/.*)?", os.path.join(BASE_DIR, "etc/pki/consumer/Splice")),
         ],
         "httpd_sys_content_t": [
                 ("%s(/.*)?", os.path.join(BASE_DIR, "etc/splice")),

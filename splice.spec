@@ -176,9 +176,14 @@ setfacl -d -m o::rx %{_var}/log/%{name}
 # This step will be removed during production, the splice server cert must come from
 # access.redhat.com eventually
 #
-if [ ! -f /etc/pki/splice/generated/Splice_identity.cert ]
+if [ ! -f /etc/pki/consumer/Splice_identity.cert ]
 then
-    splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.key --outcert /etc/pki/splice/generated/Splice_identity.cert --outkey /etc/pki/splice/generated/Splice_identity.key
+    if [ ! -d /etc/pki/consumer ]
+        mkdir /etc/pki/consumer
+    fi
+    splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.key --outcert /etc/pki/consumer/Splice_identity.cert --outkey /etc/pki/consumer/Splice_identity.key
+    semanage fcontext -a -t splice_cert_t "/etc/pki/consumer/Splice(.*)?"
+    restorecon /etc/pki/consumer/Splice*
 fi
 
 
