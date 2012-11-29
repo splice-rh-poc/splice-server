@@ -62,10 +62,11 @@ def get_entitlement(host, port, url, requested_products, identity,
 def _form_url(url, requested_products, identity, start_date=None, end_date=None):
     query_params = {
         "product": requested_products,
-        "rhicUUID": identity,
         }
     data = urllib.urlencode(query_params, True)
-    url = url +"?" + data
+    if url[-1] != "/":
+        url += "/"
+    url += identity + "?" + data
     if start_date and end_date:
         url += "&start=%s&end=%s" % (urllib.quote_plus(start_date),
                                      urllib.quote_plus(end_date))
