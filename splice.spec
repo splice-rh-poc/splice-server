@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.86
+Version:    0.87
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -261,6 +261,13 @@ exit 0
 
 
 %changelog
+* Fri Nov 30 2012 John Matthews <jmatthews@redhat.com> 0.87-1
+- Fixes being unable to create Splice Server identity certificate on a clean
+  install. Ordering was an issue, splice-common %%post was running before the
+  requires of python-certutil was installed. (jmatthews@redhat.com)
+- Comment for conf file about splice-certmaker being co-located by default
+  (jmatthews@redhat.com)
+
 * Thu Nov 29 2012 John Matthews <jmatthews@redhat.com> 0.86-1
 - Update config values for new location of splice server identity certificate
   (jmatthews@redhat.com)
