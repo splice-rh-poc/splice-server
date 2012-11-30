@@ -38,16 +38,26 @@ service rabbitmq-server start
 service mongod start
 nohup splice-certmaker &
 
-#function check_mongo() {
-#    grep 'waiting for connections on port 27017' /var/log/mongodb/mongodb.log &> /dev/null
-#    return $?
-#}
-
 # Ensure mongodb is up (sometimes it takes 30 seconds to finish it's first run)
-#while [ check_mongo ]; do
-#    echo "Waiting for mongodb to finish initialization"
-#    sleep 1
-#done
+OVER=0
+TESTS=0
+MAX_TESTS=6
+while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
+    OUTPUT=`grep 'waiting for connections on port 27017' /var/log/mongodb/mongodb.log`
+    RET_CODE=$?
+    if [ RET_CODE != 1 ]; then
+        OVER=1
+    else
+        # I like bc but 'echo $(( TESTS+=1 ))' should work, too. Or expr.
+        TESTS=$(echo $TESTS+1 | bc)
+        echo "Waiting for mongodb to finish initialization"
+        sleep 5
+    fi
+done
+if [ $TESTS = $MAX_TESTS ]; then
+    echo "Mongo has not come up after 30 seconds.  Unexpected error"
+    exit 1
+fi
 
 service splice_all restart
 
