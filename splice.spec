@@ -40,7 +40,6 @@ Requires: m2crypto >= 0.21.1.pulp-7
 #
 Requires: report-server-import
 Requires: rhic-serve-rcs >= 0.15
-Requires: python-certutils >= 0.15
 #
 # Our own sub RPMs
 #
@@ -77,6 +76,7 @@ SELinux policy for Splice
 Summary:        Splice common components
 Group:          Development/Languages
 Requires:       %{name}-common-config = %{version}-%{release}
+Requires:       python-certutils >= 0.15
 
 %description    common
 Splice common components
