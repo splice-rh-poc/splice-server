@@ -96,7 +96,15 @@ defaults = \
 }
 
 
-def init(config_file=None, reinit=False):
+def init(config_file, reinit=False):
+    """
+    @param config_file: path to main splice configuration file, example '/etc/splice/splice.conf'
+    @type config_file: str
+
+    @param reinit: optional, forces config info to be reinitialized
+    @type reinit: bool
+    @return:
+    """
     global CONFIG
     if CONFIG and not reinit:
         return CONFIG
@@ -127,6 +135,15 @@ def read_config_files():
                     continue
                 else:
                     CONFIG.read(os.path.join(config_dir, config_file))
+    #
+    # Unittests will set an environment variable: ${SPLICE_CONFIG} to an override config file
+    #   this will change settings such as the logging configuration
+    #
+    if os.environ.has_key("SPLICE_CONFIG"):
+        override_config = os.environ["SPLICE_CONFIG"]
+        if os.path.exists(override_config) and os.path.isfile(override_config):
+            print "Using SPLICE_CONFIG: %s" % (override_config)
+            CONFIG.read(override_config)
 
 
 def reset_logging():
