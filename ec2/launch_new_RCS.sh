@@ -8,9 +8,7 @@
 # 3) Setup mongodb to use new volume
 # 4) wget install script
 # 5) run install script to install splice & dependencies
-SSH_KEY="/git/cloude/splice/aws/ssh-keys/splice_rsa.pub"
 SSH_USERNAME="root"
-
 AMI_ID="ami-cc5af9a5"
 KEY_NAME="splice"
 INSTANCE_TYPE="m1.large"
@@ -18,16 +16,48 @@ ZONE="us-east-1d"
 SEC_GROUP="devel-testing"
 VOLUME_SIZE="25"
 
-if [ "${EC2_PRIVATE_KEY}" = "" ] || [ "${EC2_CERT}" = "" ]; then
-    echo "EC2_PRIVATE_KEY and EC2_CERT are required.  Please set these env variables and retry" 1>&2
-    exit 1
+function check_env () {
+    if [ ! -f $2 ]; then
+        echo "Bad environment variable: $1=$2"
+        exit 1
+    fi
+}
+
+if [ "${CLOUDE_GIT_REPO}" = "" ]; then
+    echo "Warning:  The cloude git repository environment variable CLOUDE_GIT_REPO was not set"
+    echo "          If you want this script to set environment variables for you," 
+    echo "          please re-run with CLOUDE_GIT_REPO set to the correct location"
+    echo ""
 fi
 
-if [ ! -f ${SSH_KEY} ]; then
-    echo "Please edit SSH_KEY so it points to the SSH key matching 'KEY_NAME'"
-    exit 1
+if [ "${EC2_CERT}" = "" ]; then
+    export EC2_CERT=${CLOUDE_GIT_REPO}/splice/aws/X.509/devel/cert-UZC2CZPCLKKV73IBKR6JCYA7VA4JNA5X.pem
 fi
+check_env "EC2_PRIVATE_KEY" ${EC2_PRIVATE_KEY}
 
+if [ "${EC2_PRIVATE_KEY}" = "" ]; then
+    export EC2_PRIVATE_KEY=${CLOUDE_GIT_REPO}/splice/aws/X.509/devel/pk-UZC2CZPCLKKV73IBKR6JCYA7VA4JNA5X.pem
+fi
+check_env "EC2_CERT" ${EC2_CERT}
+
+if [ "${SSH_KEY}" = "" ]; then
+    export SSH_KEY=${CLOUDE_GIT_REPO}/splice/aws/ssh-keys/splice_rsa.pub
+fi
+check_env "SSH_KEY" ${SSH_KEY}
+
+if [ "${CERTMAKER_DATA}" = "" ]; then
+    export CERTMAKER_DATA=${CLOUDE_GIT_REPO}/splice/sample-data/sample-certgen-products.json
+fi
+check_env "CERTMAKER_DATA" ${CERTMAKER_DATA}
+
+
+echo "Environment Variables Used:"
+echo "CLOUDE_GIT_REPO=${CLOUDE_GIT_REPO}"
+echo "EC2_CERT=${EC2_CERT}"
+echo "EC2_PRIVATE_KEY=${EC2_PRIVATE_KEY}"
+echo "SSH_KEY=${SSH_KEY}"
+echo "CERTMAKER_DATA=${CERTMAKER_DATA}"
+echo ""
  
 RUN_OUTPUT=$(ec2-run-instances ${AMI_ID} -k ${KEY_NAME} --instance-type ${INSTANCE_TYPE} -z ${ZONE} -g ${SEC_GROUP})
 INSTANCE_ID=$(echo "$RUN_OUTPUT" | awk '/^INSTANCE/ {print $2}')
@@ -174,6 +204,8 @@ ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "service i
 #
 echo "Installing splice on ${NAME}"
 scp -o "StrictHostKeyChecking no" -i ${SSH_KEY} ./install_rpm_setup.sh ${SSH_USERNAME}@$NAME:~
+# Temporary step for splice-certmaker
+scp -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${CERTMAKER_DATA} ${SSH_USERNAME}@$NAME:/tmp/test.json
 ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "chmod +x ./install_rpm_setup.sh"
 ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "time ./install_rpm_setup.sh &> ./splice_install.log "
 

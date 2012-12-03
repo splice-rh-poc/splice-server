@@ -55,7 +55,7 @@ def sync_single_rhic(uuid):
     status_code  = identity.sync_single_rhic_blocking(uuid)
     identity_lookup.complete_rhic_lookup_task(uuid, status_code)
     end = time.time()
-    _LOG.info("completed with status_code '%s' in %s seconds" % \
+    _LOG.info("Task uuid '%s' completed with status_code '%s' in %s seconds" % \
               (uuid, status_code, end-start))
     return status_code
 
