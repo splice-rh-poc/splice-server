@@ -93,12 +93,25 @@ if [ $TESTS = $MAX_TESTS ]; then
     exit 1
 fi
 echo "$INSTANCE_ID is running, name is $NAME, will now wait for SSH access to come up"
+
+#
+# Create Volume
+#
+VOLUME_OUT=`ec2-create-volume --size ${VOLUME_SIZE} --availability-zone ${ZONE}`
+VOLUME_ID=`echo "${VOLUME_OUT}" | awk '/^VOLUME/ {print $2}'`
+echo "Volume '${VOLUME_ID}' has been created."
+
+#
+# Tag this instance & volume so it's easier to see from AWS web console
+#
+ec2-create-tags ${VOLUME_ID} ${INSTANCE_ID} --tag "Name=RCS ${INSTANCE_ID}" &> /dev/null
+
 #
 # Wait for ssh to come up
 #
 OVER=0
 TESTS=0
-MAX_CONNECTS=6
+MAX_CONNECTS=12
 COMMANDS="(uname -a)"
 while [ $OVER != 1 ] && [ $TESTS -lt $MAX_CONNECTS ]; do
     ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "${COMMANDS}" &> /dev/null
@@ -112,14 +125,10 @@ while [ $OVER != 1 ] && [ $TESTS -lt $MAX_CONNECTS ]; do
     fi
 done
 if [ $TESTS = $MAX_CONNECTS ]; then
-    echo "Cannot connect to ${NAME}" 1>&2
+    echo "Cannot connect to ssh service on ${NAME}, waited 60 seconds." 1>&2
+    exit 1
 fi
 
-
-# Need to get volume id
-VOLUME_OUT=`ec2-create-volume --size ${VOLUME_SIZE} --availability-zone ${ZONE}`
-VOLUME_ID=`echo "${VOLUME_OUT}" | awk '/^VOLUME/ {print $2}'`
-echo "Volume '${VOLUME_ID}' has been created."
 #
 # Wait for volume to be available
 #
@@ -145,10 +154,6 @@ if [ $TESTS = $MAX_TESTS ]; then
     exit 1
 fi
 
-#
-# Tag this instance so it's easier to see from AWS web console
-#
-ec2-create-tags ${VOLUME_ID} ${INSTANCE_ID} --tag "Name=RCS ${INSTANCE_ID}" &> /dev/null
 
 # Attach volume
 ec2-attach-volume ${VOLUME_ID} -i ${INSTANCE_ID} -d /dev/sdp
