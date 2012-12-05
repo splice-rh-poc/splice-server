@@ -209,10 +209,12 @@ ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "service i
 #
 echo "Installing splice on ${NAME}"
 scp -o "StrictHostKeyChecking no" -i ${SSH_KEY} ./install_rpm_setup.sh ${SSH_USERNAME}@$NAME:~
-# Temporary step for splice-certmaker
-scp -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${CERTMAKER_DATA} ${SSH_USERNAME}@$NAME:/tmp/test.json
 ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "chmod +x ./install_rpm_setup.sh"
 ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "time ./install_rpm_setup.sh &> ./splice_install.log "
+
+# Upload product data to cert-maker
+echo "Uploading product data from ${CERTMAKER} to splice-certmaker on ${NAME}"
+curl -X POST --data "product_list=`cat ${CERTMAKER_DATA}`"  http://${NAME}:8080/productlist
 
 echo ""
 echo "**"
