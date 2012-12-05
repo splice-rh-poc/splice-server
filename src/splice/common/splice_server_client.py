@@ -28,24 +28,29 @@ def get_connection(host, port, cert, key, accept_gzip=False):
     # Note: this method will be mocked out in unit tests
     return BaseConnection(host, port, handler="", https=True, cert_file=cert, key_file=key, accept_gzip=accept_gzip)
 
-def parse_data(data):
-    # Placeholder, may want to parse response and identify objects that weren't successfully uploaded
-    # Returns a list of objects to retry or an empty list on success
-    return []
-
-def upload_product_usage_data(host, port, url, pu_data, accept_gzip=False):
+def send_data(host, port, url, data, accept_gzip=False):
     key_file = certs.get_splice_server_identity_key_path()
     cert_file = certs.get_splice_server_identity_cert_path()
     try:
         conn = get_connection(host, port, cert_file, key_file, accept_gzip)
-        status, data = conn.POST(url, pu_data)
-        if status in [200, 202]:
-            return parse_data(data)
+        status, data = conn.POST(url, data)
+        return status, data
     except Exception, e:
-        _LOG.exception("Caught exception attempting to send %s product usage objects to %s:%s/%s with key=%s, cert=%s" % \
-                       (len(pu_data), host, port, url, key_file, cert_file))
+        _LOG.exception("Caught exception attempting to send data to %s:%s/%s with key=%s, cert=%s" %\
+                   (host, port, url, key_file, cert_file))
         raise
-    raise RequestException(status, data)
+
+def upload_splice_server_metadata(host, port, url, metadata):
+    status, data = send_data(host, port, url, metadata)
+    if status not in [200, 202]:
+        raise RequestException(status, data)
+    return status, data
+
+def upload_product_usage_data(host, port, url, pu_data, accept_gzip=False):
+    status, data = send_data(host, port, url, pu_data, accept_gzip)
+    if status not in [200, 202]:
+        raise RequestException(status, data)
+    return status, data
 
 if __name__ == "__main__":
     from datetime import datetime
@@ -72,6 +77,6 @@ if __name__ == "__main__":
     port = remote_server[1]
     url = remote_server[2]
 
-    resp = upload_product_usage_data(host, port, url, [pu])
+    status, data = upload_product_usage_data(host, port, url, [pu])
     print "---\n\n"
-    print "Response:\n%s" % (resp)
+    print "Response:\n Status Code: %s\n%s" % (status, data)
