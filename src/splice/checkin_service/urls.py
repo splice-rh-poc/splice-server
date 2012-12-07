@@ -22,7 +22,8 @@ from tastypie.api import Api
 from splice.entitlement import on_startup
 on_startup.run()
 
-from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource, ModifiedProductUsageResource
+from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource, ModifiedProductUsageResource, \
+    ModifiedSpliceServerResource
 
 _LOG = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ v1_api = Api(api_name='v1')
 v1_api.register(EntitlementResource())
 v1_api.register(RHICRCSModifiedResource())
 v1_api.register(ModifiedProductUsageResource())
+v1_api.register(ModifiedSpliceServerResource())
 
 urlpatterns = patterns('',
     # Examples:

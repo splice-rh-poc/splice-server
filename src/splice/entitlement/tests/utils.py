@@ -59,7 +59,6 @@ class UtilsTest(BaseEntitlementTestCase):
         expected_same = utils.sanitize_key_for_mongo(sanitized)
         self.assertEquals(expected_same, sanitized)
 
-
     def test_convert_to_datetime(self):
         # Ensure we can handle None being passed in
         self.assertIsNone(utils.convert_to_datetime(None))
@@ -76,12 +75,12 @@ class UtilsTest(BaseEntitlementTestCase):
 
         b = '2012-09-19T19:01:55+00:00'
         dt_b = utils.convert_to_datetime(b)
-        self.assertEquals(dt_a.year, 2012)
-        self.assertEquals(dt_a.month, 9)
-        self.assertEquals(dt_a.day, 19)
-        self.assertEquals(dt_a.hour, 19)
-        self.assertEquals(dt_a.minute, 1)
-        self.assertEquals(dt_a.second, 55)
+        self.assertEquals(dt_b.year, 2012)
+        self.assertEquals(dt_b.month, 9)
+        self.assertEquals(dt_b.day, 19)
+        self.assertEquals(dt_b.hour, 19)
+        self.assertEquals(dt_b.minute, 1)
+        self.assertEquals(dt_b.second, 55)
 
         c = '2012-09-19T19:01:55'
         dt_c = utils.convert_to_datetime(c)
@@ -91,6 +90,15 @@ class UtilsTest(BaseEntitlementTestCase):
         self.assertEquals(dt_c.hour, 19)
         self.assertEquals(dt_c.minute, 1)
         self.assertEquals(dt_c.second, 55)
+
+        d = '2012-12-06T10:11:48.050566'
+        dt_d = utils.convert_to_datetime(d)
+        self.assertEquals(dt_d.year, 2012)
+        self.assertEquals(dt_d.month, 12)
+        self.assertEquals(dt_d.day, 06)
+        self.assertEquals(dt_d.hour, 10)
+        self.assertEquals(dt_d.minute, 11)
+        self.assertEquals(dt_d.second, 48)
 
         caught  = False
         bad_value = 'BadValue'

@@ -28,8 +28,21 @@ class SpliceServer(Document):
     description = StringField() # Example what datacenter is this deployed to, i.e. us-east-1
     hostname = StringField(required=True)
     environment = StringField(required=True)
-   
+    created = IsoDateTimeField(required=True, default=get_now)
+    modified = IsoDateTimeField(required=True, default=get_now)
+
     meta = {'allow_inheritance': True}
+
+    def __str__(self):
+        return "SpliceServer<%s>, hostname=<%s>, environment=<%s>, created on %s, last modified %s" % \
+               (self.uuid, self.hostname, self.environment, self.created, self.modified)
+
+    @classmethod
+    def pre_save(cls, sender, document, **kwargs):
+        if isinstance(document.created, basestring):
+            document.created = convert_to_datetime(document.created)
+        if isinstance(document.modified, basestring):
+            document.modified = convert_to_datetime(document.modified)
 
 class RHICLookupTask(Document):
     meta = {
@@ -120,3 +133,4 @@ class ProductUsage(Document):
 # Signals
 signals.pre_save.connect(IdentitySyncInfo.pre_save, sender=IdentitySyncInfo)
 signals.pre_save.connect(ProductUsage.pre_save, sender=ProductUsage)
+signals.pre_save.connect(SpliceServer.pre_save, sender=SpliceServer)

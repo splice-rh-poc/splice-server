@@ -18,17 +18,16 @@ import time
 
 from logging import getLogger
 
-from tastypie.test import ResourceTestCase
+from tastypie.test import ResourceTestCase, TestApiClient
+from tastypie.serializers import Serializer
 
 from mongoengine.connection import connect, disconnect, register_connection
 from mongoengine.queryset import QuerySet
 from django.conf import settings
+from django.test import TestCase
 from django.test.client import RequestFactory
 
-
-from splice.common import candlepin_client
-from splice.common import config
-from splice.common import rhic_serve_client
+from splice.common import candlepin_client, config, rhic_serve_client, utils
 from splice.common.connect import BaseConnection
 from splice.common.identity import create_or_update_consumer_identity, SyncRHICServeThread
 from splice.entitlement.checkin import CheckIn
@@ -40,9 +39,49 @@ TEST_DATA_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "..", "
 LOG = getLogger(__name__)
 
 
+class RawTestApiClient(TestApiClient):
+    """
+    Will not serialize passed in 'data'
+    Assumes caller is responsible for all serialization outside of this test code
+    """
+    def post(self, uri, format='json', data=None, authentication=None, **kwargs):
+        content_type = self.get_content_type(format)
+        kwargs['content_type'] = content_type
+
+        if data is not None:
+            kwargs['data'] = data
+
+        if authentication is not None:
+            kwargs['HTTP_AUTHORIZATION'] = authentication
+
+        return self.client.post(uri, **kwargs)
+
+    def put(self, uri, format='json', data=None, authentication=None, **kwargs):
+        content_type = self.get_content_type(format)
+        kwargs['content_type'] = content_type
+
+        if data is not None:
+            kwargs['data'] = data
+
+        if authentication is not None:
+            kwargs['HTTP_AUTHORIZATION'] = authentication
+
+        return self.client.put(uri, **kwargs)
+
+
+class ModifiedResourceTestCase(ResourceTestCase):
+    """
+    A useful base class for the start of testing Tastypie APIs.
+    """
+    def setUp(self):
+        # Overriding the default serializer to use our MongoEncoder
+        super(ModifiedResourceTestCase, self).setUp()
+        self.raw_api_client = RawTestApiClient(self.serializer)
+
+
 # Adapted From:
 # https://github.com/vandersonmota/mongoengine_django_tests/blob/master/mongotest.py
-class MongoTestCase(ResourceTestCase):
+class MongoTestCase(ModifiedResourceTestCase):
     """
     TestCase class that clear the collection between the tests
     """

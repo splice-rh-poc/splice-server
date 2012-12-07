@@ -7,6 +7,7 @@ from identity import *
 from identity_lookup import *
 from mongotests import *
 from productusage import *
+from spliceserver import *
 from upload_manager import *
 from utils import *
 

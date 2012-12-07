@@ -20,16 +20,60 @@ from tastypie.resources import Resource
 from tastypie.exceptions import BadRequest
 
 from rhic_serve.rhic_rcs.api import rhic
-from report_server.report_import.api import productusage
+from report_server.report_import.api import productusage, spliceserver
 
 from splice.entitlement.checkin import CheckIn
 from splice.common import certs
 from splice.common.auth import X509CertificateAuthentication
 from splice.common.identity import get_current_rhic_lookup_tasks
+from splice.common.models import SpliceServer
 from splice.managers import identity_lookup
 
 import logging
 _LOG = logging.getLogger(__name__)
+
+
+class ModifiedSpliceServerResource(spliceserver.SpliceServerResource):
+    class Meta(spliceserver.SpliceServerResource.Meta):
+        #
+        # We want our class to have the same URL pattern as the base class
+        # So...explicitly setting 'resource_name'
+        #
+        resource_name = 'spliceserver'
+        # This resource will be secured by the Splice Server Identity Certificate
+        authentication = X509CertificateAuthentication(verification_ca=certs.get_splice_server_identity_ca_pem())
+
+    def __init__(self):
+        super(ModifiedSpliceServerResource, self).__init__()
+
+    def import_hook(self, servers):
+        errors = []
+        _LOG.debug("Importing %s SpliceServer objects" % (len(servers)))
+        start = time.time()
+        for s in servers:
+            try:
+                existing_server = SpliceServer.objects(uuid=s["uuid"]).first()
+                if not existing_server:
+                    # No existing server, save new copy
+                    s.save()
+                else:
+                    # Existing server, check if data is newer than what we have
+                    if existing_server.modified > s.modified:
+                        # Older data, do nothing
+                        _LOG.info("Skipping import of Splice Server '%s' with modified date '%s', ",
+                            "we have a newer modified date '%s'" % (s.uuid, s.modified, existing_server.modified))
+                    else:
+                        # Newer data, update our records
+                        existing_server.update(s)
+                        existing_server.save()
+            except OperationError, e:
+                _LOG.warning("Error on attempting to save: %s.\nException: %s" % (s, e))
+                errors.append(s)
+        end = time.time()
+        _LOG.debug("%s SpliceServer objects successfully imported, %s were errors, processed in %s seconds" % \
+                   (len(servers) -  len(errors), len(errors), (end-start)))
+        return errors
+
 
 class ModifiedProductUsageResource(productusage.ProductUsageResource):
     class Meta(productusage.ProductUsageResource.Meta):
