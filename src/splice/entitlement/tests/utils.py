@@ -72,6 +72,7 @@ class UtilsTest(BaseEntitlementTestCase):
         self.assertEquals(dt_a.minute, 1)
         self.assertEquals(dt_a.microsecond, 8000)
         self.assertEquals(dt_a.second, 55)
+        self.assertIsNotNone(dt_a.tzinfo)
 
         b = '2012-09-19T19:01:55+00:00'
         dt_b = utils.convert_to_datetime(b)
@@ -81,6 +82,7 @@ class UtilsTest(BaseEntitlementTestCase):
         self.assertEquals(dt_b.hour, 19)
         self.assertEquals(dt_b.minute, 1)
         self.assertEquals(dt_b.second, 55)
+        self.assertIsNotNone(dt_b.tzinfo)
 
         c = '2012-09-19T19:01:55'
         dt_c = utils.convert_to_datetime(c)
@@ -90,6 +92,7 @@ class UtilsTest(BaseEntitlementTestCase):
         self.assertEquals(dt_c.hour, 19)
         self.assertEquals(dt_c.minute, 1)
         self.assertEquals(dt_c.second, 55)
+        self.assertIsNotNone(dt_c.tzinfo)
 
         d = '2012-12-06T10:11:48.050566'
         dt_d = utils.convert_to_datetime(d)
@@ -99,6 +102,7 @@ class UtilsTest(BaseEntitlementTestCase):
         self.assertEquals(dt_d.hour, 10)
         self.assertEquals(dt_d.minute, 11)
         self.assertEquals(dt_d.second, 48)
+        self.assertIsNotNone(dt_d.tzinfo)
 
         caught  = False
         bad_value = 'BadValue'

@@ -117,8 +117,6 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertIsNotNone(found[0].modified)
 
     def test_uploading_duplicate(self):
-        # TODO: need to fix: TypeError: can't compare offset-naive and offset-aware datetimes
-        return
         found = SpliceServer.objects()
         self.assertEquals(len(found), 0)
 
@@ -129,6 +127,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         server.environment = "environment info"
         # Note this tests save()'s the instance to the DB
         server.save()
+        self.assertIsNotNone(server.modified.tzinfo)
 
         example = {"objects":[server]}
         post_data = utils.obj_to_json(example)
@@ -192,7 +191,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].description, orig_description)
         self.assertEquals(found[0].hostname, orig_hostname)
         self.assertEquals(found[0].environment, orig_environment)
-        self.assertEquals(str(found[0].modified), "2012-12-01 11:13:06.432000")
+        self.assertEquals(str(found[0].modified), "2012-12-01 11:13:06.432000+00:00")
 
     def test_upload_newer_spliceserver(self):
         found = SpliceServer.objects()
@@ -236,7 +235,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].description, newer.description)
         self.assertEquals(found[0].hostname, newer.hostname)
         self.assertEquals(found[0].environment, newer.environment)
-        self.assertEquals(str(found[0].modified), "2012-12-31 11:13:06.432000")
+        self.assertEquals(str(found[0].modified), "2012-12-31 11:13:06.432000+00:00")
 
     def test_upload_error(self):
         # TODO

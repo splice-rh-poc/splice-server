@@ -89,7 +89,7 @@ class MongoTestCase(ModifiedResourceTestCase):
     def __init__(self, methodName='runtest'):
         super(MongoTestCase, self).__init__(methodName)
         disconnect()
-        self.db = connect(self.db_name)
+        self.db = connect(self.db_name, tz_aware=True)
         self.drop_database_and_reconnect()
 
     def _post_teardown(self):
@@ -105,7 +105,7 @@ class MongoTestCase(ModifiedResourceTestCase):
         # https://github.com/hmarr/mongoengine/issues/422
         QuerySet._reset_already_indexed()
         if reconnect:
-            self.db = connect(self.db_name)
+            self.db = connect(self.db_name, tz_aware=True)
             register_connection('rhic_serve', self.db_name)
 
     def assertDateTimeIsEqual(self, left, right):

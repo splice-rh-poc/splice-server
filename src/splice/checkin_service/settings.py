@@ -63,7 +63,7 @@ INSTALLED_APPS = (
 import mongoengine
 MONGO_DATABASE_NAME = config.CONFIG.get('server', 'db_name')
 MONGO_DATABASE_HOST = config.CONFIG.get('server', 'db_host')
-mongoengine.connect(MONGO_DATABASE_NAME, host=MONGO_DATABASE_HOST)
+mongoengine.connect(MONGO_DATABASE_NAME, host=MONGO_DATABASE_HOST, tz_aware=True)
 mongoengine.register_connection("rhic_serve", MONGO_DATABASE_NAME)
 
 AUTHENTICATION_BACKENDS = (

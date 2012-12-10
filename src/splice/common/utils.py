@@ -16,8 +16,10 @@ from logging import getLogger
 from splice.common.exceptions import UnsupportedDateFormatException
 
 from datetime import datetime
+from dateutil.tz import tzutc
 import isodate
 import json
+
 
 _LOG = getLogger(__name__)
 
@@ -96,16 +98,20 @@ def convert_to_datetime(input_date_str):
     @return:
     @rtype: datetime.datetime
     """
+    def ensure_tzinfo(input):
+        if not input.tzinfo:
+            return input.replace(tzinfo=tzutc())
+        return input
+
     if input_date_str is None:
         return None
     try:
-        return isodate.parse_datetime(input_date_str)
+        return ensure_tzinfo(isodate.parse_datetime(input_date_str))
     except Exception, e:
         try:
             # Fallback to a non iso format datetime parser
             from dateutil.parser import parser
-            p = parser()
-            return p.parse(input_date_str)
+            return ensure_tzinfo(parser().parse(input_date_str))
         except:
             pass
         _LOG.exception("Unable to parse date: %s" % (input_date_str))

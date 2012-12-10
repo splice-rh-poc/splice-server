@@ -53,9 +53,7 @@ class IdentityLookupTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].uuid, task_a.uuid)
         self.assertFalse(found[0].completed)
         self.assertEquals(found[0].task_id, task_id)
-        # TODO Look into why we need to localize isodates that come back from mongo,
-        # looks like it's dropping off the timezone offset
-        self.assertTrue(pytz.UTC.localize(found[0].modified) > prior_modified)
+        self.assertTrue(found[0].modified > prior_modified)
 
 
     def test_complete_rhic_lookup_task_200(self):
