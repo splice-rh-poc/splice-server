@@ -36,7 +36,13 @@ chkconfig rabbitmq-server on
 service rabbitmq-server start
 chkconfig mongod on
 service mongod start
-splice-certmaker 
+# HACK until we fix perms of log files to share with splice-certmaker
+touch /var/log/splice/splice-certmaker
+chown splice:apache /var/log/splice/splice-certmaker
+chmod ug+rwX /var/log/splice/splice-certmaker
+# End of Hack
+chkconfig splice-certmaker on
+service splice-certmaker restart
 
 # Ensure mongodb is up (sometimes it takes 30 seconds to finish it's first run)
 OVER=0
