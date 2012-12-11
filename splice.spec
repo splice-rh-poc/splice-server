@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.87
+Version:    0.88
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -261,6 +261,27 @@ exit 0
 
 
 %changelog
+* Tue Dec 11 2012 John Matthews <jmatthews@redhat.com> 0.88-1
+- Moved SpliceServerResource from report server codebase to here
+  (jmatthews@redhat.com)
+- Modified upload task to include uploading Splice Server metadata & unit tests
+  (jmatthews@redhat.com)
+- On a '500' write Request & Exception to splice.log AND
+  /var/log/httpd/error_log (jmatthews@redhat.com)
+- Fix for timezone aware issues, updated mongo connection to use tz_aware=True,
+  updated common utils method to add tzinfo if not set (jmatthews@redhat.com)
+- Adding API for uploading splice server metadata (jmatthews@redhat.com)
+- Update iptables for 8080 to allow splice-certmaker to accept external upload.
+  (jmatthews@redhat.com)
+- Small refactor to splice_server_client to support uploading a new data:
+  Splice Server Metadata (jmatthews@redhat.com)
+- Update for uploading product data to splice-certmaker and changed config val:
+  product_json_cache (jmatthews@redhat.com)
+- Introduced env var SPLICE_CONFIG. Allows unittests to override logging config
+  to silence output to console (jmatthews@redhat.com)
+- Update from testing, single script now able to launch a working
+  RCS+splice_certmaker (jmatthews@redhat.com)
+
 * Fri Nov 30 2012 John Matthews <jmatthews@redhat.com> 0.87-1
 - Fixes being unable to create Splice Server identity certificate on a clean
   install. Ordering was an issue, splice-common %%post was running before the
