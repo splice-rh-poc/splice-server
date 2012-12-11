@@ -20,7 +20,7 @@ from tastypie.resources import Resource
 from tastypie.exceptions import BadRequest
 
 from rhic_serve.rhic_rcs.api import rhic
-from report_server.report_import.api import productusage, spliceserver
+from report_server.report_import.api import productusage
 
 from splice.entitlement.checkin import CheckIn
 from splice.common import certs
@@ -30,22 +30,6 @@ from splice.managers import identity_lookup
 
 import logging
 _LOG = logging.getLogger(__name__)
-
-
-#class ModifiedSpliceServerResource(spliceserver.SpliceServerResource):
-#    class Meta(spliceserver.SpliceServerResource.Meta):
-#        #
-#        # We want our class to have the same URL pattern as the base class
-#        # So...explicitly setting 'resource_name'
-#        #
-#        resource_name = 'spliceserver'
-#        # This resource will be secured by the Splice Server Identity Certificate
-#        authentication = X509CertificateAuthentication(verification_ca=certs.get_splice_server_identity_ca_pem())
-#
-#    def __init__(self):
-#        super(ModifiedSpliceServerResource, self).__init__()
-
-
 
 class ModifiedProductUsageResource(productusage.ProductUsageResource):
     class Meta(productusage.ProductUsageResource.Meta):

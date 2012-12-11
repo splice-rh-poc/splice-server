@@ -22,8 +22,8 @@ from tastypie.api import Api
 from splice.entitlement import on_startup
 on_startup.run()
 
+from splice.common.api import SpliceServerResource
 from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource, ModifiedProductUsageResource
-from report_server.report_import.api.spliceserver import SpliceServerResource
 
 _LOG = logging.getLogger(__name__)
 
