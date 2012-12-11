@@ -41,8 +41,9 @@ def send_data(host, port, url, data, accept_gzip=False):
         raise
 
 def upload_splice_server_metadata(host, port, url, metadata):
+    metadata = {"objects":metadata}
     status, data = send_data(host, port, url, metadata)
-    if status not in [200, 202]:
+    if status not in [200, 202, 204]:
         raise RequestException(status, data)
     return status, data
 

@@ -79,16 +79,15 @@ class ProductUsageTransferInfo(Document):
     server_hostname = StringField(required=True, unique=True)
     last_timestamp = IsoDateTimeField(required=True)
 
-    @classmethod
-    def pre_save(cls, sender, document, **kwargs):
-        """
-        pre_save signal hook.
-        """
-        # Ensure that the 'server_hostname' has any "." removed so it can be a key in mongo
-        document.server_hostname = sanitize_key_for_mongo(document.server_hostname)
+    def __str__(self):
+        return "%s, server_hostname = %s, last_timestamp = %s" % (self.__class__, self.server_hostname, self.last_timestamp)
+
+class SpliceServerTransferInfo(Document):
+    server_hostname = StringField(required=True, unique=True)
+    last_timestamp = IsoDateTimeField(required=True)
 
     def __str__(self):
-        return "ProductUsageTransferInfo, server_hostname = %s, last_timestamp = %s" % (self.server_hostname, self.last_timestamp)
+        return "%s, server_hostname = %s, last_timestamp = %s" % (self.__class__, self.server_hostname, self.last_timestamp)
 
 class ConsumerIdentity(RHIC):
 
