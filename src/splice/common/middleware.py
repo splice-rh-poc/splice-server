@@ -104,7 +104,9 @@ class StandardExceptionMiddleware(object):
 
 
     def log_exception(self, request, exception, exc_info):
-        _LOG.exception("Middleware caught exception: ", exception)
+        _LOG.exception("Request yielded an exception: \n%s" % (request))
+        sys.stderr.write("Caught exception: %s\n" % (exception))
+        sys.stderr.write("Request: \n%s" % (request))
         sys.stderr.write("%s\n" % (self._get_traceback(exc_info)))
         sys.stderr.flush()
 

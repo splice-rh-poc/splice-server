@@ -119,7 +119,6 @@ TEMPLATE_LOADERS = (
 
 
 MIDDLEWARE_CLASSES = (
-    # 'splice.common.middleware.WsgiLogErrors',
     'splice.common.middleware.StandardExceptionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
