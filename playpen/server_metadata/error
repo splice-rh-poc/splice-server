@@ -1,0 +1,14 @@
+2012-12-11 14:28:30,335 INFO splice.common.config config:init_logging: Logging configured from: /etc/splice/logging/basic.cfg
+2012-12-11 14:28:30,336 INFO splice.common.connect connect:_request: 'POST' to '/splice/api/v1/spliceserver/' 
+	with headers '{'Content-type': 'application/json', 'Accept': 'application/json'}'
+	 body '{"objects": [{"description": "A test splice server instance", "created": "2012-12-07T15:35:54.686000", "hostname": "example.com", "modified": "2012-12-07T15:35:54.686000", "environment": "us-east-1a", "uuid": "uuid_value_B"}, {"description": "A test splice server instance", "created": "2012-12-07T15:35:54.686000", "hostname": "example.com", "modified": "2012-12-07T15:35:54.686000", "environment": "us-east-1a", "uuid": "uuid_value_A"}]}'
+2012-12-11 14:28:30,517 INFO splice.common.connect connect:_request: Received '204' from 'POST /splice/api/v1/spliceserver/'
+2012-12-11 14:28:30,624 WARNING splice.common.settings settings:set_celerybeat_schedule: Skipped configuring a periodic task to upload Product Usage since no servers were configured.
+Traceback (most recent call last):
+  File "./upload_metadata.py", line 45, in <module>
+    response = upload(opts.host, opts.port, data)
+  File "./upload_metadata.py", line 16, in upload
+    return splice_server_client.upload_splice_server_metadata(host, port, "/splice/api/v1/spliceserver/", data)
+  File "/git/splice-server/src/splice/common/splice_server_client.py", line 47, in upload_splice_server_metadata
+    raise RequestException(status, data)
+splice.common.exceptions.RequestException: Exception: remote request yielded status code: '204' with body ''
