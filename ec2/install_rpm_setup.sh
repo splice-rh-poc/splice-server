@@ -37,9 +37,10 @@ service rabbitmq-server start
 chkconfig mongod on
 service mongod start
 # HACK until we fix perms of log files to share with splice-certmaker
-touch /var/log/splice/splice-certmaker
-chown splice:apache /var/log/splice/splice-certmaker
-chmod ug+rwX /var/log/splice/splice-certmaker
+CERTMAKER_LOG="/var/log/splice/splice-certmaker.log"
+touch ${CERTMAKER_LOG}
+chown splice:apache ${CERTMAKER_LOG}
+chmod ug+rwX ${CERTMAKER_LOG}
 # End of Hack
 chkconfig splice-certmaker on
 service splice-certmaker restart
@@ -62,6 +63,27 @@ while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
 done
 if [ $TESTS = $MAX_TESTS ]; then
     echo "Mongo has not come up after 60 seconds.  Unexpected error"
+    exit 1
+fi
+
+# Ensure splice-certmaker is up 
+OVER=0
+TESTS=0
+MAX_TESTS=12
+while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
+    OUTPUT=`grep 'org.candlepin.splice.Main - server started!' /var/log/splice/splice-certmaker.log`
+    RET_CODE=$?
+    if [ RET_CODE != 1 ]; then
+        OVER=1
+    else
+        # I like bc but 'echo $(( TESTS+=1 ))' should work, too. Or expr.
+        TESTS=$(echo $TESTS+1 | bc)
+        echo "Waiting for splice-certmaker to come up"
+        sleep 5
+    fi
+done
+if [ $TESTS = $MAX_TESTS ]; then
+    echo "splice-certmaker has not come up after 60 seconds.  Unexpected error"
     exit 1
 fi
 

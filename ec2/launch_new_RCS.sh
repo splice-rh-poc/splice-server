@@ -63,7 +63,9 @@ RUN_OUTPUT=$(ec2-run-instances ${AMI_ID} -k ${KEY_NAME} --instance-type ${INSTAN
 INSTANCE_ID=$(echo "$RUN_OUTPUT" | awk '/^INSTANCE/ {print $2}')
 echo "Launched '${INSTANCE_ID}' a '${INSTANCE_TYPE}' instance in '${ZONE}' with AMI: '${AMI_ID}', security group '${SEC_GROUP}', and SSH key '${KEY_NAME}'"
 
-
+# Allow a few seconds for the APIs to all register we launched a new instance
+# Have seen a timing problem in past where ec2-describe-instances returns bad data for a newly launched instance
+sleep 5
 #
 # Wait for instance to come up
 #
