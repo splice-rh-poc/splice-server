@@ -216,12 +216,27 @@ scp -o "StrictHostKeyChecking no" -i ${SSH_KEY} ./install_rpm_setup.sh ${SSH_USE
 ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "chmod +x ./install_rpm_setup.sh"
 ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "time ./install_rpm_setup.sh &> ./splice_install.log "
 
-# Wait a few seconds to be sure splice-certmaker is ready to process requests
-sleep 15
-
 # Upload product data to cert-maker
 echo "Uploading product data from ${CERTMAKER_DATA} to splice-certmaker on ${NAME}"
-curl -X POST --data "product_list=`cat ${CERTMAKER_DATA}`"  http://${NAME}:8080/productlist
+OVER=0
+TESTS=0
+MAX_TESTS=6
+while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
+    echo "curl -X POST --data \"product_list=\`cat ${CERTMAKER_DATA}\`\"  http://${NAME}:8080/productlist"
+    curl -X POST --data "product_list=`cat ${CERTMAKER_DATA}`"  http://${NAME}:8080/productlist
+    STATUS=$? 
+    if [ $STATUS = 0 ]; then
+        OVER=1
+    else
+        TESTS=$(echo $TESTS+1 | bc)
+        echo "Waiting 30 seconds for splice-certmaker to become available"
+        sleep 30
+    fi
+done
+if [ $TESTS = $MAX_TESTS ]; then
+    echo "Unable to upload a product_list to splice-certmaker at: ${NAME}"
+    exit 1
+fi
 
 echo ""
 echo "**"

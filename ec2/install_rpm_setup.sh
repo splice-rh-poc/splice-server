@@ -53,7 +53,7 @@ MAX_TESTS=12
 while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
     OUTPUT=`grep 'waiting for connections on port 27017' /var/log/mongodb/mongodb.log`
     RET_CODE=$?
-    if [ RET_CODE != 1 ]; then
+    if [ RET_CODE == 0 ]; then
         OVER=1
     else
         # I like bc but 'echo $(( TESTS+=1 ))' should work, too. Or expr.
@@ -75,7 +75,7 @@ MAX_TESTS=12
 while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
     OUTPUT=`grep 'org.candlepin.splice.Main - server started!' /var/log/splice/splice-certmaker.log`
     RET_CODE=$?
-    if [ RET_CODE != 1 ]; then
+    if [ RET_CODE == 0 ]; then
         OVER=1
     else
         # I like bc but 'echo $(( TESTS+=1 ))' should work, too. Or expr.
