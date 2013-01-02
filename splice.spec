@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.88
+Version:    0.89
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -261,6 +261,13 @@ exit 0
 
 
 %changelog
+* Wed Jan 02 2013 John Matthews <jmatthews@redhat.com> 0.89-1
+- Fix intermittent timing error with launch of new RCS & mark EBS volume as
+  delete on termination true (jmatthews@redhat.com)
+- Fix for upload tasks of Splice Server metadata and ProductUsage to append "/"
+  to end of URL (jmatthews@redhat.com)
+- Updates for latest build of splice-certmaker (jmatthews@redhat.com)
+
 * Tue Dec 11 2012 John Matthews <jmatthews@redhat.com> 0.88-1
 - Moved SpliceServerResource from report server codebase to here
   (jmatthews@redhat.com)
