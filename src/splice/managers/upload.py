@@ -43,7 +43,7 @@ def upload_product_usage_data(cfg=None):
 # - Internal functions below
 ###
 def _process_splice_server_metadata_upload(addr, port, url, since=None):
-    url = url + "/spliceserver"
+    url = url + "/spliceserver/" # must end in '/'
     cursor = _get_splice_server_metadata(addr, since)
     data = list(cursor)
     if not data:
@@ -68,7 +68,7 @@ def _process_product_usage_upload(addr, port, url, limit, since=None):
     @param since: Optional, date we want to send data from, intended for unit tests only
     @return: True on success, False on failure
     """
-    url = url + "/productusage"
+    url = url + "/productusage/"  #must end in '/'
     cursor = _get_product_usage_data(addr, limit, since)
     pu_data = list(cursor)
     if not pu_data:
