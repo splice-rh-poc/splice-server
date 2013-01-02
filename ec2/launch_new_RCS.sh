@@ -106,8 +106,8 @@ echo "Volume '${VOLUME_ID}' has been created."
 #
 # Tag this instance & volume so it's easier to see from AWS web console
 #
-ec2-create-tags ${VOLUME_ID} ${INSTANCE_ID} --tag "Name=RCS ${INSTANCE_ID}" &> /dev/null
-
+ec2-create-tags ${VOLUME_ID} ${INSTANCE_ID} --tag "Name=RCS ${NAME}" &> /dev/null
+
 #
 # Wait for ssh to come up
 #
@@ -184,6 +184,8 @@ if [ $TESTS = $MAX_TESTS ]; then
     exit 1
 fi
 
+# Configure the EBS Volume to be deleted when instance terminates
+ec2-modify-instance-attribute -b "/dev/sdp"=${VOLUME_ID}:true ${INSTANCE_ID}
 
 #
 # Setup EBS volume
@@ -214,8 +216,11 @@ scp -o "StrictHostKeyChecking no" -i ${SSH_KEY} ./install_rpm_setup.sh ${SSH_USE
 ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "chmod +x ./install_rpm_setup.sh"
 ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME "time ./install_rpm_setup.sh &> ./splice_install.log "
 
+# Wait a few seconds to be sure splice-certmaker is ready to process requests
+sleep 15
+
 # Upload product data to cert-maker
-echo "Uploading product data from ${CERTMAKER} to splice-certmaker on ${NAME}"
+echo "Uploading product data from ${CERTMAKER_DATA} to splice-certmaker on ${NAME}"
 curl -X POST --data "product_list=`cat ${CERTMAKER_DATA}`"  http://${NAME}:8080/productlist
 
 echo ""

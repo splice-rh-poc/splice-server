@@ -45,6 +45,7 @@ chmod ug+rwX ${CERTMAKER_LOG}
 chkconfig splice-certmaker on
 service splice-certmaker restart
 
+echo "RPMs installed, waiting for mongo & splice-certmaker to initialize: `date`"
 # Ensure mongodb is up (sometimes it takes 30 seconds to finish it's first run)
 OVER=0
 TESTS=0
@@ -65,6 +66,7 @@ if [ $TESTS = $MAX_TESTS ]; then
     echo "Mongo has not come up after 60 seconds.  Unexpected error"
     exit 1
 fi
+echo "Completed check that mongo is available: `date`"
 
 # Ensure splice-certmaker is up 
 OVER=0
@@ -86,6 +88,7 @@ if [ $TESTS = $MAX_TESTS ]; then
     echo "splice-certmaker has not come up after 60 seconds.  Unexpected error"
     exit 1
 fi
+echo "Completed check that splice-certmaker is up: `date`"
 
 service splice_all stop
 service splice_all start
