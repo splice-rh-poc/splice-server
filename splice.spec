@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.90
+Version:    0.91
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -266,6 +266,9 @@ exit 0
 
 
 %changelog
+* Thu Jan 03 2013 John Matthews <jmatthews@redhat.com> 0.91-1
+- Update group perms for /var/log/splice (jmatthews@redhat.com)
+
 * Thu Jan 03 2013 John Matthews <jmatthews@redhat.com> 0.90-1
 - Adding 'waitfor' function to install script for RCS (jmatthews@redhat.com)
 - Celery tasks now execute as 'splice' user (jmatthews@redhat.com)
