@@ -107,7 +107,7 @@ echo "Volume '${VOLUME_ID}' has been created."
 # Tag this instance & volume so it's easier to see from AWS web console
 #
 ec2-create-tags ${VOLUME_ID} ${INSTANCE_ID} --tag "Name=RCS ${NAME}" &> /dev/null
-
+
 #
 # Wait for ssh to come up
 #

@@ -34,13 +34,6 @@ function waitfor() {
     fi
 }
 
-function check_env () {
-    if [ ! -f $2 ]; then
-        echo "Bad environment variable: $1=$2"
-        exit 1
-    fi
-}
-
 # Install EPEL
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm || {
     echo "Unable to install EPEL"
