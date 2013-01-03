@@ -195,11 +195,7 @@ def update_celeryd_config():
 def update_permissions():
     cmd = "chown -R apache:splice /var/log/splice"
     run_command(cmd)
-    cmd = "chmod 3775 /var/log/splice"
-    run_command(cmd)
-    cmd = "chmod g+s /var/log/splice"
-    run_command(cmd)
-    cmd = "setfacl -d -m g::rwx /var/log/splice"
+    cmd = "chmod -R g+rwX /var/log/splice"
     run_command(cmd)
 
 def run_command(cmd, verbose=True):

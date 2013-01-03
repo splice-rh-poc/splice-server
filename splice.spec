@@ -175,10 +175,7 @@ exit 0
 
 %post common
 chown -R apache:splice %{_var}/log/%{name}
-chmod g+s %{_var}/log/%{name}
-setfacl -d -m g::rwx %{_var}/log/%{name}
-setfacl -d -m o::rx %{_var}/log/%{name}
-
+chmod -R g+rwX %{_var}/log/%{name}
 #
 # If there is no Splice Server identity certificate, generate a new one for testing
 # This step will be removed during production, the splice server cert must come from
@@ -243,7 +240,7 @@ exit 0
 %config(noreplace) %{_sysconfdir}/%{name}
 %exclude %{_sysconfdir}/%{name}/splice.conf
 %exclude %{_sysconfdir}/%{name}/logging/basic.cfg
-%defattr(-,apache,apache,-)
+%defattr(-,apache,splice,-)
 %dir %{_sysconfdir}/pki/%{name}
 %{_sysconfdir}/pki/%{name}
 %dir %{_var}/log/%{name}
