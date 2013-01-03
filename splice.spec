@@ -126,7 +126,9 @@ mkdir -p %{buildroot}/%{_sysconfdir}/httpd/conf.d/
 mkdir -p %{buildroot}/%{_sysconfdir}/splice
 mkdir -p %{buildroot}/%{_sysconfdir}/pki/%{name}
 mkdir -p %{buildroot}/%{_sysconfdir}/rc.d/init.d
+mkdir -p %{buildroot}/%{_var}/lib/%{name}
 mkdir -p %{buildroot}/%{_var}/log/%{name}
+
 
 # Install WSGI script & httpd conf
 cp -R srv %{buildroot}
@@ -169,7 +171,7 @@ fi
 %pre common
 getent group splice >/dev/null || groupadd -r splice
 getent passwd splice >/dev/null || \
-    useradd -r -g splice -G apache -d %{_datadir}/%{name} -s /sbin/nologin \
+    useradd -r -g splice -G apache -d %{_var}/lib/%{name} -s /sbin/nologin \
     -c "splice user" splice
 exit 0
 
@@ -243,6 +245,7 @@ exit 0
 %defattr(-,apache,splice,-)
 %dir %{_sysconfdir}/pki/%{name}
 %{_sysconfdir}/pki/%{name}
+%dir %{_var}/lib/%{name}
 %dir %{_var}/log/%{name}
 
 %files common-config
