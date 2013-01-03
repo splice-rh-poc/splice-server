@@ -38,6 +38,7 @@ WARNING_RESET = '\033[0m'
 DIRS = ("/etc/splice",
         "/etc/splice/celery",
         "/etc/pki/splice",
+        "/var/lib/splice",
         "/var/log/splice",
         "/srv/splice",
         )
@@ -110,6 +111,7 @@ def getlinks():
 
 def install(opts):
     warnings = []
+    create_splice_user()
     create_dirs(opts)
     currdir = os.path.abspath(os.path.dirname(__file__))
     for src, dst in getlinks():
@@ -190,6 +192,12 @@ def update_celeryd_config():
     # Update celeryd configuration
     django_dir = DJANGO_APP_DIR.replace("/", "\/")
     cmd = "sed -i 's/^CELERYD_CHDIR=.*/CELERYD_CHDIR=%s/' %s" % (django_dir, '/etc/splice/celery/celeryd')
+    run_command(cmd)
+
+def create_splice_user():
+    cmd = "getent group splice >/dev/null || groupadd -r splice"
+    run_command(cmd)
+    cmd = "getent passwd splice >/dev/null || useradd -r -g splice -G apache -d /var/lib/splice -s /sbin/nologin -c 'splice user' splice"
     run_command(cmd)
 
 def update_permissions():
