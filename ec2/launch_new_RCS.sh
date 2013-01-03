@@ -224,8 +224,7 @@ MAX_TESTS=6
 while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
     echo "curl -X POST --data \"product_list=\`cat ${CERTMAKER_DATA}\`\"  http://${NAME}:8080/productlist"
     curl -X POST --data "product_list=`cat ${CERTMAKER_DATA}`"  http://${NAME}:8080/productlist
-    STATUS=$? 
-    if [ $STATUS = 0 ]; then
+    if [ $? = 0 ]; then
         OVER=1
     else
         TESTS=$(echo $TESTS+1 | bc)

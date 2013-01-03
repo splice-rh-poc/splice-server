@@ -1,4 +1,46 @@
+#!/bin/sh
+# Hostname for instance serving splice RPMs
 SERVER_ADDR=ec2-23-22-86-129.compute-1.amazonaws.com
+
+function waitfor() {
+    if [ "$#" -ne 4 ]; then
+        echo "Incorrect usage of waitfor() function, only $# arguments passed when 4 were expected"
+        echo "Usage: retry CMD WAITING_MESSAGE NUM_ITERATIONS SLEEP_SECONDS_EACH_ITERATION"
+        exit 1
+    fi
+    CMD=$1
+    WAITING_MSG=$2
+    MAX_TESTS=$3
+    SLEEP_SECS=$4
+    
+    TESTS=0
+    OVER=0
+    while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
+        eval ${CMD} > /dev/null
+        if [ $? -eq 0 ]; then
+            OVER=1
+        else
+            TESTS=$(echo $TESTS+1 | bc)
+            echo $WAITING_MSG will wait for ${SLEEP_SECS} seconds this is attempt ${TESTS}/${MAX_TESTS} at `date`
+            sleep $SLEEP_SECS
+        fi
+    done
+    if [ $TESTS = $MAX_TESTS ]; then
+        echo ""
+        echo "**ERROR**:"
+        echo "Command:  ${CMD}"
+        echo "Unsuccessful after ${MAX_TESTS} iterations with a sleep of ${SLEEP_SECS} seconds in between"
+        exit 1
+    fi
+}
+
+function check_env () {
+    if [ ! -f $2 ]; then
+        echo "Bad environment variable: $1=$2"
+        exit 1
+    fi
+}
+
 # Install EPEL
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm || {
     echo "Unable to install EPEL"
@@ -36,58 +78,17 @@ chkconfig rabbitmq-server on
 service rabbitmq-server start
 chkconfig mongod on
 service mongod start
-# HACK until we fix perms of log files to share with splice-certmaker
-CERTMAKER_LOG="/var/log/splice/splice-certmaker.log"
-touch ${CERTMAKER_LOG}
-chown splice:apache ${CERTMAKER_LOG}
-chmod ug+rwX ${CERTMAKER_LOG}
-# End of Hack
 chkconfig splice-certmaker on
 service splice-certmaker restart
 
 echo "RPMs installed, waiting for mongo & splice-certmaker to initialize: `date`"
-# Ensure mongodb is up (sometimes it takes 30 seconds to finish it's first run)
-OVER=0
-TESTS=0
-MAX_TESTS=10
-while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
-    OUTPUT=`grep 'waiting for connections on port 27017' /var/log/mongodb/mongodb.log`
-    RET_CODE=$?
-    if [ RET_CODE == 0 ]; then
-        OVER=1
-    else
-        # I like bc but 'echo $(( TESTS+=1 ))' should work, too. Or expr.
-        TESTS=$(echo $TESTS+1 | bc)
-        echo "Waiting for mongodb to finish initialization"
-        sleep 30
-    fi
-done
-if [ $TESTS = $MAX_TESTS ]; then
-    echo "Mongo has not come up after 5 minutes.  Unexpected error"
-    exit 1
-fi
+CMD="grep 'waiting for connections on port 27017' /var/log/mongodb/mongodb.log"
+waitfor "${CMD}" "Waiting for mongodb to finish initialization" 10 30
 echo "Completed check that mongo is available: `date`"
 
 # Ensure splice-certmaker is up 
-OVER=0
-TESTS=0
-MAX_TESTS=12
-while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
-    OUTPUT=`grep 'org.candlepin.splice.Main - server started!' /var/log/splice/splice-certmaker.log`
-    RET_CODE=$?
-    if [ RET_CODE == 0 ]; then
-        OVER=1
-    else
-        # I like bc but 'echo $(( TESTS+=1 ))' should work, too. Or expr.
-        TESTS=$(echo $TESTS+1 | bc)
-        echo "Waiting for splice-certmaker to come up"
-        sleep 5
-    fi
-done
-if [ $TESTS = $MAX_TESTS ]; then
-    echo "splice-certmaker has not come up after 60 seconds.  Unexpected error"
-    exit 1
-fi
+CMD="grep 'org.candlepin.splice.Main - server started!' /var/log/splice/splice-certmaker.log"
+waitfor "${CMD}" "Waiting for splice-certmaker to come up" 8 15
 echo "Completed check that splice-certmaker is up: `date`"
 
 service splice_all stop
