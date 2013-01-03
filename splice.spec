@@ -166,11 +166,19 @@ then
     splice_cert_gen_setup.py /etc/httpd/conf.d/splice.conf
 fi
 
+%pre common
+getent group splice >/dev/null || groupadd -r splice
+getent passwd splice >/dev/null || \
+    useradd -r -g splice -G apache -d %{_datadir}/%{name} -s /sbin/nologin \
+    -c "splice user" splice
+exit 0
+
 %post common
-chown -R apache:apache %{_var}/log/%{name}
+chown -R apache:splice %{_var}/log/%{name}
 chmod g+s %{_var}/log/%{name}
 setfacl -d -m g::rwx %{_var}/log/%{name}
 setfacl -d -m o::rx %{_var}/log/%{name}
+
 #
 # If there is no Splice Server identity certificate, generate a new one for testing
 # This step will be removed during production, the splice server cert must come from

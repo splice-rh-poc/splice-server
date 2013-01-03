@@ -31,13 +31,8 @@ CELERYD_PID_FILE="/var/run/splice_celery_%n.pid"
 CELERYD_LOG_LEVEL="DEBUG"
 
 # Workers should run as an unprivileged user.
-# TODO:
-#  We are unable to run splice-celerdy as a daemon when
-#  settings are present fhr CELERYD_USER
-#  Would like to fix this in the future to allow celery 
-#  tasks to be constrained to 'celery' user
-#CELERYD_USER="celery"
-#CELERYD_GROUP="celery"
+CELERYD_USER="splice"
+CELERYD_GROUP="splice"
 
 # Name of the projects settings module.
 export DJANGO_SETTINGS_MODULE="splice.checkin_service.settings"

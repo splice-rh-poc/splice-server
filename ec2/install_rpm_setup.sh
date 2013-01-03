@@ -49,7 +49,7 @@ echo "RPMs installed, waiting for mongo & splice-certmaker to initialize: `date`
 # Ensure mongodb is up (sometimes it takes 30 seconds to finish it's first run)
 OVER=0
 TESTS=0
-MAX_TESTS=12
+MAX_TESTS=10
 while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
     OUTPUT=`grep 'waiting for connections on port 27017' /var/log/mongodb/mongodb.log`
     RET_CODE=$?
@@ -59,11 +59,11 @@ while [ $OVER != 1 ] && [ $TESTS -lt $MAX_TESTS ]; do
         # I like bc but 'echo $(( TESTS+=1 ))' should work, too. Or expr.
         TESTS=$(echo $TESTS+1 | bc)
         echo "Waiting for mongodb to finish initialization"
-        sleep 5
+        sleep 30
     fi
 done
 if [ $TESTS = $MAX_TESTS ]; then
-    echo "Mongo has not come up after 60 seconds.  Unexpected error"
+    echo "Mongo has not come up after 5 minutes.  Unexpected error"
     exit 1
 fi
 echo "Completed check that mongo is available: `date`"
