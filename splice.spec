@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.89
+Version:    0.90
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -269,6 +269,12 @@ exit 0
 
 
 %changelog
+* Thu Jan 03 2013 John Matthews <jmatthews@redhat.com> 0.90-1
+- Adding 'waitfor' function to install script for RCS (jmatthews@redhat.com)
+- Celery tasks now execute as 'splice' user (jmatthews@redhat.com)
+- Continuing to debug intermittent issues with RCS ec2 scripts
+  (jmatthews@redhat.com)
+
 * Wed Jan 02 2013 John Matthews <jmatthews@redhat.com> 0.89-1
 - Fix intermittent timing error with launch of new RCS & mark EBS volume as
   delete on termination true (jmatthews@redhat.com)
