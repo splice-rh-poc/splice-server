@@ -195,10 +195,8 @@ def update_celeryd_config():
     run_command(cmd)
 
 def create_splice_user():
-    cmd = "getent group splice >/dev/null || groupadd -r splice"
-    run_command(cmd)
-    cmd = "getent passwd splice >/dev/null || useradd -r -g splice -G apache -d /var/lib/splice -s /sbin/nologin -c 'splice user' splice"
-    run_command(cmd)
+    os.system("getent group splice >/dev/null || groupadd -r splice")
+    os.system("getent passwd splice >/dev/null || useradd -r -g splice -G apache -d /var/lib/splice -s /sbin/nologin -c 'splice user' splice")
 
 def update_permissions():
     cmd = "chown -R apache:splice /var/log/splice"
