@@ -6,25 +6,21 @@
 # :Usage: /etc/init.d/splice_all {start|stop|restart|status}
 #
 
-#LOG_FILE=/var/log/splice/django.log
-
 dropdatabase() {
     mongo 'checkin_service' --eval "db.dropDatabase();"
 }
 
 #
-# Hack to force the django log file is writeable by apache
+# Hack to force splice logging perms
 # 
-#force_log_perms() {
-#    if [ ! -f ${LOG_FILE} ] 
-#    then
-#        touch ${LOG_FILE}
-#    fi
-#    chown -R apache:apache ${LOG_FILE}
-#}
+force_log_perms() {
+    chown -R apache:splice /var/log/splice
+    chown -R splice:splice /var/log/splice/celery
+    chmod -R g+rw /var/log/splice
+}
 
 start() {
-    #force_log_perms
+    force_log_perms
     service httpd start
     service splice_celeryd start
     service splice_celerybeat start
@@ -37,7 +33,7 @@ stop() {
 }
 
 restart() {
-    #force_log_perms
+    force_log_perms
     service httpd restart
     service splice_celeryd restart
     service splice_celerybeat stop
