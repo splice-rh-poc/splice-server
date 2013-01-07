@@ -25,12 +25,20 @@ from splice.common.models import RHICLookupTask
 _LOG = getLogger(__name__)
 
 def get_cached_status_code(uuid):
+    """
+    @param uuid: RHIC uuid
+    @return:
+    """
     t = identity.get_current_rhic_lookup_tasks(uuid)
     if t and t.completed:
         return t.status_code
     return None
 
 def create_rhic_lookup_task(uuid):
+    """
+    @param uuid: RHIC uuid
+    @return:
+    """
     _LOG.info("create_rhic_lookup_task(%s)" % (uuid))
     # To avoid circular import
     # where we import 'identity_lookup' from splice.entitlement.tasks
@@ -41,24 +49,39 @@ def create_rhic_lookup_task(uuid):
     return task
 
 def complete_rhic_lookup_task(uuid, status_code):
+    """
+    @param uuid: RHIC uuid
+    @param status_code: HTTP status code from RHIC lookup
+    @return: None
+    """
     _LOG.info("complete_rhic_lookup_task(rhic_uuid='%s', status_code='%s') invoked" % (uuid, status_code))
     current_task = identity.get_current_rhic_lookup_tasks(uuid)
     if not current_task:
         _LOG.warning("completed_rhic_lookup_task with status code '%s' called on uuid '%s' "
                      "yet no task was found" % (status_code, uuid))
         return None
-    current_task.task_id = None
-    current_task.modified = datetime.now(tzutc())
-    current_task.status_code = status_code
-    current_task.completed = True
-    if status_code == 200:
+    if status_code in [202, 404]:
+        #   202 - in-progress tasks
+        #   404 - lookups that received a definitive response of the RHIC not existing.
+        current_task.task_id = None
+        current_task.modified = datetime.now(tzutc())
+        current_task.status_code = status_code
+        current_task.completed = True
+        if status_code == 202:
+            # Parent is still processing request, task will remain active.
+            current_task.completed = False
+        current_task.save()
+    else:
+        # Task will be killed, it either succeeded with a '200' or an unexpected error was seen.
+        msg = "Received [%s] for lookup of RHIC [%s]" % (status_code, uuid)
+        if status_code in [200]:
+            # 200 - RHIC was found in parent
+            _LOG.info(msg)
+        else:
+            _LOG.error(msg)
         identity.delete_rhic_lookup(current_task)
-        return None
-    elif status_code == 202:
-        # 202 is considered to be in_progress, so don't mark it as complete
-        current_task.completed = False
-    current_task.save()
-    return current_task
+    return None
+
 
 def update_rhic_lookup_task(uuid, task_id):
     _LOG.info("update_rhic_lookup_task(rhic_uuid='%s', task_id='%s')" % (uuid, task_id))

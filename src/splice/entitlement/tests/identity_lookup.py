@@ -82,7 +82,7 @@ class IdentityLookupTest(BaseEntitlementTestCase):
         # it should be marked as 'completed=True'
         not_found = 404
         ret_val = identity_lookup.complete_rhic_lookup_task(task.uuid, not_found)
-        self.assertIsNotNone(ret_val)
+        self.assertIsNone(ret_val)
         found = RHICLookupTask.objects()
         self.assertEquals(len(found), 1)
         self.assertEquals(found[0].uuid, task.uuid)
@@ -101,7 +101,7 @@ class IdentityLookupTest(BaseEntitlementTestCase):
         # task should remain in DB, should be marked as 'completed=False'
         in_progress = 202
         ret_val = identity_lookup.complete_rhic_lookup_task(task.uuid, in_progress)
-        self.assertIsNotNone(ret_val)
+        self.assertIsNone(ret_val)
         found = RHICLookupTask.objects()
         self.assertEquals(len(found), 1)
         self.assertEquals(found[0].uuid, task.uuid)
@@ -117,14 +117,10 @@ class IdentityLookupTest(BaseEntitlementTestCase):
         self.assertEquals(len(found), 1)
         self.assertEquals(found[0].uuid, task.uuid)
 
-        # Mark task with an odd unexpected value, we will mark the task as completed=True
-        # and store the status_code
+        # Mark task with an odd unexpected value
+        # We expect the task to be deleted and the unexpected value is not cached.
         unexpected = 123
         ret_val = identity_lookup.complete_rhic_lookup_task(task.uuid, unexpected)
-        self.assertIsNotNone(ret_val)
+        self.assertIsNone(ret_val)
         found = RHICLookupTask.objects()
-        self.assertEquals(len(found), 1)
-        self.assertEquals(found[0].uuid, task.uuid)
-        self.assertIsNone(found[0].task_id)
-        self.assertEquals(found[0].status_code, unexpected)
-        self.assertTrue(found[0].completed)
+        self.assertEquals(len(found), 0)
