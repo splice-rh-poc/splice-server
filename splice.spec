@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.93
+Version:    0.94
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -272,6 +272,10 @@ exit 0
 
 
 %changelog
+* Mon Jan 07 2013 John Matthews <jmatthews@redhat.com> 0.94-1
+- Update for perms on /var/log/splice, celery files will be in own subdir
+  (jmatthews@redhat.com)
+
 * Mon Jan 07 2013 John Matthews <jmatthews@redhat.com> 0.93-1
 - Cleanup RHIC sync task (jmatthews@redhat.com)
 - Fix for dev_setup.py with creating 'splice' user (jmatthews@redhat.com)
