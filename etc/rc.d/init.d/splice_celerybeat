@@ -22,7 +22,7 @@
 #set -e
 
 DEFAULT_PID_FILE="/var/run/splice_celerybeat.pid"
-DEFAULT_LOG_FILE="/var/log/splice/celerybeat.log"
+DEFAULT_LOG_FILE="/var/log/splice/celery/celerybeat.log"
 DEFAULT_LOG_LEVEL="INFO"
 DEFAULT_CELERYBEAT="celerybeat"
 
@@ -97,7 +97,7 @@ ensure_dir() {
     if [ -d "$1" ]; then
         mkdir -p "$1"
         chown $CELERYBEAT_USER:$CELERYBEAT_GROUP "$1"
-        chmod 02755 "$1"
+        chmod 02775 "$1"
     fi
 }
 

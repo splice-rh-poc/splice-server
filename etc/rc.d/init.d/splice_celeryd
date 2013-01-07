@@ -84,7 +84,7 @@ ensure_dir() {
     if [ -d "$1" ]; then
         mkdir -p "$1"
         chown $CELERYD_USER:$CELERYD_GROUP "$1"
-        chmod 02755 "$1"
+        chmod 02775 "$1"
     fi
 }
 

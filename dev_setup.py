@@ -40,6 +40,7 @@ DIRS = ("/etc/splice",
         "/etc/pki/splice",
         "/var/lib/splice",
         "/var/log/splice",
+        "/var/log/splice/celery",
         "/srv/splice",
         )
 

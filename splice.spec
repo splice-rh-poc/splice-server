@@ -128,6 +128,7 @@ mkdir -p %{buildroot}/%{_sysconfdir}/pki/%{name}
 mkdir -p %{buildroot}/%{_sysconfdir}/rc.d/init.d
 mkdir -p %{buildroot}/%{_var}/lib/%{name}
 mkdir -p %{buildroot}/%{_var}/log/%{name}
+mkdir -p %{buildroot}/%{_var}/log/%{name}/celery
 
 
 # Install WSGI script & httpd conf
@@ -177,6 +178,7 @@ exit 0
 
 %post common
 chown -R apache:splice %{_var}/log/%{name}
+chown -R splice:splice %{_var}/log/%{name}/celery
 chmod -R g+rwX %{_var}/log/%{name}
 #
 # If there is no Splice Server identity certificate, generate a new one for testing
@@ -247,6 +249,7 @@ exit 0
 %{_sysconfdir}/pki/%{name}
 %dir %{_var}/lib/%{name}
 %dir %{_var}/log/%{name}
+%dir %{_var}/log/%{name}/celery
 
 %files common-config
 %defattr(-,root,root,-)
