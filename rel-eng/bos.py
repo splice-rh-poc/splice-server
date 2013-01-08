@@ -77,6 +77,8 @@ def createrepo(temp_repo_dir, repo_dir):
     run_command(cmd)
     cmd = "chmod -R go+rX %s" % (repo_dir)
     run_command(cmd)
+    cmd = "restorecon -R %s" % (repo_dir)
+    run_command(cmd)
 
 def clean_temp_dir(temp_dir):
     if os.path.exists(temp_dir):
