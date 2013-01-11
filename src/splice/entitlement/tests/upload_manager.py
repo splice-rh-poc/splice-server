@@ -20,7 +20,7 @@ from uuid import uuid4
 
 from splice.common import splice_server_client
 from splice.common.config import BadConfigurationException
-from splice.common.models import get_now, ProductUsage, ProductUsageTransferInfo, SpliceServer, SpliceServerTransferInfo
+from splice.common.models import get_now, ProductUsage, SpliceServer, SpliceServerTransferInfo
 
 # Unit test imports
 from base import BaseEntitlementTestCase
@@ -115,7 +115,7 @@ upload_product_usage_limit_per_call = 5000
             self.assertTrue(arg[0] in ["255.255.255.255", "127.0.0.1",])
             self.assertTrue(arg[1] in [443, 80])
             self.assertTrue(arg[2] in ["/splice/api/v1/", "/foo/bar/bz", "/foo/bar/bz2"])
-            self.assertEqual(arg[3], 5000)
+            self.assertEqual(arg[3], 5001)
 
     def test_process_product_usage_upload(self):
         addr = "127.0.0.1"
@@ -204,49 +204,62 @@ upload_product_usage_limit_per_call = 5000
         found_data = list(upload._get_splice_server_metadata(addr, since))
         self.assertEqual(len(found_data), 0)
 
-
-    def test_update_last_timestamp_empty(self):
-        self.assertEqual(ProductUsageTransferInfo.objects().count(), 0)
-        addr = "example.host.com"
-        timestamp = datetime.now(tzutc())
-        upload._update_last_timestamp(addr, timestamp, ProductUsageTransferInfo)
-        pusagetrans = ProductUsageTransferInfo.objects(server_hostname=addr).first()
-        self.assertIsNotNone(pusagetrans)
-        self.assertDateTimeIsEqual(pusagetrans.last_timestamp, timestamp)
-        self.assertEqual(ProductUsageTransferInfo.objects().count(), 1)
-
-        self.assertEqual(SpliceServerTransferInfo.objects().count(), 0)
-        upload._update_last_timestamp(addr, timestamp, SpliceServerTransferInfo)
-        trans = SpliceServerTransferInfo.objects(server_hostname=addr).first()
-        self.assertIsNotNone(trans)
-        self.assertDateTimeIsEqual(trans.last_timestamp, timestamp)
-        self.assertEqual(SpliceServerTransferInfo.objects().count(), 1)
-
-
-    def test_update_last_timestamp(self):
-        self.assertEqual(ProductUsageTransferInfo.objects().count(), 0)
-        addr = "example.host.com"
-        prod_usage_transfer = ProductUsageTransferInfo(server_hostname=addr)
-        prod_usage_transfer.last_timestamp = datetime.now(tzutc()) - timedelta(hours=1)
-        prod_usage_transfer.save()
-        timestamp = datetime.now(tzutc())
-        upload._update_last_timestamp(addr, timestamp, ProductUsageTransferInfo)
-        pusagetrans = ProductUsageTransferInfo.objects(server_hostname=addr).first()
-        self.assertIsNotNone(pusagetrans)
-        self.assertDateTimeIsEqual(pusagetrans.last_timestamp, timestamp)
-        self.assertEqual(ProductUsageTransferInfo.objects().count(), 1)
-
-        self.assertEqual(SpliceServerTransferInfo.objects().count(), 0)
-        transfer = SpliceServerTransferInfo(server_hostname=addr)
-        transfer.last_timestamp = datetime.now(tzutc()) - timedelta(hours=1)
-        transfer.save()
-        timestamp = datetime.now(tzutc())
-        upload._update_last_timestamp(addr, timestamp, SpliceServerTransferInfo)
-        trans = SpliceServerTransferInfo.objects(server_hostname=addr).first()
-        self.assertIsNotNone(trans)
-        self.assertDateTimeIsEqual(trans.last_timestamp, timestamp)
-        self.assertEqual(SpliceServerTransferInfo.objects().count(), 1)
+#
+#    def test_update_last_timestamp_empty(self):
+#        self.assertEqual(ProductUsageTransferInfo.objects().count(), 0)
+#        addr = "example.host.com"
+#        timestamp = datetime.now(tzutc())
+#        upload._update_last_timestamp(addr, timestamp, ProductUsageTransferInfo)
+#        pusagetrans = ProductUsageTransferInfo.objects(server_hostname=addr).first()
+#        self.assertIsNotNone(pusagetrans)
+#        self.assertDateTimeIsEqual(pusagetrans.last_timestamp, timestamp)
+#        self.assertEqual(ProductUsageTransferInfo.objects().count(), 1)
+#
+#        self.assertEqual(SpliceServerTransferInfo.objects().count(), 0)
+#        upload._update_last_timestamp(addr, timestamp, SpliceServerTransferInfo)
+#        trans = SpliceServerTransferInfo.objects(server_hostname=addr).first()
+#        self.assertIsNotNone(trans)
+#        self.assertDateTimeIsEqual(trans.last_timestamp, timestamp)
+#        self.assertEqual(SpliceServerTransferInfo.objects().count(), 1)
 
 
+#    def test_update_last_timestamp(self):
+#        self.assertEqual(ProductUsageTransferInfo.objects().count(), 0)
+#        addr = "example.host.com"
+#        prod_usage_transfer = ProductUsageTransferInfo(server_hostname=addr)
+#        prod_usage_transfer.last_timestamp = datetime.now(tzutc()) - timedelta(hours=1)
+#        prod_usage_transfer.save()
+#        timestamp = datetime.now(tzutc())
+#        upload._update_last_timestamp(addr, timestamp, ProductUsageTransferInfo)
+#        pusagetrans = ProductUsageTransferInfo.objects(server_hostname=addr).first()
+#        self.assertIsNotNone(pusagetrans)
+#        self.assertDateTimeIsEqual(pusagetrans.last_timestamp, timestamp)
+#        self.assertEqual(ProductUsageTransferInfo.objects().count(), 1)
+#
+#        self.assertEqual(SpliceServerTransferInfo.objects().count(), 0)
+#        transfer = SpliceServerTransferInfo(server_hostname=addr)
+#        transfer.last_timestamp = datetime.now(tzutc()) - timedelta(hours=1)
+#        transfer.save()
+#        timestamp = datetime.now(tzutc())
+#        upload._update_last_timestamp(addr, timestamp, SpliceServerTransferInfo)
+#        trans = SpliceServerTransferInfo.objects(server_hostname=addr).first()
+#        self.assertIsNotNone(trans)
+#        self.assertDateTimeIsEqual(trans.last_timestamp, timestamp)
+#        self.assertEqual(SpliceServerTransferInfo.objects().count(), 1)
 
+
+    def test_multiple_endpoints(self):
+        # Create ProductUsage entry_a
+        # Create endpoint_a
+        # Run upload and verify entry_a.tracker has endpoint_a in it
+        # Create endpoint_b
+        # Create ProductUsage entry_b
+        # Re-Run upload
+        # Verify
+        #  endpoint_a receives only entry_b
+        #  endpoint_b receives entry_a and entry_b
+        # Re-run upload
+        # Verify:
+        #  endpoint_a & endpoint_b receive nothing new
+        pass
 

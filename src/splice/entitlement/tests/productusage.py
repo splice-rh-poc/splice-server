@@ -80,6 +80,29 @@ upload_product_usage_limit_per_call = 5000
         pu.save()
         self.assertEquals(len(ProductUsage.objects()), 1)
 
+    def test_tracker_for_product_usage_prevents_duplicate_server_entries(self):
+        self.assertEqual(len(ProductUsage.objects()), 0)
+        pu = ProductUsage()
+        pu.consumer = "consumer_uuid"
+        pu.splice_server = "splice server uuid"
+        pu.date = datetime.now(tzutc())
+        pu.instance_identifier = "mac addr"
+        pu.allowed_product_info = ["1"]
+        pu.unallowed_product_info = []
+        pu.facts = {"key":"value"}
+        self.assertEqual(pu.tracker, [])
+        pu.tracker.append("a.example.com")
+        pu.tracker.append("a.example.com")
+        pu.tracker.append("b.example.com")
+        self.assertEqual(len(pu.tracker), 3)
+        pu.save()
+        self.assertEqual(len(pu.tracker), 2)
+        found = ProductUsage.objects()
+        self.assertEqual(len(found), 1)
+        self.assertEqual(len(found[0].tracker), 2)
+        self.assertIn("a.example.com", found[0].tracker)
+        self.assertIn("b.example.com", found[0].tracker)
+
     def test_duplicate_product_usage_not_allowed(self):
         self.assertEquals(len(ProductUsage.objects()), 0)
         consumer = "consumer_uuid"

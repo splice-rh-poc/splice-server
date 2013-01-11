@@ -75,12 +75,12 @@ class IdentitySyncInfo(Document):
     def __str__(self):
         return "IdentitySyncInfo, server_hostname = %s, last_sync = %s" % (self.server_hostname, self.last_sync)
 
-class ProductUsageTransferInfo(Document):
-    server_hostname = StringField(required=True, unique=True)
-    last_timestamp = IsoDateTimeField(required=True)
-
-    def __str__(self):
-        return "%s, server_hostname = %s, last_timestamp = %s" % (self.__class__, self.server_hostname, self.last_timestamp)
+#class ProductUsageTransferInfo(Document):
+#    server_hostname = StringField(required=True, unique=True)
+#    last_timestamp = IsoDateTimeField(required=True)
+#
+#    def __str__(self):
+#        return "%s, server_hostname = %s, last_timestamp = %s" % (self.__class__, self.server_hostname, self.last_timestamp)
 
 class SpliceServerTransferInfo(Document):
     server_hostname = StringField(required=True, unique=True)
@@ -108,6 +108,8 @@ class ProductUsage(Document):
 
     allowed_product_info = ListField(StringField())
     unallowed_product_info = ListField(StringField())
+    tracker = ListField(StringField())
+
     facts = DictField()
 
     meta = {'allow_inheritance': True}
@@ -118,6 +120,9 @@ class ProductUsage(Document):
             document.date = convert_to_datetime(document.date)
         if document.facts:
             document.facts = sanitize_dict_for_mongo(document.facts)
+        # Ensure no duplicate entries are stored for document.tracker
+        if document.tracker:
+            document.tracker = list(set(document.tracker))
 
     def __str__(self):
         return "Consumer '%s' on Splice Server '%s' from instance '%s' "" \
