@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.95
+Version:    0.96
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -272,6 +272,18 @@ exit 0
 
 
 %changelog
+* Mon Jan 14 2013 John Matthews <jmatthews@redhat.com> 0.96-1
+- Increasing verbosity for celerybeat launcher (jmatthews@redhat.com)
+- Fix how /var/run/ was being owned by 'splice' because of celeryd/celerybeat
+  chown of the basedir containing their pid lock files (jmatthews@redhat.com)
+- First steps on change to upload ProductUsage based on which endpoint it's
+  been sent to, opposed to a last processed timestamp (jmatthews@redhat.com)
+- Update to use tee for builder output (jmatthews@redhat.com)
+- Run 'restorecon' so apache is able to serve content with SELinux enabled
+  (jmatthews@redhat.com)
+- Script to build all splice subprojects and form a yum repo
+  (jmatthews@redhat.com)
+
 * Mon Jan 07 2013 John Matthews <jmatthews@redhat.com> 0.95-1
 - Adding a logging perm workaround to /etc/init.d/splice_all
   (jmatthews@redhat.com)
