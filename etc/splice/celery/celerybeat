@@ -3,7 +3,7 @@
 CELERYBEAT_CHDIR="$CELERYD_CHDIR"
 
 # Extra arguments to celerybeat
-CELERYBEAT_OPTS="--schedule=/var/run/splice_celerybeat_schedule"
+CELERYBEAT_OPTS="--schedule=/var/run/splice/celerybeat_schedule --traceback --verbosity=3"
 
 # Path to celerybeat
 # Important, we are running integrated with django
