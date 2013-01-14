@@ -78,8 +78,8 @@ class BaseConnection(object):
         if body:
             # Use customized JSON encoder to handle Mongo objects
             body = utils.obj_to_json(body)
-        _LOG.info("'%s' to '%s' \n\twith headers '%s'\n\t body '%s'" % \
-                  (request_type, url, self.headers, body))
+        _LOG.info("'%s' to '%s' \n\twith headers '%s'\n\t body of %s bytes" % \
+                  (request_type, url, self.headers, len(body)))
         conn.request(request_type, url, body=body, headers=self.headers)
         response = conn.getresponse()
         response_body = response.read()
