@@ -112,7 +112,10 @@ class ProductUsage(Document):
 
     facts = DictField()
 
-    meta = {'allow_inheritance': True}
+    meta = {
+        'allow_inheritance': True,
+        'indexes': ['date', 'splice_server', 'consumer', 'instance_identifier'],
+    }
 
     @classmethod
     def pre_save(cls, sender, document, **kwargs):
