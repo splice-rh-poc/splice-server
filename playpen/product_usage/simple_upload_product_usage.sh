@@ -3,8 +3,8 @@
 export SERVER_ADDR=`hostname`
 export PORT=443
 export CA_CERT=/etc/pki/splice/generated/Splice_HTTPS_CA.cert
-export CLIENT_CERT=/etc/pki/splice/generated/Splice_identity.cert
-export CLIENT_KEY=/etc/pki/splice/generated/Splice_identity.key
+export CLIENT_CERT=/etc/pki/consumer/Splice_identity.cert
+export CLIENT_KEY=/etc/pki/consumer/Splice_identity.key
 export DATA="[{
 \"consumer\":\"fb647f68-aa01-4171-b62b-35c2984a5328\", 
 \"instance_identifier\":\"F0:DE:F1:DE:88:2B\", 
