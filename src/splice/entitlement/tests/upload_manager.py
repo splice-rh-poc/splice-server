@@ -115,7 +115,7 @@ upload_product_usage_limit_per_call = 5000
             self.assertTrue(arg[0] in ["255.255.255.255", "127.0.0.1",])
             self.assertTrue(arg[1] in [443, 80])
             self.assertTrue(arg[2] in ["/splice/api/v1/", "/foo/bar/bz", "/foo/bar/bz2"])
-            self.assertEqual(arg[3], 5001)
+            self.assertEqual(arg[3], 5000)
 
     def test_process_product_usage_upload(self):
         addr = "127.0.0.1"
@@ -157,18 +157,8 @@ upload_product_usage_limit_per_call = 5000
         # Create dummy data
         dummy_data = self.create_product_usage_data(addr, 5)
         self.assertEqual(len(dummy_data), 5)
-        found_data = list(upload._get_product_usage_data(addr, limit)) # convert cursor to list
+        found_data = upload._get_product_usage_data(addr, limit)
         self.assertEqual(len(found_data), 2)
-        # Verify that 'since' is working and we can advance to newer entries
-        since = found_data[-1].date
-        found_data = list(upload._get_product_usage_data(addr, limit, since))
-        self.assertEqual(len(found_data), 2)
-        since = found_data[-1].date
-
-        found_data = list(upload._get_product_usage_data(addr, limit, since))
-        self.assertEqual(len(found_data), 1)
-        # The last returned item we get should be equal to the last item in our dummy data
-        self.assertEqual(found_data[0], dummy_data[-1])
 
     def test_simple_get_product_usage_data(self):
         addr = "rcs.example.com"
@@ -179,73 +169,6 @@ upload_product_usage_limit_per_call = 5000
         self.assertEqual(len(dummy_data), 5)
         found_data = list(upload._get_splice_server_metadata(addr)) # convert cursor to list
         self.assertEqual(len(found_data), 5)
-
-    def test_get_product_usage_with_since(self):
-        addr = "rcs.example.com"
-        new_date = get_now()
-        old_date = new_date - timedelta(hours=1)
-        old_entry = SpliceServer(uuid=str(uuid4()), description="descrp", hostname="host.example.com",
-            environment="env", created=old_date, modified=old_date)
-        old_entry.save()
-        new_entry = SpliceServer(uuid=str(uuid4()), description="descrp", hostname="host.example.com",
-            environment="env", created=new_date, modified=new_date)
-        new_entry.save()
-        # Verify that 'since' is working and we can advance to newer entries
-        since = old_entry.modified - timedelta(seconds=1)
-        found_data = list(upload._get_splice_server_metadata(addr, since))
-        self.assertEqual(len(found_data), 2)
-
-        since = old_entry.modified
-        found_data = list(upload._get_splice_server_metadata(addr, since))
-        self.assertEqual(len(found_data), 1)
-        self.assertEqual(found_data[0].uuid, new_entry.uuid)
-
-        since = new_entry.modified
-        found_data = list(upload._get_splice_server_metadata(addr, since))
-        self.assertEqual(len(found_data), 0)
-
-#
-#    def test_update_last_timestamp_empty(self):
-#        self.assertEqual(ProductUsageTransferInfo.objects().count(), 0)
-#        addr = "example.host.com"
-#        timestamp = datetime.now(tzutc())
-#        upload._update_last_timestamp(addr, timestamp, ProductUsageTransferInfo)
-#        pusagetrans = ProductUsageTransferInfo.objects(server_hostname=addr).first()
-#        self.assertIsNotNone(pusagetrans)
-#        self.assertDateTimeIsEqual(pusagetrans.last_timestamp, timestamp)
-#        self.assertEqual(ProductUsageTransferInfo.objects().count(), 1)
-#
-#        self.assertEqual(SpliceServerTransferInfo.objects().count(), 0)
-#        upload._update_last_timestamp(addr, timestamp, SpliceServerTransferInfo)
-#        trans = SpliceServerTransferInfo.objects(server_hostname=addr).first()
-#        self.assertIsNotNone(trans)
-#        self.assertDateTimeIsEqual(trans.last_timestamp, timestamp)
-#        self.assertEqual(SpliceServerTransferInfo.objects().count(), 1)
-
-
-#    def test_update_last_timestamp(self):
-#        self.assertEqual(ProductUsageTransferInfo.objects().count(), 0)
-#        addr = "example.host.com"
-#        prod_usage_transfer = ProductUsageTransferInfo(server_hostname=addr)
-#        prod_usage_transfer.last_timestamp = datetime.now(tzutc()) - timedelta(hours=1)
-#        prod_usage_transfer.save()
-#        timestamp = datetime.now(tzutc())
-#        upload._update_last_timestamp(addr, timestamp, ProductUsageTransferInfo)
-#        pusagetrans = ProductUsageTransferInfo.objects(server_hostname=addr).first()
-#        self.assertIsNotNone(pusagetrans)
-#        self.assertDateTimeIsEqual(pusagetrans.last_timestamp, timestamp)
-#        self.assertEqual(ProductUsageTransferInfo.objects().count(), 1)
-#
-#        self.assertEqual(SpliceServerTransferInfo.objects().count(), 0)
-#        transfer = SpliceServerTransferInfo(server_hostname=addr)
-#        transfer.last_timestamp = datetime.now(tzutc()) - timedelta(hours=1)
-#        transfer.save()
-#        timestamp = datetime.now(tzutc())
-#        upload._update_last_timestamp(addr, timestamp, SpliceServerTransferInfo)
-#        trans = SpliceServerTransferInfo.objects(server_hostname=addr).first()
-#        self.assertIsNotNone(trans)
-#        self.assertDateTimeIsEqual(trans.last_timestamp, timestamp)
-#        self.assertEqual(SpliceServerTransferInfo.objects().count(), 1)
 
 
     def test_multiple_endpoints(self):

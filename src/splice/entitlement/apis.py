@@ -47,10 +47,11 @@ class ModifiedProductUsageResource(productusage.ProductUsageResource):
     def import_hook(self, product_usages):
         errors = []
         dups = []
-        _LOG.debug("Importing %s ProductUsage objects" % (len(product_usages)))
+        _LOG.info("Importing %s ProductUsage objects" % (len(product_usages)))
         start = time.time()
         for pu in product_usages:
             try:
+                # TODO  Consider moving to a batched save/operation
                 pu.save()
             except NotUniqueError, e:
                 # This is fine, don't count as an error, skip this item and proceed
@@ -59,7 +60,7 @@ class ModifiedProductUsageResource(productusage.ProductUsageResource):
                 _LOG.warning("Error on attempting to save: %s.\nException: %s" % (pu, e))
                 errors.append(pu)
         end = time.time()
-        _LOG.debug("%s ProductUsage objects successfully imported, %s were duplicates and %s were errors, process in %s seconds" % \
+        _LOG.info("%s ProductUsage objects successfully imported, %s were duplicates and %s were errors, process in %s seconds" % \
                    (len(product_usages)- len(errors) - len(dups), len(dups), len(errors), (end-start)))
         return errors
 

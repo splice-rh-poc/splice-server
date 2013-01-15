@@ -11,6 +11,8 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import time
+
 from splice.common import config, splice_server_client
 from splice.common.exceptions import RequestException
 from splice.common.models import ProductUsage, SpliceServer, SpliceServerTransferInfo
@@ -59,32 +61,41 @@ def _process_splice_server_metadata_upload(addr, port, url, since=None):
     _update_last_timestamp(addr, last_timestamp, SpliceServerTransferInfo)
     return True
 
-def _process_product_usage_upload(addr, port, url, limit, since=None):
+def _process_product_usage_upload(addr, port, url, limit):
     """
     @param addr: address of remote server
     @param port:  port of remote server
     @param url:  url of remote server
     @param limit: max amount of objects to process per request
-    @param since: Optional, date we want to send data from, intended for unit tests only
     @return: True on success, False on failure
     """
     url = url + "/productusage/"  #must end in '/'
-    cursor = _get_product_usage_data(addr, limit, since)
+    time_a = time.time()
+    cursor = _get_product_usage_data(addr, limit)
+    time_b = time.time()
     pu_data = list(cursor)
+    time_c = time.time()
     if not pu_data:
         _LOG.info("No new product usage data to upload")
         return True
     #last_timestamp = pu_data[-1].date
     try:
-        _LOG.info("Uploading %s ProductUsage objects to %s:%s/%s" % (len(pu_data), addr, port, url))
+        _LOG.info("Uploading %s ProductUsage entries to %s:%s/%s" % (len(pu_data), addr, port, url))
         # TODO:
         #  Examine return values and determine, what/if any objects were not successfuly uploaded.
+        time_d = time.time()
         splice_server_client.upload_product_usage_data(addr, port, url, pu_data)
+        time_e = time.time()
         #  Mark the successfully uploaded objects as transferred
         #  TODO:  Update logic to account for return value from upload call
         object_ids = [x.id for x in pu_data]
         for oid in object_ids:
             ProductUsage.objects(id=oid).update(add_to_set__tracker=addr)
+        time_f = time.time()
+        _LOG.info("%s seconds to fetch/upload %s ProductUsage entries to %s:%s/%s" % (time_f-time_a, len(pu_data), addr, port, url))
+        _LOG.info("  %s seconds to fetch %s ProductUsage entries, %s for initial mongo query %s seconds to convert to list" % \
+                  (time_c-time_a, len(pu_data), time_b-time_a, time_c-time_b))
+        _LOG.info("  %s seconds to upload %s ProductUsage entries, %s seconds to update tracker" % (time_e-time_d, len(pu_data), time_f-time_e))
         #  Log items unsuccessful and retry upload
     except RequestException, e:
         #_LOG.exception("Received exception attempting to send %s records from %s to %s:%s\%s" % (len(pu_data), last_timestamp, addr, port, url))
@@ -121,44 +132,22 @@ def _get_splice_server_metadata(addr, since=None):
     _LOG.info("Retrieved %s items to send to %s, since last timestamp of %s" % (len(data), addr, last_timestamp))
     return data
 
-def _get_product_usage_data(addr, limit, since=None):
+def _get_product_usage_data(addr, limit):
     """
     Returns product usage data which has not yet been uploaded to 'addr'
     @param addr: remote server to upload data to
     @param limit: max amount of objects to process per request
-    @param since: Optional, date we want to send data from, intended for unit tests only
-    @type since: datetime.datetime
     @return: list of product usage objects ordered by date
     """
-
-    # Goal:
-    #  Each ProductUsage item will have an attribute noting the server it has been sent to
-    #  Job of _get_product_usage_data() is to return the items which have _not_ been sent to the
-    #  passed in server address
-    #  Note:
-    #   After successful transfer of each ProductUsage, it must have it's "transfer" field updated
-    #   to reflect it has been uploaded.
-    last_timestamp = since
-    #prod_usage_transfer = ProductUsageTransferInfo.objects(server_hostname=addr).first()
-    # Get the last timestamp we sent to 'addr'
-    #if not last_timestamp and prod_usage_transfer:
-    #    last_timestamp = prod_usage_transfer.last_timestamp
-
-    #if last_timestamp:
-    #    prod_usage_data = ProductUsage.objects(date__gt=last_timestamp, tracker__nin=[addr])
-    #else:
-    #    prod_usage_data = ProductUsage.objects(tracker__nin=[addr])
     prod_usage_data = ProductUsage.objects(tracker__nin=[addr])
-    # Ensure ordered by date
     prod_usage_data = prod_usage_data.order_by("date")
 
     if limit:
         prod_usage_data = prod_usage_data.limit(limit)
-
     # Keep 'tracker' information private to this server
     for pu in prod_usage_data:
-        pu.tracker = []
-    _LOG.info("Retrieved %s items to send to %s, since last timestamp of %s" % (len(prod_usage_data), addr, last_timestamp))
+        pu.tracker = [] #
+    _LOG.info("Retrieved %s items to send to %s" % (len(prod_usage_data), addr))
     return prod_usage_data
 
 
