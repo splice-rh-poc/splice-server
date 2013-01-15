@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.96
+Version:    0.97
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -272,6 +272,17 @@ exit 0
 
 
 %changelog
+* Tue Jan 15 2013 John Matthews <jmatthews@redhat.com> 0.97-1
+- Removed traces of older usage of "since" with product usage upload
+  (jmatthews@redhat.com)
+- Update exception middleware to return a plain text exception traceback that
+  is easier to read for REST API calls opposed to HTML text
+  (jmatthews@redhat.com)
+- Update path for splice identity cert (jmatthews@redhat.com)
+- Don't log large message bodies (jmatthews@redhat.com)
+- Added index for ProductUsage to fix: database error: too much data for sort()
+  with no index. (jmatthews@redhat.com)
+
 * Mon Jan 14 2013 John Matthews <jmatthews@redhat.com> 0.96-1
 - Increasing verbosity for celerybeat launcher (jmatthews@redhat.com)
 - Fix how /var/run/ was being owned by 'splice' because of celeryd/celerybeat
