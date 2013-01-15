@@ -29,12 +29,14 @@ import logging
 import os
 import re
 import sys
+import httplib
 import hotshot, hotshot.stats
 import tempfile
 import StringIO
 
 from django import http
 from django.conf import settings
+from django.http import HttpResponse
 
 _LOG = logging.getLogger(__name__)
 
@@ -86,16 +88,19 @@ class StandardExceptionMiddleware(object):
         exc_info = sys.exc_info()
         if settings.DEBUG:
             self.log_exception(request, exception, exc_info)
-            return self.debug_500_response(request, exception, exc_info)
+            return self.debug_500_response_non_html(request, exception, exc_info)
         else:
             self.log_exception(request, exception, exc_info)
             return self.production_500_response(request, exception, exc_info)
-
 
     def debug_500_response(self, request, exception, exc_info):
         from django.views import debug
         return debug.technical_500_response(request, *exc_info)
 
+    def debug_500_response_non_html(self, request, exception, exc_info):
+        return HttpResponse(
+            content="Server Exception: %s\n%s\nFrom Request:%s" % (exception, self._get_traceback(exc_info), request),
+            status=httplib.INTERNAL_SERVER_ERROR)
 
     def production_500_response(self, request, exception, exc_info):
         '''Return an HttpResponse that displays a friendly error message.'''
