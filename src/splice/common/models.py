@@ -136,6 +136,16 @@ class ProductUsage(Document):
             self.unallowed_product_info,
             self.date)
 
+class SingleTaskInfo(Document):
+    task_id = StringField(required=True, unique=True)
+    owner_pid = IntField(required=True)
+    created = IsoDateTimeField(required=True, default=get_now)
+
+    meta = {
+        'indexes': ['task_id', 'owner_pid', ('task_id', 'owner_pid')],
+    }
+    def __str__(self):
+        return "task_id '%s', owner_pid '%s', created on '%s'" % (self.task_id, self.owner_pid, self.created)
 
 # Signals
 signals.pre_save.connect(IdentitySyncInfo.pre_save, sender=IdentitySyncInfo)
