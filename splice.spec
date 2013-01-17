@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.97
+Version:    0.98
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -272,6 +272,14 @@ exit 0
 
 
 %changelog
+* Thu Jan 17 2013 John Matthews <jmatthews@redhat.com> 0.98-1
+- Added @single_task_instance to product usage task (jmatthews@redhat.com)
+- Added @single_instance_task decorator to restrict celery tasks spawned by
+  different processes to a global single task running at a time
+  (jmatthews@redhat.com)
+- Add mongo port to config file (jmatthews@redhat.com)
+- Removing manage.py's usage of "dev.settings" (jmatthews@redhat.com)
+
 * Tue Jan 15 2013 John Matthews <jmatthews@redhat.com> 0.97-1
 - Removed traces of older usage of "since" with product usage upload
   (jmatthews@redhat.com)
