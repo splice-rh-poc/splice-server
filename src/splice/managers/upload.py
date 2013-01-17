@@ -139,6 +139,8 @@ def _get_product_usage_data(addr, limit):
     @param limit: max amount of objects to process per request
     @return: list of product usage objects ordered by date
     """
+    #TODO:
+    #  - Modify query to not fetch the "tracker" field this way it is always blank
     prod_usage_data = ProductUsage.objects(tracker__nin=[addr])
     prod_usage_data = prod_usage_data.order_by("date")
 

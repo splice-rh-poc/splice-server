@@ -145,9 +145,3 @@ class EnforceSingleTasksTest(BaseEntitlementTestCase):
         self.assertIsNone(EnforceSingleTask.release(task_id))
         # Verify the remove did nothing because our 'pid' didn't match the entrie's pid
         self.assertEquals(1, SingleTaskInfo.objects(task_id=task_id).count())
-
-    def single_instance_task(self):
-        # Kick off multiple tasks to run
-        # Ensure that only ever runs
-        pass
-

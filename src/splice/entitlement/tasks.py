@@ -15,20 +15,29 @@ import time
 
 from celery import Celery
 from celery.result import AsyncResult
-from datetime import timedelta
 from datetime import datetime
-from dateutil.tz import tzutc
 from logging import getLogger
 
 from splice.common.constants import SPLICE_ENTITLEMENT_BASE_TASK_NAME
 from splice.common import identity
 from splice.common import celeryconfig
 from splice.managers import identity_lookup, upload
+from splice.common.enforce_single_tasks import single_instance_task
 
 _LOG = getLogger(__name__)
 
 celery = Celery(SPLICE_ENTITLEMENT_BASE_TASK_NAME)
 celery.config_from_object(celeryconfig)
+
+
+@celery.task(name="%s.test_task" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME))
+@single_instance_task(seconds_expire=5)
+def test_task():
+    invoked_time = datetime.now()
+    for x in range(0, 3):
+        _LOG.info("Test task invoked at <%s>  saying hello at: %s" % (invoked_time, datetime.now()))
+        time.sleep(1)
+    return ""
 
 @celery.task(name="%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME))
 def add(x, y):
@@ -43,6 +52,7 @@ def xsum(numbers):
     return sum(numbers)
 
 @celery.task(name="%s.sync_single_rhic" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
+@single_instance_task()
 def sync_single_rhic(uuid):
     """
     Will sync data on a single RHIC specified by the 'uuid'
@@ -60,6 +70,7 @@ def sync_single_rhic(uuid):
     return status_code
 
 @celery.task(name="%s.sync_all_rhics" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
+@single_instance_task()
 def sync_rhics():
     """
     Will synchronize RHIC to product mapping data from a RCS server.
@@ -76,6 +87,7 @@ def sync_rhics():
     return retval
 
 @celery.task(name="%s.process_running_rhic_lookup_tasks" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
+@single_instance_task()
 def process_running_rhic_lookup_tasks():
     start = time.time()
     _LOG.info("invoked")
@@ -103,6 +115,7 @@ def log_time():
     _LOG.info("Celery task: log_time invoked.  Current time is: %s" % datetime.now())
 
 @celery.task(name="%s.upload_product_usage" % SPLICE_ENTITLEMENT_BASE_TASK_NAME)
+@single_instance_task(seconds_expire=60*60)
 def upload_product_usage():
     _LOG.info("invoked")
     upload.upload_product_usage_data()

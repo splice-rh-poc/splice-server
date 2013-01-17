@@ -141,13 +141,15 @@ def set_celerybeat_schedule():
     else:
         LOG.warning("Skipped configuring a periodic task to upload Product Usage since no servers were configured.")
 
-    # Test Task
-    CELERYBEAT_SCHEDULE['test_task'] = {
-        'task': '%s.test_task' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
-        'schedule': timedelta(seconds=5),
-        'args': {},
-    }
-    LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
+    ###
+    # Test Task used for basic celery beat testing
+    #
+    #CELERYBEAT_SCHEDULE['test_task'] = {
+    #    'task': '%s.test_task' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+    #    'schedule': timedelta(seconds=5),
+    #    'args': {},
+    #}
+    #LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
 
 if on_startup.check_valid_identity():
     set_celerybeat_schedule()
