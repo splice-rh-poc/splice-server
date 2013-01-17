@@ -56,14 +56,15 @@ INSTALLED_APPS = (
     'report_server.report_import',
 )
 
-
 ##
 ## Adding mongoengine specifics ##
 ##
 import mongoengine
 MONGO_DATABASE_NAME = config.CONFIG.get('server', 'db_name')
 MONGO_DATABASE_HOST = config.CONFIG.get('server', 'db_host')
-mongoengine.connect(MONGO_DATABASE_NAME, host=MONGO_DATABASE_HOST, tz_aware=True)
+MONGO_DATABASE_PORT = config.CONFIG.get('server', 'db_port')
+
+mongoengine.connect(MONGO_DATABASE_NAME, host="%s:%s" % (MONGO_DATABASE_HOST, MONGO_DATABASE_PORT), tz_aware=True)
 mongoengine.register_connection("rhic_serve", MONGO_DATABASE_NAME)
 
 AUTHENTICATION_BACKENDS = (
@@ -140,6 +141,12 @@ def set_celerybeat_schedule():
     else:
         LOG.warning("Skipped configuring a periodic task to upload Product Usage since no servers were configured.")
 
+    # Test Task
+    CELERYBEAT_SCHEDULE['test_task'] = {
+        'task': '%s.test_task' % (SPLICE_ENTITLEMENT_BASE_TASK_NAME),
+        'schedule': timedelta(seconds=5),
+        'args': {},
+    }
     LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
 
 if on_startup.check_valid_identity():
