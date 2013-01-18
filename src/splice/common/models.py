@@ -114,7 +114,7 @@ class ProductUsage(Document):
 
     meta = {
         'allow_inheritance': True,
-        'indexes': ['date', 'splice_server', 'consumer', 'instance_identifier'],
+        'indexes': ['date', 'splice_server', 'consumer', 'instance_identifier', 'tracker'],
     }
 
     @classmethod

@@ -89,8 +89,7 @@ def _process_product_usage_upload(addr, port, url, limit):
         #  Mark the successfully uploaded objects as transferred
         #  TODO:  Update logic to account for return value from upload call
         object_ids = [x.id for x in pu_data]
-        for oid in object_ids:
-            ProductUsage.objects(id=oid).update(add_to_set__tracker=addr)
+        _mark_sent(object_ids, addr)
         time_f = time.time()
         _LOG.info("%s seconds to fetch/upload %s ProductUsage entries to %s:%s/%s" % (time_f-time_a, len(pu_data), addr, port, url))
         _LOG.info("  %s seconds to fetch %s ProductUsage entries, %s for initial mongo query %s seconds to convert to list" % \
@@ -103,6 +102,14 @@ def _process_product_usage_upload(addr, port, url, limit):
         return False
     #_update_last_timestamp(addr, last_timestamp, ProductUsageTransferInfo)
     return True
+
+def _mark_sent(object_ids, addr):
+    for oid in object_ids:
+        ProductUsage.objects(id=oid).update(add_to_set__tracker=addr)
+
+def _unmark_sent(object_ids, addr):
+    for oid in object_ids:
+        ProductUsage.objects(id=oid).update(pull__tracker=addr)
 
 def _update_last_timestamp(addr, timestamp, transfer_cls):
     transfer = transfer_cls.objects(server_hostname=addr).first()
