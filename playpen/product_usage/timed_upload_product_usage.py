@@ -1,7 +1,9 @@
 #!/usr/bin/env python
+import os
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "splice.checkin_service.settings")
+
 import logging
 import logging.config
-import os
 import random
 import string
 import sys
@@ -70,13 +72,13 @@ def create_product_usage(checkin_date, instance_identifier, facts):
     pu.date = checkin_date
     return pu
 
-def create_data(num_instances, num_entries):
+def create_data(num_instances, num_entries, begin):
     # Return ProductUsage objects, created so they have hourly checkins
     # going back 'num' hours ago
     now = datetime.now(tzutc())
     items = []
     for entry_index in range(0, num_entries):
-        checkin_date = now - timedelta(hours=num_entries-entry_index)
+        checkin_date = begin - timedelta(hours=num_entries-entry_index)
         for inst_index in range(0, num_instances):
             inst_id = INSTANCE_IDS[inst_index]
             facts = FACTS[inst_index]
@@ -100,10 +102,14 @@ def send(host, port, url, data, batch_size=5000):
         if end_index >= len(data):
             break
 
+def translate_date(input):
+    date_object = datetime.strptime(i, '%Y-%m-%d')
+
 if __name__ == "__main__":
     parser = OptionParser(description="Timing test for uploading ProductUsage data")
     parser.add_option("--host", action="store", help="Hostname for RCS", default="127.0.0.1")
     parser.add_option("--port", action="store", help="Port for RCS", default="443")
+    parser.add_option("--begin", action="store", help="Begin date to create entries from, format: YYYY-MM-DD", default=None)
     parser.add_option("--num_entries", action="store", help="Number of ProductUsage objects to upload per instance", default="100")
     parser.add_option("--num_instances", action="store", help="Number of instances to simulate", default="20")
     (opts, args) = parser.parse_args()
@@ -114,6 +120,16 @@ if __name__ == "__main__":
     url = '/splice/api/v1/productusage/'
     num_entries = int(opts.num_entries)
     num_instances = int(opts.num_instances)
+    begin = datetime.now(tzutc())
+    if opts.begin:
+        try:
+            begin = datetime.strptime(opts.begin, '%Y-%m-%d')
+        except Exception, e:
+            print "Unable to parse: %s" % (opts.begin)
+            print "Caught exception: %s" % (e)
+            sys.exit(1)
+        begin = begin.replace(tzinfo=tzutc())
+    print "Will create %s entries for %s instances beginning at: %s" % (num_entries, num_instances, begin)
     # Init db connection and splice classes
     config.init(settings.SPLICE_CONFIG_FILE)
     init_logging() # Redo logging config so we can control where we log data for these runs
@@ -123,7 +139,7 @@ if __name__ == "__main__":
     init_facts(num_instances)
     start_b = time.time()
     # Create checkin data
-    data = create_data(num_instances, num_entries)
+    data = create_data(num_instances, num_entries, begin=begin)
     end = time.time()
     print "\nCreated %s ProductUsage objects for %s instances each having %s checkins" % (len(data), num_instances, num_entries)
     print "%.3f seconds to create simulated data, %.3f seconds to init system facts, %.3f seconds to generate checkins" % \
