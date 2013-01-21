@@ -75,13 +75,6 @@ class IdentitySyncInfo(Document):
     def __str__(self):
         return "IdentitySyncInfo, server_hostname = %s, last_sync = %s" % (self.server_hostname, self.last_sync)
 
-#class ProductUsageTransferInfo(Document):
-#    server_hostname = StringField(required=True, unique=True)
-#    last_timestamp = IsoDateTimeField(required=True)
-#
-#    def __str__(self):
-#        return "%s, server_hostname = %s, last_timestamp = %s" % (self.__class__, self.server_hostname, self.last_timestamp)
-
 class SpliceServerTransferInfo(Document):
     server_hostname = StringField(required=True, unique=True)
     last_timestamp = IsoDateTimeField(required=True)
@@ -137,6 +130,10 @@ class ProductUsage(Document):
             self.date)
 
 class SingleTaskInfo(Document):
+    #
+    # SingleTaskInfo helps to enforce the behavior of a lock in mongodb
+    # This lock behavior is used to restrict certain celery tasks to executing as only one at a time
+    #
     task_id = StringField(required=True, unique=True)
     owner_pid = IntField(required=True)
     created = IsoDateTimeField(required=True, default=get_now)
