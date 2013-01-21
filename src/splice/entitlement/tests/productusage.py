@@ -247,3 +247,10 @@ servers = 255.255.255.255:/splice/api/v1/productusage 192.168.1.1:443:/splice/ap
         except BadConfigurationException, e:
             caught = True
         self.assertTrue(caught)
+
+    def test_upload_empty_body(self):
+        post_data = {}
+        LOG.info("Calling api for productusage import with post data: '%s'" % (post_data))
+        resp = self.api_client.post('/api/v1/productusage/', format='json', data=post_data,
+            SSL_CLIENT_CERT=self.expected_valid_splice_server_identity_pem)
+        self.assertEquals(resp.status_code, 400)
