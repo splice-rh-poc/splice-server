@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.98
+Version:    0.99
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -272,6 +272,19 @@ exit 0
 
 
 %changelog
+* Wed Jan 23 2013 John Matthews <jmatthews@redhat.com> 0.99-1
+- Adding gzip to request for upload of ProductUsage data, seeing improvements
+  from 10k entries of 35MB compressed to 240k (jmatthews@redhat.com)
+- Unit tests for uploading an empty body on ProductUsage, requires update from
+  ReportServer API (jmatthews@redhat.com)
+- Update comments in SingleTaskInfo (jmatthews@redhat.com)
+- Fix exception with get_all_rhics() when body is empty (jmatthews@redhat.com)
+- Debug scripts to help isolate celerybeat issues during daemon mode
+  (jmatthews@redhat.com)
+- Added ability to create test data from any start date (jmatthews@redhat.com)
+- Test script to help test timing for fetch/update of the tracker entry in a
+  ProductUsage document (jmatthews@redhat.com)
+
 * Thu Jan 17 2013 John Matthews <jmatthews@redhat.com> 0.98-1
 - Added @single_task_instance to product usage task (jmatthews@redhat.com)
 - Added @single_instance_task decorator to restrict celery tasks spawned by
