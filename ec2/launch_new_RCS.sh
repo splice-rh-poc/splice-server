@@ -8,6 +8,7 @@
 # 3) Setup mongodb to use new volume
 # 4) wget install script
 # 5) run install script to install splice & dependencies
+WHOAMI=`whoami` # Used to label the instance in ec2 webui
 SSH_USERNAME="root"
 AMI_ID="ami-cc5af9a5"
 KEY_NAME="splice"
@@ -106,7 +107,7 @@ echo "Volume '${VOLUME_ID}' has been created."
 #
 # Tag this instance & volume so it's easier to see from AWS web console
 #
-ec2-create-tags ${VOLUME_ID} ${INSTANCE_ID} --tag "Name=RCS ${NAME}" &> /dev/null
+ec2-create-tags ${VOLUME_ID} ${INSTANCE_ID} --tag "Name=${WHOAMI} RCS ${NAME}" &> /dev/null
 
 #
 # Wait for ssh to come up
