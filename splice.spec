@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.99
+Version:    0.100
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -272,6 +272,10 @@ exit 0
 
 
 %changelog
+* Wed Jan 23 2013 John Matthews <jmatthews@redhat.com> 0.100-1
+- Bump requires on report server to version with gzip support
+  (jmatthews@redhat.com)
+
 * Wed Jan 23 2013 John Matthews <jmatthews@redhat.com> 0.99-1
 - Adding gzip to request for upload of ProductUsage data, seeing improvements
   from 10k entries of 35MB compressed to 240k (jmatthews@redhat.com)
