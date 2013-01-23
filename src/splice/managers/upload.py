@@ -61,12 +61,13 @@ def _process_splice_server_metadata_upload(addr, port, url, since=None):
     _update_last_timestamp(addr, last_timestamp, SpliceServerTransferInfo)
     return True
 
-def _process_product_usage_upload(addr, port, url, limit):
+def _process_product_usage_upload(addr, port, url, limit, gzip_body=True):
     """
     @param addr: address of remote server
     @param port:  port of remote server
     @param url:  url of remote server
     @param limit: max amount of objects to process per request
+    @param gzip_body: defaults to True, will gzip the request body
     @return: True on success, False on failure
     """
     url = url + "/productusage/"  #must end in '/'
@@ -84,7 +85,7 @@ def _process_product_usage_upload(addr, port, url, limit):
         # TODO:
         #  Examine return values and determine, what/if any objects were not successfuly uploaded.
         time_d = time.time()
-        splice_server_client.upload_product_usage_data(addr, port, url, pu_data)
+        splice_server_client.upload_product_usage_data(addr, port, url, pu_data, gzip_body=gzip_body)
         time_e = time.time()
         #  Mark the successfully uploaded objects as transferred
         #  TODO:  Update logic to account for return value from upload call
@@ -97,8 +98,7 @@ def _process_product_usage_upload(addr, port, url, limit):
         _LOG.info("  %s seconds to upload %s ProductUsage entries, %s seconds to update tracker" % (time_e-time_d, len(pu_data), time_f-time_e))
         #  Log items unsuccessful and retry upload
     except RequestException, e:
-        #_LOG.exception("Received exception attempting to send %s records from %s to %s:%s\%s" % (len(pu_data), last_timestamp, addr, port, url))
-        _LOG.exception("Received exception attempting to send %s records from %s to %s:%s\%s" % (len(pu_data), addr, port, url))
+        _LOG.exception("Received exception attempting to send %s records to %s:%s\%s" % (len(pu_data), addr, port, url))
         return False
     #_update_last_timestamp(addr, last_timestamp, ProductUsageTransferInfo)
     return True

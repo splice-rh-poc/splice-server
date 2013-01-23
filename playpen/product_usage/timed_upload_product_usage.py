@@ -85,7 +85,7 @@ def create_data(num_instances, num_entries, begin):
             items.append(create_product_usage(checkin_date, inst_id, facts))
     return items
 
-def send(host, port, url, data, batch_size=5000):
+def send(host, port, url, data, batch_size=5000, gzip_body=False):
     # Transfer data to SpliceServer
     start_index = 0
     end_index = 0
@@ -95,7 +95,7 @@ def send(host, port, url, data, batch_size=5000):
             end_index = len(data)
         sub_data = data[start_index:end_index]
         start = time.time()
-        resp = splice_server_client.upload_product_usage_data(host, port, url, sub_data)
+        resp = splice_server_client.upload_product_usage_data(host, port, url, sub_data, gzip_body=gzip_body)
         end = time.time()
         print "Sent %s items in %.4f seconds" % (len(sub_data), end-start)
         start_index += batch_size
@@ -110,8 +110,9 @@ if __name__ == "__main__":
     parser.add_option("--host", action="store", help="Hostname for RCS", default="127.0.0.1")
     parser.add_option("--port", action="store", help="Port for RCS", default="443")
     parser.add_option("--begin", action="store", help="Begin date to create entries from, format: YYYY-MM-DD", default=None)
-    parser.add_option("--num_entries", action="store", help="Number of ProductUsage objects to upload per instance", default="100")
-    parser.add_option("--num_instances", action="store", help="Number of instances to simulate", default="20")
+    parser.add_option("--num_entries", action="store", help="Number of ProductUsage objects to upload per instance", default="1")
+    parser.add_option("--num_instances", action="store", help="Number of instances to simulate", default="1")
+    parser.add_option("--nogzip", action="store_true", help="Do not GZip the request body", default=False)
     (opts, args) = parser.parse_args()
 
     # Parse CLI
@@ -120,6 +121,8 @@ if __name__ == "__main__":
     url = '/splice/api/v1/productusage/'
     num_entries = int(opts.num_entries)
     num_instances = int(opts.num_instances)
+    gzip_body = not opts.nogzip
+
     begin = datetime.now(tzutc())
     if opts.begin:
         try:
@@ -146,7 +149,7 @@ if __name__ == "__main__":
             (end-start_a, start_b-start_a, end-start_b)
     start = time.time()
     # Send data to server
-    send(host, port, url, data)
+    send(host, port, url, data, gzip_body=gzip_body)
     end = time.time()
     print "Took %s seconds to send %s items" % (end-start, len(data))
 

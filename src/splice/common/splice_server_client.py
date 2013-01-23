@@ -28,12 +28,12 @@ def get_connection(host, port, cert, key, accept_gzip=False):
     # Note: this method will be mocked out in unit tests
     return BaseConnection(host, port, handler="", https=True, cert_file=cert, key_file=key, accept_gzip=accept_gzip)
 
-def send_data(host, port, url, data, accept_gzip=False):
+def send_data(host, port, url, data, accept_gzip=False, gzip_body=False):
     key_file = certs.get_splice_server_identity_key_path()
     cert_file = certs.get_splice_server_identity_cert_path()
     try:
         conn = get_connection(host, port, cert_file, key_file, accept_gzip)
-        status, data = conn.POST(url, data)
+        status, data = conn.POST(url, data, gzip_body=gzip_body)
         return status, data
     except Exception, e:
         _LOG.exception("Caught exception attempting to send data to %s:%s/%s with key=%s, cert=%s" %\
@@ -47,8 +47,8 @@ def upload_splice_server_metadata(host, port, url, metadata):
         raise RequestException(status, data)
     return status, data
 
-def upload_product_usage_data(host, port, url, pu_data, accept_gzip=False):
-    status, data = send_data(host, port, url, pu_data, accept_gzip)
+def upload_product_usage_data(host, port, url, pu_data, accept_gzip=False, gzip_body=False):
+    status, data = send_data(host, port, url, pu_data, accept_gzip=accept_gzip, gzip_body=gzip_body)
     if status not in [200, 202]:
         raise RequestException(status, data)
     return status, data

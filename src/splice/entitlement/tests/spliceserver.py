@@ -146,9 +146,6 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertIsNotNone(found[0].created)
         self.assertIsNotNone(found[0].modified)
 
-
-
-
     def test_upload_older_spliceserver(self):
         found = SpliceServer.objects()
         self.assertEquals(len(found), 0)
@@ -236,16 +233,3 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].hostname, newer.hostname)
         self.assertEquals(found[0].environment, newer.environment)
         self.assertEquals(str(found[0].modified), "2012-12-31 11:13:06.432000+00:00")
-
-    def test_upload_error(self):
-        # TODO
-        pass
-
-    def test_upload_mixed(self):
-        # TODO
-        # 1 new
-        # 1 old
-        # 1 newer
-        # 1 error
-        pass
-

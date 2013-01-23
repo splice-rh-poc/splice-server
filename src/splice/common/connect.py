@@ -69,20 +69,43 @@ class BaseConnection(object):
             conn = httplib.HTTPConnection(self.host, self.port)
         return conn
 
-    def _request(self, request_type, method, body=None):
+    def _gzip_data(self, input):
+        out = StringIO.StringIO()
+        f = gzip.GzipFile(fileobj=out, mode='w')
+        try:
+            f.write(input)
+        finally:
+            f.close()
+        ret_val = out.getvalue()
+        return ret_val
+
+    def _request(self, request_type, method, body=None, gzip_body=False):
+        """
+
+        @param request_type: HTTP request such as 'GET', 'PUT', 'POST'
+        @param method: combined with the URL specified by 'handler' to form the full URL end point
+        @param body: contents of this request
+        @param gzip_body: optional boolean, default value 'false' leaves body as is
+                          'true' will compress the body
+        @return:
+        """
         if self.username and self.password:
             # add the basic auth info to headers
             self.set_basic_auth()
         conn = self.__get_connection()
         url = self.handler + method
-        length = 0
+        headers = self.headers
         if body:
             # Use customized JSON encoder to handle Mongo objects
             body = utils.obj_to_json(body)
-            length = len(body)
-        _LOG.info("'%s' to '%s' \n\twith headers '%s'\n\t body of %s bytes" % \
-                  (request_type, url, self.headers, length))
-        conn.request(request_type, url, body=body, headers=self.headers)
+            if gzip_body:
+                headers["content-encoding"] = "gzip"
+                orig_body = body
+                body = self._gzip_data(body)
+                _LOG.info("Request to '%s' compressed body from %s to %s" % (url, len(orig_body), len(body)))
+
+        _LOG.info("Sending '%s' to '%s' \n\twith headers '%s'" % (request_type, url, headers))
+        conn.request(request_type, url, body=body, headers=headers)
         response = conn.getresponse()
         response_body = response.read()
         if response.getheader('content-encoding', '') == 'gzip':
@@ -91,11 +114,12 @@ class BaseConnection(object):
             response_body = gzipper.read()
         _LOG.info("Received '%s' from '%s %s'" % (response.status, request_type, url))
         if response.status in [200, 202] and response_body:
+            _LOG.info("Response body = \n'%s'" % (response_body))
             response_body = json.loads(response_body)
         return response.status, response_body
 
     def GET(self, method):
         return self._request("GET", method)
 
-    def POST(self, method, params="", ):
-        return self._request("POST", method, params)
+    def POST(self, method, params="", gzip_body=False):
+        return self._request("POST", method, params, gzip_body)
