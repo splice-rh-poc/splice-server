@@ -102,7 +102,7 @@ class BaseConnection(object):
                 headers["content-encoding"] = "gzip"
                 orig_body = body
                 body = self._gzip_data(body)
-                _LOG.info("Request to '%s' compressed body from %s to %s" % (url, len(orig_body), len(body)))
+                _LOG.info("Request to '%s' compressed body from %s bytes to %s bytes" % (url, len(orig_body), len(body)))
 
         _LOG.info("Sending '%s' to '%s' \n\twith headers '%s'" % (request_type, url, headers))
         conn.request(request_type, url, body=body, headers=headers)
