@@ -105,11 +105,6 @@ VOLUME_ID=`echo "${VOLUME_OUT}" | awk '/^VOLUME/ {print $2}'`
 echo "Volume '${VOLUME_ID}' has been created."
 
 #
-# Tag this instance & volume so it's easier to see from AWS web console
-#
-ec2-create-tags ${VOLUME_ID} ${INSTANCE_ID} --tag "Name=${WHOAMI} RCS ${NAME}" &> /dev/null
-
-#
 # Wait for ssh to come up
 #
 OVER=0
@@ -237,6 +232,12 @@ if [ $TESTS = $MAX_TESTS ]; then
     echo "Unable to upload a product_list to splice-certmaker at: ${NAME}"
     exit 1
 fi
+
+#
+# Tag this instance & volume so it's easier to see from AWS web console
+#
+RCS_VER=`ssh -o "StrictHostKeyChecking no" -i ${SSH_KEY} ${SSH_USERNAME}@$NAME -C "rpm -q --queryformat \"%{VERSION}\" splice"`
+ec2-create-tags ${VOLUME_ID} ${INSTANCE_ID} --tag "Name=${WHOAMI} RCS-${RCS_VER} ${NAME}" &> /dev/null
 
 echo ""
 echo "**"
