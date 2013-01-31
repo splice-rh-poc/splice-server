@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.101
+Version:    0.102
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -273,6 +273,9 @@ exit 0
 
 
 %changelog
+* Thu Jan 31 2013 John Matthews <jwmatthews@gmail.com> 0.102-1
+- Adding requires of "python-isodate" to splice-common (jwmatthews@gmail.com)
+
 * Thu Jan 31 2013 John Matthews <jwmatthews@gmail.com> 0.101-1
 - Removing requirement of django.http being available to use
   splice.common.exceptions (needed by spacewalk-splice-tool)
