@@ -32,15 +32,15 @@ class SpliceServerResource(MongoEngineResource):
         detail_allowed_methods = ['get']
 
     def hydrate_created(self, bundle):
-        _LOG.debug("SpliceServerResource:hydrate_created bundle.data['created'] = '%s'" % (bundle.data["created"]))
+        #_LOG.debug("SpliceServerResource:hydrate_created bundle.data['created'] = '%s'" % (bundle.data["created"]))
         bundle.data["created"] = utils.convert_to_datetime(bundle.data["created"])
-        _LOG.debug("SpliceServerResource:hydrate_created translated to bundle.data['created'] = '%s'" % (bundle.data["created"]))
+        #_LOG.debug("SpliceServerResource:hydrate_created translated to bundle.data['created'] = '%s'" % (bundle.data["created"]))
         return bundle
 
     def hydrate_modified(self, bundle):
-        _LOG.debug("SpliceServerResource:hydrate_created bundle.data['modified'] = '%s'" % (bundle.data["modified"]))
+        #_LOG.debug("SpliceServerResource:hydrate_created bundle.data['modified'] = '%s'" % (bundle.data["modified"]))
         bundle.data["modified"] = utils.convert_to_datetime(bundle.data["modified"])
-        _LOG.debug("SpliceServerResource:hydrate_created translated to bundle.data['modified'] = '%s'" % (bundle.data["modified"]))
+        #_LOG.debug("SpliceServerResource:hydrate_created translated to bundle.data['modified'] = '%s'" % (bundle.data["modified"]))
         return bundle
 
     def post_list(self, request, **kwargs):
@@ -57,8 +57,17 @@ class SpliceServerResource(MongoEngineResource):
         # deleting the entire collection on each collection 'PUT'
         pass
 
+    def find_by_uuid(self, uuid):
+        #
+        # Breaking this out so it can be overriden in ReportServer
+        # Need a different SpliceServer model to contain db_alias info
+        #
+        _LOG.info("splice.common.api.SpliceServerResource::find_by_uuid(%s) SpliceServer=%s" % (uuid, SpliceServer))
+        return SpliceServer.objects(uuid=uuid).first()
+
     def obj_create(self, bundle, request=None, **kwargs):
         bundle.obj = self._meta.object_class()
+        _LOG.info("SpliceServerResource type(bundle.obj) = '%s', bundle.obj = '%s'" % (type(bundle.obj), bundle.obj))
 
         for key, value in kwargs.items():
             setattr(bundle.obj, key, value)
@@ -69,19 +78,24 @@ class SpliceServerResource(MongoEngineResource):
             self.error_response(bundle.errors, request)
 
         # Our change to ignore older objects and only save if this object is "new" or "newer"
-        existing = SpliceServer.objects(uuid=bundle.obj.uuid).first()
+        existing = self.find_by_uuid(bundle.obj.uuid)
+        _LOG.info("existing = '%s'" % (existing))
         if existing:
             _LOG.info("SpliceServerResource:obj_create()  bundle.obj.modified = '%s', existing.modified = '%s'" % \
                       (bundle.obj.modified, existing.modified))
             if bundle.obj.modified > existing.modified:
                 # Request's object is newer than what's in our DB
                 for key, value in bundle.obj._data.items():
-                    if key:
+                    if key and key != "id":
                         # Skip the 'None' which is part of the data sent if the obj has not been saved previously
+                        _LOG.info("Updating '%s'='%s'" % (key, value))
                         setattr(existing, key, value)
+                _LOG.info("Calling existing.save(): type(existing) = %s" % (type(existing)))
+                _LOG.info("existing.id = %s" % (existing.id))
                 existing.save()
             else:
                 _LOG.debug("Ignorning %s since it is not newer than what is in DB" % (bundle.obj))
         else:
+            _LOG.info("Calling bundle.obj.save()")
             bundle.obj.save()
         return bundle
