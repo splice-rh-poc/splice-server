@@ -84,6 +84,7 @@ Splice common components
 %package        common-config
 Summary:        Splice common config components
 Group:          Development/Languages
+Requires:       python-isodate
 
 %description    common-config
 Splice common config components
