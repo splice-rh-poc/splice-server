@@ -31,7 +31,7 @@ class UploadManagerTest(BaseEntitlementTestCase):
     def setUp(self):
         super(UploadManagerTest, self).setUp()
         self.mocked_arg_of_upload_data = None
-        def mocked_upload_data(addr, port, url, data):
+        def mocked_upload_data(addr, port, url, data, gzip_body=False):
             self.mocked_arg_of_upload_data = data
         self.orig_upload_product_usage_data = splice_server_client.upload_product_usage_data
         self.orig_upload_splice_server_metadata = splice_server_client.upload_splice_server_metadata
