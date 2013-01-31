@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.103
+Version:    0.104
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -273,6 +273,10 @@ exit 0
 
 
 %changelog
+* Thu Jan 31 2013 John Matthews <jwmatthews@gmail.com> 0.104-1
+- Adding debug info to track down issue with SpliceServer upload in
+  ReportServer (jwmatthews@gmail.com)
+
 * Thu Jan 31 2013 John Matthews <jwmatthews@gmail.com> 0.103-1
 - Adding debug info for splice.common.api SpliceServer (jwmatthews@gmail.com)
 
