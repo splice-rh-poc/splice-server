@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.100
+Version:    0.101
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -272,6 +272,19 @@ exit 0
 
 
 %changelog
+* Thu Jan 31 2013 John Matthews <jwmatthews@gmail.com> 0.101-1
+- Removing requirement of django.http being available to use
+  splice.common.exceptions (needed by spacewalk-splice-tool)
+  (jwmatthews@gmail.com)
+- Fix unit test to allow mocked method to accept "gzip" arg
+  (jwmatthews@gmail.com)
+- Adding "spacewalk-splice-tool" and "splice-socketreport" to list of packages
+  to build (jwmatthews@gmail.com)
+- Update ec2 instance tag to reflect the rpm version of the RCS which was setup
+  (jmatthews@redhat.com)
+- Small logging update (jmatthews@redhat.com)
+- Prefix ec2 instance of launched RCS with whoami (jmatthews@redhat.com)
+
 * Wed Jan 23 2013 John Matthews <jmatthews@redhat.com> 0.100-1
 - Bump requires on report server to version with gzip support
   (jmatthews@redhat.com)
