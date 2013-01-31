@@ -12,8 +12,17 @@
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
 import httplib
-
-from django.http import HttpResponse
+try:
+    # We want to remove the requirement of django being needed for consumers of splice.common
+    from django.http import HttpResponse
+    def form_response(content, status):
+        return HttpResponse(content=content, status=status)
+except:
+    # Not all consumers of splice.common will be using Django
+    # 'spacewalk-splice-tool` is an example of a CLI tool sharing splice.common
+    # code yet not using django.  For these cases, a 'response' field is unused
+    def form_response(content, status):
+        return None
 
 
 class CheckinException(Exception):
@@ -21,7 +30,7 @@ class CheckinException(Exception):
 
 class CertValidationException(CheckinException):
     def __init__(self):
-        self.response = HttpResponse(
+        self.response = form_response(
             content="Unable to verify consumer's identity certificate was signed by configured CA",
             status=httplib.UNAUTHORIZED)
 
@@ -30,7 +39,7 @@ class UnallowedProductException(CheckinException):
         super(UnallowedProductException, self).__init__(self, )
         self.consumer_uuid = consumer_uuid
         self.products = products
-        self.response = HttpResponse(
+        self.response = form_response(
             content= self.__str__(),
             status=httplib.PAYMENT_REQUIRED
         )
@@ -42,7 +51,7 @@ class UnknownConsumerIdentity(CheckinException):
     def __init__(self, identity):
         super(UnknownConsumerIdentity, self).__init__(self)
         self.identity = identity
-        self.response = HttpResponse(
+        self.response = form_response(
             content=self.__str__(),
             # status = httplib.NOT_FOUND
             # For a quick work around to aid in submgr testing
@@ -60,7 +69,7 @@ class NotFoundConsumerIdentity(CheckinException):
     def __init__(self, identity):
         super(NotFoundConsumerIdentity, self).__init__(self)
         self.identity = identity
-        self.response = HttpResponse(
+        self.response = form_response(
             content=self.__str__(),
             status = httplib.NOT_FOUND
         )
@@ -77,7 +86,7 @@ class RequestException(Exception):
         super(RequestException, self).__init__()
         self.status = status
         self.message = message
-        self.response = HttpResponse(
+        self.response = form_response(
             content=self.__str__(),
             # status is marking a remote service had a problem
             status=httplib.BAD_GATEWAY
@@ -92,7 +101,7 @@ class UnsupportedDateFormatException(Exception):
         super(UnsupportedDateFormatException, self).__init__()
         self.date_str = date_str
         self.message = message
-        self.response = HttpResponse(
+        self.response = form_response(
             content=self.__str__(),
             status=httplib.BAD_REQUEST
         )
@@ -105,7 +114,7 @@ class DeletedConsumerIdentityException(Exception):
     def __init__(self, consumer_uuid):
         super(DeletedConsumerIdentityException, self).__init__()
         self.consumer_uuid = consumer_uuid
-        self.response = HttpResponse(
+        self.response = form_response(
             content=self.__str__(),
             status=httplib.GONE
         )
@@ -118,7 +127,7 @@ class UnexpectedStatusCodeException(Exception):
         super(UnexpectedStatusCodeException, self).__init__()
         self.consumer_uuid = consumer_uuid
         self.status_code = status_code
-        self.response = HttpResponse(
+        self.response = form_response(
             content=self.__str__(),
             status=self.status_code
         )
