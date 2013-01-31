@@ -32,11 +32,15 @@ class SpliceServerResource(MongoEngineResource):
         detail_allowed_methods = ['get']
 
     def hydrate_created(self, bundle):
+        _LOG.debug("SpliceServerResource:hydrate_created bundle.data['created'] = '%s'" % (bundle.data["created"]))
         bundle.data["created"] = utils.convert_to_datetime(bundle.data["created"])
+        _LOG.debug("SpliceServerResource:hydrate_created translated to bundle.data['created'] = '%s'" % (bundle.data["created"]))
         return bundle
 
     def hydrate_modified(self, bundle):
+        _LOG.debug("SpliceServerResource:hydrate_created bundle.data['modified'] = '%s'" % (bundle.data["modified"]))
         bundle.data["modified"] = utils.convert_to_datetime(bundle.data["modified"])
+        _LOG.debug("SpliceServerResource:hydrate_created translated to bundle.data['modified'] = '%s'" % (bundle.data["modified"]))
         return bundle
 
     def post_list(self, request, **kwargs):
@@ -67,6 +71,8 @@ class SpliceServerResource(MongoEngineResource):
         # Our change to ignore older objects and only save if this object is "new" or "newer"
         existing = SpliceServer.objects(uuid=bundle.obj.uuid).first()
         if existing:
+            _LOG.info("SpliceServerResource:obj_create()  bundle.obj.modified = '%s', existing.modified = '%s'" % \
+                      (bundle.obj.modified, existing.modified))
             if bundle.obj.modified > existing.modified:
                 # Request's object is newer than what's in our DB
                 for key, value in bundle.obj._data.items():
