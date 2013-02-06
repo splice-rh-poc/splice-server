@@ -34,7 +34,7 @@ if __name__ == "__main__":
     #
     print "Update EC2 tag with RPM version of 'report-server' installed on %s" % (hostname)
     status, out, err = ssh_command(hostname, ssh_user, ssh_key, "rpm -q --queryformat \"%{VERSION}\" report-server")
-    rcs_ver = out
+    rs_ver = out
     tag = ""
     if instance.__dict__.has_key("tags"):
         all_tags = instance.__dict__["tags"]
@@ -43,9 +43,9 @@ if __name__ == "__main__":
     if not tag:
         import getpass
         tag = "%s %s" % (getpass.getuser(), hostname)
-    tag += " ReportServer %s" % (rcs_ver)
+    tag += " ReportServer %s" % (rs_ver)
     instance.add_tag("Name","%s" % (tag))
 
     end = time.time()
-    print "ReportServer install completed on: %s in %s seconds" % (hostname, end-start)
+    print "ReportServer %s install completed on: %s in %s seconds" % (rs_ver, hostname, end-start)
     print "Visit https://%s/report-server/ui20" % (hostname)

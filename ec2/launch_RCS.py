@@ -63,5 +63,5 @@ if __name__ == "__main__":
     instance.add_tag("Name","%s" % (tag))
 
     end = time.time()
-    print "RCS install completed on: %s in %s seconds" % (hostname, end-start)
+    print "RCS %s install completed on: %s in %s seconds" % (rcs_ver, hostname, end-start)
 

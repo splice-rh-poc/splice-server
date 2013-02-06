@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # Assumes that "install_rpm_setup.sh" has already been run
+source ./functions.sh
 
 #
 # Cloning git repo so the curl scripts under playpen are available for testing.
