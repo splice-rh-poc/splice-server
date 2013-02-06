@@ -37,6 +37,7 @@ def run_instance(conn, ami_id, key_name, instance_type,
         # Create block device mapping info
         dev_sda1 = BlockDeviceType()
         dev_sda1.size = int(vol_size)
+        dev_sda1.delete_on_termination = True
         bdm = BlockDeviceMapping()
         bdm['/dev/sda1'] = dev_sda1
 
