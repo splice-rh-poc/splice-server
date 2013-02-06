@@ -32,15 +32,11 @@ class SpliceServerResource(MongoEngineResource):
         detail_allowed_methods = ['get']
 
     def hydrate_created(self, bundle):
-        #_LOG.debug("SpliceServerResource:hydrate_created bundle.data['created'] = '%s'" % (bundle.data["created"]))
         bundle.data["created"] = utils.convert_to_datetime(bundle.data["created"])
-        #_LOG.debug("SpliceServerResource:hydrate_created translated to bundle.data['created'] = '%s'" % (bundle.data["created"]))
         return bundle
 
     def hydrate_modified(self, bundle):
-        #_LOG.debug("SpliceServerResource:hydrate_created bundle.data['modified'] = '%s'" % (bundle.data["modified"]))
         bundle.data["modified"] = utils.convert_to_datetime(bundle.data["modified"])
-        #_LOG.debug("SpliceServerResource:hydrate_created translated to bundle.data['modified'] = '%s'" % (bundle.data["modified"]))
         return bundle
 
     def post_list(self, request, **kwargs):
