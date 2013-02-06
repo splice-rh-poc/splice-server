@@ -1,5 +1,8 @@
-- launch_new_RCS.sh
-Will provision a new instance and configure RCS & splice-certmaker by using 'install_rpm_setup.sh'
+- launch_instance.py
+Will provision a new ec2 instance with an expanded root partition
+
+- launch_RCS.py
+Will provision & configure a new RCS instance in EC2
 
 - install_rpm_setup.sh
 Script to use on a provisioned instance, will pull down splice repo and install RPMs
@@ -9,15 +12,29 @@ Recommend Usage:
 1) Set the environment variable CLOUDE_GIT_REPO in your ~.bashrc
   export CLOUDE_GIT_REPO=/git/cloude
 2) Run the script
- ./launch_new_RCS.sh
+ ./launch_RCS.py
  Wait ~10 minutes
 3) ssh into the ec2 hostname printed from the script
    Completed Splice install on: ec2-107-22-99-233.compute-1.amazonaws.com
 
 
-Optional, if desired you may override the default environment variables, otherwise this script will use the files from the cloude git repo
-$EC2_PRIVATE_KEY    = ec2 cli private key
-$EC2_CERT           = ec2 cli cert
-$SSH_KEY            = ec2 ssh public cert 
-$CERTMAKER_DATA     = path to json data for splice-certmaker product data
+Optional, if desired you may override the default settings through command line arguments:
+$ ./launch_RCS.py --help
+Usage: launch_RCS.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  --product_data=PRODUCT_DATA
+                        Product data for splice-certmaker: defaults to
+                        /git/cloude/splice/sample-data/sample-certgen-
+                        products.json
+  --ssh_user=SSH_USER   SSH username
+  --ssh_key=SSH_KEY     Path to ssh key, defaults to: /git/cloude/splice/aws
+                        /ssh-keys/splice_rsa.pub
+  --ami=AMI             AMI, defaults to: ami-cc5af9a5
+  --key_name=KEY_NAME   Name for ssh key in EC2, defaults to: splice
+  --type=TYPE           Instance type, defaults to: m1.large
+  --zone=ZONE           Zone to launch this instance, defaults to: us-east-1d
+  --group=GROUP         Security Group, defaults to: devel-testing
+  --vol_size=VOL_SIZE   Root volume size, defaults to: 25
 
