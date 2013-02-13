@@ -9,8 +9,10 @@ Script to use on a provisioned instance, will pull down splice repo and install 
 
 
 Recommend Usage:
-1) Set the environment variable CLOUDE_GIT_REPO in your ~.bashrc
+1) Set the following environment variables in your ~.bashrc
   export CLOUDE_GIT_REPO=/git/cloude
+  export AWS_ACCESS_KEY_ID=YOUR_AWS_ACCESS_KEY
+  export AWS_SECRET_ACCESS_KEY=YOUR_AWS_SECRET_KEY
 2) Run the script
  ./launch_RCS.py
  Wait ~10 minutes

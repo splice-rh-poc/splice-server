@@ -2,7 +2,7 @@
 # Hostname for instance serving splice RPMs
 SERVER_ADDR=ec2-23-22-86-129.compute-1.amazonaws.com
 
-source functions.sh
+source ./functions.sh
 
 # Install EPEL
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-7.noarch.rpm || {

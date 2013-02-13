@@ -19,6 +19,24 @@ except Exception, e:
     print "Try:  sudo yum install python-boto"
     sys.exit(1)
 
+def tag_instance(instance, hostname, ssh_user, ssh_key, rpm_name, tag_name=None):
+    status, out, err = ssh_command(hostname, ssh_user, ssh_key, "rpm -q --queryformat \"%{VERSION}\" " + rpm_name)
+    rpm_ver = out
+    tag = ""
+    if instance.__dict__.has_key("tags"):
+        all_tags = instance.__dict__["tags"]
+        if all_tags.has_key("Name"):
+            tag = all_tags["Name"]
+    if not tag:
+        import getpass
+        tag = "%s" % (getpass.getuser())
+    if tag_name:
+        tag += " %s %s" % (tag_name, rpm_ver)
+    else:
+        tag += " %s %s" % (rpm_name, rpm_ver)
+    instance.add_tag("Name","%s" % (tag))
+    return rpm_ver
+
 def run_instance(conn, ami_id, key_name, instance_type, 
         sec_group, zone="us-east-1d", vol_size=None):
     """
