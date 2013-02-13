@@ -7,19 +7,42 @@ from optparse import OptionParser
 
 if __name__ == "__main__":
     start = time.time()
+    
+    default_sat_cert = None
+    if os.environ.has_key("CLOUDE_GIT_REPO"):
+        default_sat_cert = "%s/splice/certs/internal-satellite-cert.xml" % (os.environ["CLOUDE_GIT_REPO"])
+        if not os.path.isfile(default_sat_cert):
+            print "Warning: Satellite Certificate not found at: %s" % (default_sat_cert)
+            print "Unable to set default value"
+            default_sat_cert = None
+    else:
+        print "Couldn't find environment variable 'CLOUDE_GIT_REPO'"
 
     parser = OptionParser()
     parser = get_opt_parser(parser=parser)
     parser.add_option('--manifest', action="store", default=None, help="Subscription Manifest to load into Candlepin")
+    parser.add_option('--rhn_user', action="store", default=None, help="RHN Username to activate Satellite with")
+    parser.add_option('--rhn_pass', action="store", default=None, help="RHN Password to activate Satellite with")
+    parser.add_option('--sat_cert', action="store", default=default_sat_cert, help="Satellite Certificate")
+    
     (opts, args) = parser.parse_args()
     manifest = opts.manifest
     if not manifest or not os.path.isfile(opts.manifest):
         print "Please re-run with '--manifest' point to a subscription manifest file"
         sys.exit(1)
+    if not opts.rhn_user or not opts.rhn_pass:
+        print "Please re-run with '--rhn_user', '--rhn_pass'"
+        sys.exit(1)
+    if not opts.sat_cert:
+        print "Please re-run with '--sat_cert' pointing to a valid Satellite certificate"
+        sys.exit(1)
     instance = launch_instance(opts)
     hostname = instance.dns_name
     ssh_key = opts.ssh_key
     ssh_user = opts.ssh_user
+    rhn_user = opts.rhn_user
+    rhn_pass = opts.rhn_pass
+    sat_cert = opts.sat_cert
     #
     # open firewall
     #
@@ -38,7 +61,7 @@ if __name__ == "__main__":
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/spacewalk.answers", "/tmp/") 
     ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_spacewalk.sh")
     ssh_command(hostname, ssh_user, ssh_key, "time ./install_spacewalk.sh &> ./spacewalk_rpm_setup.log ")
-    
+
     # Begin CandlePin Install
     scp_to_command(hostname, ssh_user, ssh_key, opts.manifest, "~")
     scp_to_command(hostname, ssh_user, ssh_key, "./etc/tomcat/context.xml", "~/context.xml")
@@ -46,6 +69,12 @@ if __name__ == "__main__":
     ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_candlepin.sh")
     ssh_command(hostname, ssh_user, ssh_key, "time ./install_candlepin.sh &> ./candlepin_rpm_setup.log ")
 
+    # Begin Splice Spacewalk Modifed install
+    scp_to_command(hostname, ssh_user, ssh_key, opts.sat_cert, "~/satellite_cert.xml")
+    scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_splice_spacewalk.sh", "~") 
+    ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_splice_spacewalk.sh")
+    cmd = "time ./install_splice_spacewalk.sh %s %s %s &> ./splice_spacewalk_setup.log" % (opts.rhn_user, opts.rhn_pass, opts.sat_cert)
+    ssh_command(hostname, ssh_user, ssh_key, cmd)
     #
     # Update EC2 tag with version of RCS installed
     #
