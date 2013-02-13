@@ -7,6 +7,12 @@ Will provision & configure a new RCS instance in EC2
 - install_rpm_setup.sh
 Script to use on a provisioned instance, will pull down splice repo and install RPMs
 
+- launch_Spacewalk.py
+Provisions a postgres backed Spacewalk by itself
+
+- launch_Spacewalk_Candlepin.py
+Provisions a postgres backed Spacewalk with Candlepin Installed
+
 
 Recommend Usage:
 1) Set the following environment variables in your ~.bashrc
@@ -39,4 +45,23 @@ Options:
   --zone=ZONE           Zone to launch this instance, defaults to: us-east-1d
   --group=GROUP         Security Group, defaults to: devel-testing
   --vol_size=VOL_SIZE   Root volume size, defaults to: 25
+
+
+To Launch Spacewalk & Candlepin
+As in above, your "AWS_ACCESS_KEY_ID" and "AWS_SECRET_ACCESS_KEY" must be specified.
+Additionally a "Subscription Manifest" must be provided.
+
+$ ./launch_Spacewalk_Candlepin.py --manifest ~/Splice/Spacewalk_Investigation/manifest/manifest.zip 
+Waiting for instance 'i-49898b39' to come up
+Waited 0 seconds for instance 'i-49898b39' to come up
+Waited 10 seconds for instance 'i-49898b39' to come up
+Waited 20 seconds for instance 'i-49898b39' to come up
+Waiting for instance 'ec2-107-22-56-64.compute-1.amazonaws.com' to listen for ssh requests
+Attempt '1' waiting for ssh to come up on ec2-107-22-56-64.compute-1.amazonaws.com
+Attempt '2' waiting for ssh to come up on ec2-107-22-56-64.compute-1.amazonaws.com
+Resizing /dev/xvde1 on ec2-107-22-56-64.compute-1.amazonaws.com
+Updating firewall rules
+Running install script for Spacewalk
+Update EC2 tag with RPM version of 'spacewalk' installed on ec2-107-22-56-64.compute-1.amazonaws.com
+Spacewalk 1.8.6 install completed on: ec2-107-22-56-64.compute-1.amazonaws.com in 1344.49916697 seconds
 
