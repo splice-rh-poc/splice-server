@@ -73,7 +73,7 @@ if __name__ == "__main__":
     scp_to_command(hostname, ssh_user, ssh_key, opts.sat_cert, "~/satellite_cert.xml")
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_splice_spacewalk.sh", "~") 
     ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_splice_spacewalk.sh")
-    cmd = "time ./install_splice_spacewalk.sh %s %s %s &> ./splice_spacewalk_setup.log" % (opts.rhn_user, opts.rhn_pass, opts.sat_cert)
+    cmd = "time ./install_splice_spacewalk.sh %s %s %s &> ./splice_spacewalk_setup.log" % (opts.rhn_user, opts.rhn_pass, "~/satellite_cert.xml")
     ssh_command(hostname, ssh_user, ssh_key, cmd)
     #
     # Update EC2 tag with version of RCS installed

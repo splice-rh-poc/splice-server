@@ -122,7 +122,7 @@ def scp_to_command(hostname, ssh_user, ssh_key, from_path, to_path, exit_on_erro
     return run_command(cmd, exit_on_error=exit_on_error)
 
 def ssh_command(hostname, ssh_user, ssh_key, command, exit_on_error=True):
-    cmd = "ssh -o \"StrictHostKeyChecking no\" -i %s %s@%s \"%s\"" % (ssh_key, ssh_user, hostname, command)
+    cmd = "ssh -o \"StrictHostKeyChecking no\" -t -i %s %s@%s \"%s\"" % (ssh_key, ssh_user, hostname, command)
     return run_command(cmd, exit_on_error=exit_on_error)
 
 def wait_for_ssh(instance, ssh_user, ssh_key, wait=30):
