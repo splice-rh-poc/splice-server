@@ -207,7 +207,7 @@ def launch_instance(opts, tag=None):
     if not tag:
         import getpass
         WHOAMI=getpass.getuser() # Used to label the instance in ec2 webui
-        tag = "%s %s" % (getpass.getuser(), instance.dns_name)
+        tag = "%s" % (getpass.getuser())
     instance.add_tag("Name","%s" % (tag))
 
     if not wait_for_ssh(instance, ssh_user=ssh_user, ssh_key=ssh_key):

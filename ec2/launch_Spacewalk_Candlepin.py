@@ -10,7 +10,12 @@ if __name__ == "__main__":
 
     parser = OptionParser()
     parser = get_opt_parser(parser=parser)
+    parser.add_option('--manifest', action="store", default=None, help="Subscription Manifest to load into Candlepin")
     (opts, args) = parser.parse_args()
+    manifest = opts.manifest
+    if not manifest or not os.path.isfile(opts.manifest):
+        print "Please re-run with '--manifest' point to a subscription manifest file"
+        sys.exit(1)
     instance = launch_instance(opts)
     hostname = instance.dns_name
     ssh_key = opts.ssh_key
@@ -33,12 +38,19 @@ if __name__ == "__main__":
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/spacewalk.answers", "/tmp/") 
     ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_spacewalk.sh")
     ssh_command(hostname, ssh_user, ssh_key, "time ./install_spacewalk.sh &> ./spacewalk_rpm_setup.log ")
+    
+    # Begin CandlePin Install
+    scp_to_command(hostname, ssh_user, ssh_key, opts.manifest, "~")
+    scp_to_command(hostname, ssh_user, ssh_key, "./etc/tomcat/context.xml", "~/context.xml")
+    scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_candlepin.sh", "~") 
+    ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_candlepin.sh")
+    ssh_command(hostname, ssh_user, ssh_key, "time ./install_candlepin.sh &> ./candlepin_rpm_setup.log ")
 
     #
     # Update EC2 tag with version of RCS installed
     #
     print "Update EC2 tag with RPM version of 'spacewalk' installed on %s" % (hostname)
-    rpm_ver = tag_instance(instance, hostname, ssh_user, ssh_key, "spacewalk-postgresql")
+    rpm_ver = tag_instance(instance, hostname, ssh_user, ssh_key, "spacewalk-postgresql", "spacewalk-candlepin")
 
     end = time.time()
     print "Spacewalk %s install completed on: %s in %s seconds" % (rpm_ver, hostname, end-start)

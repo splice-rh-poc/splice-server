@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# hostname for Splice's rpm builder machine
+# used by install scripts to setup up yum repo files
+export BUILDER_ADDR=ec2-23-22-86-129.compute-1.amazonaws.com
+
 function waitfor() {
     if [ "$#" -ne 4 ]; then
         echo "Incorrect usage of waitfor() function, only $# arguments passed when 4 were expected"
