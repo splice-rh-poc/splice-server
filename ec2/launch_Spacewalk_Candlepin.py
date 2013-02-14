@@ -2,6 +2,7 @@
 import os
 import sys
 import time
+from datetime import datetime
 from launch_instance import launch_instance, get_opt_parser, ssh_command, scp_to_command, run_command, tag_instance
 from optparse import OptionParser
 
@@ -37,6 +38,7 @@ if __name__ == "__main__":
         print "Please re-run with '--sat_cert' pointing to a valid Satellite certificate"
         sys.exit(1)
     instance = launch_instance(opts)
+    print "Instance %s is up: %s" % (instance.dns_name, datetime.now())
     hostname = instance.dns_name
     ssh_key = opts.ssh_key
     ssh_user = opts.ssh_user
@@ -52,10 +54,9 @@ if __name__ == "__main__":
     #
     # Run install script
     #
-    print "Running install script for Spacewalk"
+    print "Running install script for Spacewalk: %s" % (datetime.now())
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/functions.sh", "~")
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_spacewalk.sh", "~")
-
     # <- note spacewalk installer doesn't like this answer file in "~", it's unable to expand the "~" 
     # and results in no answer file being found
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/spacewalk.answers", "/tmp/") 
@@ -63,6 +64,7 @@ if __name__ == "__main__":
     ssh_command(hostname, ssh_user, ssh_key, "time ./install_spacewalk.sh &> ./spacewalk_rpm_setup.log ")
 
     # Begin CandlePin Install
+    print "Beginning Candlepin Install: %s" % (datetime.now())
     scp_to_command(hostname, ssh_user, ssh_key, opts.manifest, "~")
     scp_to_command(hostname, ssh_user, ssh_key, "./etc/tomcat/context.xml", "~/context.xml")
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_candlepin.sh", "~") 
@@ -70,6 +72,7 @@ if __name__ == "__main__":
     ssh_command(hostname, ssh_user, ssh_key, "time ./install_candlepin.sh &> ./candlepin_rpm_setup.log ")
 
     # Begin Splice Spacewalk Modifed install
+    print "Building modified Splice Spacewalk RPMs: %s" % (datetime.now())
     scp_to_command(hostname, ssh_user, ssh_key, opts.sat_cert, "~/satellite_cert.xml")
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_splice_spacewalk.sh", "~") 
     ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_splice_spacewalk.sh")

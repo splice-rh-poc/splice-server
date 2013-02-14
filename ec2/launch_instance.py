@@ -158,7 +158,7 @@ def get_opt_parser(parser=None, description=None):
     default_sec_group = "devel-testing"
     default_vol_size = 25
     if os.environ.has_key("CLOUDE_GIT_REPO"):
-        default_ssh_key="%s/splice/aws/ssh-keys/splice_rsa.pub" % os.environ["CLOUDE_GIT_REPO"]
+        default_ssh_key="%s/splice/aws/ssh-keys/splice_rsa" % os.environ["CLOUDE_GIT_REPO"]
     if not parser:
         parser = OptionParser(description=description)
     parser.add_option('--ssh_user', action='store', default="root", 
