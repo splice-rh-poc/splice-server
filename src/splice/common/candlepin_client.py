@@ -15,17 +15,60 @@
 
 import logging
 import urllib
-from django.conf import settings
 
-from splice.common import config
 from splice.common.connect import BaseConnection
 from splice.common.exceptions import RequestException
 
 _LOG = logging.getLogger(__name__)
 
-def get_connection(host, port, username, password):
+
+def get_connection(host, port, username, password, https=False):
     # Note: this method will be mocked out in unit tests
-    return BaseConnection(host, port, handler="", https=False, username=username, password=password)
+    return BaseConnection(host, port, handler="", https=https, username=username, password=password)
+
+
+def GET(host, port, username, password, https, url):
+    try:
+        conn = get_connection(host, port, username, password, https)
+        status, data = conn.GET(url)
+        if status == 200:
+            return data
+        raise RequestException(status, data)
+    except Exception, e:
+        _LOG.exception("Caught exception on %s:%s %s" % (host, port, url))
+        raise
+
+
+def get_subscriptions(host, port, username, password, https=False, url="/candlepin/subscriptions"):
+    return GET(host, port, username, password, https, url)
+
+
+def get_rules(host, port, username, password, https=False, url="/candlepin/rules/"):
+    #TODO
+    # - Response is a base 64 encoded string
+    "Decoded String: " + decoded.decode('base64', 'strict')
+    return GET(host, port, username, password, https, url)
+
+
+def get_products(host, port, username, password, https=False, url="/candlepin/products"):
+    return GET(host, port, username, password, https, url)
+
+
+def get_pools(host, port, username, password, https=False, url="/candlepin/pools"):
+    return GET(host, port, username, password, https, url)
+
+
+def get_owners(host, port, username, password, https=False, url="/candlepin/owners"):
+    return GET(host, port, username, password, https, url)
+
+
+def get_entitlements(host, port, username, password, https=False, url="/candlepin/entitlements"):
+    return GET(host, port, username, password, https, url)
+
+
+def get_consumers(host, port, username, password, https=False, url="/candlepin/consumers"):
+    return GET(host, port, username, password, https, url)
+
 
 def get_entitlement(host, port, url, requested_products, identity,
                     username, password,
@@ -82,6 +125,9 @@ def parse_data(data):
 if __name__ == "__main__":
     import datetime
     import pytz
+    from django.conf import settings
+    from splice.common import config
+
     config.init(settings.SPLICE_CONFIG_FILE)
     cfg = config.get_candlepin_config_info()
 

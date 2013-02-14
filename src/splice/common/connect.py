@@ -33,6 +33,7 @@ class BaseConnection(object):
         self.host = host
         self.port = int(port)
         self.handler = handler
+        self.headers = {}
         self.headers = {"Content-type":"application/json",
                         "Accept": "application/json"}
         self.https = https
@@ -103,7 +104,6 @@ class BaseConnection(object):
                 orig_body = body
                 body = self._gzip_data(body)
                 _LOG.info("Request to '%s' compressed body from %s bytes to %s bytes" % (url, len(orig_body), len(body)))
-
         _LOG.info("Sending '%s' to '%s' \n\twith headers '%s'" % (request_type, url, headers))
         conn.request(request_type, url, body=body, headers=headers)
         response = conn.getresponse()

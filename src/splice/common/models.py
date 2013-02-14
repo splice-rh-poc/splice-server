@@ -20,8 +20,55 @@ from rhic_serve.common.fields import IsoDateTimeField
 from rhic_serve.rhic_rcs.models import RHIC
 from splice.common.utils import sanitize_key_for_mongo, sanitize_dict_for_mongo, convert_to_datetime
 
+
 def get_now():
     return datetime.now(tzutc())
+
+
+class Product(Document):
+
+    support_level_choices = {
+        'l1-l3': 'L1-L3',
+        'l3': 'L3-only',
+        'ss': 'SS',
+        }
+
+    sla_choices = {
+        'std': 'Standard',
+        'prem': 'Premium',
+        'na': 'N/A',
+        }
+
+    # Product name
+    name = StringField(required=True)
+    # Unique product identifier
+    engineering_ids = ListField(required=True)
+    # Quantity
+    quantity = IntField(required=True)
+    # Product support level
+    support_level = StringField(required=True, choices=support_level_choices.keys())
+    # Product sla
+    sla = StringField(required=True, choices=sla_choices.keys())
+
+    # Looking at data from Candlepin /pools and /products
+    arches = ListField(StringField())
+    variant = StringField()
+    type = StringField()
+    description = StringField()
+    product_family = StringField()
+    sockets = IntField()
+    virt_limit = StringField()
+    subtype = StringField()
+    updated = IsoDateTimeField(required=True)
+
+
+class Contract(Document):
+    # Unique Contract identifier
+    contract_id = StringField(unique=True, required=True)
+    # List of products associated with this contract
+    products = ListField(StringField)  # Product Names
+
+
 
 class SpliceServer(Document):
     uuid = StringField(required=True, unique=True)
