@@ -25,6 +25,43 @@ def get_now():
     return datetime.now(tzutc())
 
 
+class Pool(Document):
+    account = IntField()
+    active = BooleanField()
+    contract = IntField()
+    product_id = StringField(required=True, unique=True)
+    product_name = StringField(required=True)
+    # product_attributes may vary common keys are:
+    #  "option_code", "enabled_consumer_types", "variant"
+    #  "name", "type", "support_level", "description", "support_type",
+    #  "product_family", "sockets", "virt_limit", "subtype"
+    product_attributes = DictField()
+    provided_products = ListField(DictField())  # [ {"id":value, "name":value} ]
+    created = IsoDateTimeField(required=True)
+    start_date = IsoDateTimeField(required=True)
+    end_date = IsoDateTimeField(required=True)
+    updated = IsoDateTimeField(required=True)
+    quantity = IntField(required=True)
+
+    @classmethod
+    def pre_save(cls, sender, document, **kwargs):
+        for attr_name in ["created", "start_date", "end_date", "updated"]:
+            if isinstance(getattr(document, attr_name), basestring):
+                setattr(document, attr_name,
+                        convert_to_datetime(getattr(document, attr_name)))
+        if document.product_attributes:
+            document.product_attributes = \
+                sanitize_dict_for_mongo(document.product_attributes)
+
+    def __str__(self):
+        return "Pool<%s, %s> account=<%s>, contract=<%s>, active=%s, quantity=<%s>, created=<%s>, " \
+            "updated=<%s>, start_date=<%s>, end_date=<%s> provided_products=<%s>," \
+            "product_attributes=<%s>" % \
+            (self.product_id, self.product_name, self.account, self.contract, self.active, self.quantity,
+             self.created, self.updated, self.start_date, self.end_date, self.provided_products,
+             self.product_attributes)
+
+
 class Product(Document):
 
     support_level_choices = {
@@ -60,6 +97,13 @@ class Product(Document):
     virt_limit = StringField()
     subtype = StringField()
     updated = IsoDateTimeField(required=True)
+    eng_prods = DictField()  # Information on Engineering Products {"id", "label", "name", "vendor"}
+    attrs = DictField()  # Product Attributes
+    dependentProductIds = ListField()
+
+    def __str__(self):
+        return "Product<%s>, description=<%s>, engineering_ids=<%s>, attributes=<%s>,  created on %s, updated %s" % \
+               (self.name, self.description, self.engineering_ids, self.attrs, self.created, self.updated)
 
 
 class Contract(Document):
@@ -176,6 +220,37 @@ class ProductUsage(Document):
             self.unallowed_product_info,
             self.date)
 
+
+class MarketingProductUsage(Document):
+    splice_server = StringField(required=True) # uuid of Splice Server
+    date = DateTimeField(required=True)
+    instance_identifier = StringField(required=True, unique_with=['splice_server', 'date']) # example: MAC Address
+
+    product_info = ListField(DictField())  # [{"account":value, "contract":value, "id":value}]
+    tracker = ListField(StringField())
+
+    facts = DictField()
+
+    meta = {
+        'allow_inheritance': True,
+        'indexes': ['date', 'splice_server', 'instance_identifier', 'tracker'],
+        }
+
+    @classmethod
+    def pre_save(cls, sender, document, **kwargs):
+        if isinstance(document.date, basestring):
+            document.date = convert_to_datetime(document.date)
+        if document.facts:
+            document.facts = sanitize_dict_for_mongo(document.facts)
+            # Ensure no duplicate entries are stored for document.tracker
+        if document.tracker:
+            document.tracker = list(set(document.tracker))
+
+    def __str__(self):
+        return "MarketingProductUsage for <%s> on Splice Server <%s> at <%s> with instance identifier <%s>" % \
+               (self.product_info, self.splice_server, self.date, self.instance_identifier)
+
+
 class SingleTaskInfo(Document):
     #
     # SingleTaskInfo helps to enforce the behavior of a lock in mongodb
@@ -195,3 +270,4 @@ class SingleTaskInfo(Document):
 signals.pre_save.connect(IdentitySyncInfo.pre_save, sender=IdentitySyncInfo)
 signals.pre_save.connect(ProductUsage.pre_save, sender=ProductUsage)
 signals.pre_save.connect(SpliceServer.pre_save, sender=SpliceServer)
+signals.pre_save.connect(Pool.pre_save, sender=Pool)
