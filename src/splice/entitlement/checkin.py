@@ -206,7 +206,7 @@ class CheckIn(object):
         @return: Certificate and the time it took for entitlement server to process the call
         @rtype: str, int
         """
-        cp_config = config.get_candlepin_config_info()
+        cp_config = config.get_entitlement_config_info()
         start_date=None
         end_date=None
         if cert_length_in_min:

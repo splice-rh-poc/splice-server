@@ -142,7 +142,7 @@ def translate_products(data):
         product = Product()
         product.created = convert_to_datetime(item["created"])
         product.updated = convert_to_datetime(item["updated"])
-        product.id = item["id"]
+        product.product_id = item["id"]
         product.name = item["name"]
         for attribute in item["attributes"]:
             # Expecting values for "type", "arch", "name"

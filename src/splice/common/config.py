@@ -44,6 +44,14 @@ defaults = \
         'username': 'admin',
         'product_json': '/tmp/test.json',
     },
+    'candlepin': {
+        'host': '127.0.0.1',
+        'password': 'admin',
+        'port': '8443',
+        'url': '/candlepin',
+        'https': "True",
+        'username': 'admin',
+    },
     'info': {
         'description': '"TBD"',
         'environment': '"us-east-1"',
@@ -167,14 +175,25 @@ def init_logging():
                 print e
                 print "Unable to initialize logging config with: %s" % (splice_log_cfg)
 
-def get_candlepin_config_info():
 
+def get_entitlement_config_info():
     return {
         "host": CONFIG.get("entitlement", "host"),
-        "port": CONFIG.get("entitlement", "port"),
+        "port": CONFIG.getint("entitlement", "port"),
         "url": CONFIG.get("entitlement", "url"),
         "username": CONFIG.get("entitlement", "username"),
         "password": CONFIG.get("entitlement", "password"),
+    }
+
+
+def get_candlepin_config_info():
+    return {
+        "host": CONFIG.get("candlepin", "host"),
+        "port": CONFIG.getint("candlepin", "port"),
+        "url": CONFIG.get("candlepin", "url"),
+        "username": CONFIG.get("candlepin", "username"),
+        "password": CONFIG.get("candlepin", "password"),
+        "https": CONFIG.getboolean("candlepin", "https")
     }
 
 def get_rhic_serve_config_info():

@@ -61,49 +61,53 @@ class Pool(Document):
              self.created, self.updated, self.start_date, self.end_date, self.provided_products,
              self.product_attributes)
 
+    def update_to(self, other):
+        self.account = other.account
+        self.active = other.active
+        self.contract = other.contract
+        self.product_id = other.product_id
+        self.product_name = other.product_name
+        self.product_attributes = other.product_attributes
+        self.provided_products = other.provided_products
+        self.created = other.created
+        self.start_date = other.start_date
+        self.end_date = other.end_date
+        self.updated = other.updated
+        self.quantity = other.quantity
+
 
 class Product(Document):
-
-    support_level_choices = {
-        'l1-l3': 'L1-L3',
-        'l3': 'L3-only',
-        'ss': 'SS',
-        }
-
-    sla_choices = {
-        'std': 'Standard',
-        'prem': 'Premium',
-        'na': 'N/A',
-        }
-
-    # Product name
+    product_id = StringField(required=True)
     name = StringField(required=True)
-    # Unique product identifier
-    engineering_ids = ListField(required=True)
-    # Quantity
-    quantity = IntField(required=True)
-    # Product support level
-    support_level = StringField(required=True, choices=support_level_choices.keys())
-    # Product sla
-    sla = StringField(required=True, choices=sla_choices.keys())
-
-    # Looking at data from Candlepin /pools and /products
-    arches = ListField(StringField())
-    variant = StringField()
-    type = StringField()
-    description = StringField()
-    product_family = StringField()
-    sockets = IntField()
-    virt_limit = StringField()
-    subtype = StringField()
+    engineering_ids = ListField()
+    created = IsoDateTimeField(required=True)
     updated = IsoDateTimeField(required=True)
-    eng_prods = DictField()  # Information on Engineering Products {"id", "label", "name", "vendor"}
+    eng_prods = ListField(DictField())  # Information on Engineering Products [{"id", "label", "name", "vendor"}]
     attrs = DictField()  # Product Attributes
-    dependentProductIds = ListField()
+    dependent_product_ids = ListField()
+
+    @classmethod
+    def pre_save(cls, sender, document, **kwargs):
+        for attr_name in ["created", "updated"]:
+            if isinstance(getattr(document, attr_name), basestring):
+                setattr(document, attr_name,
+                        convert_to_datetime(getattr(document, attr_name)))
+        if document.attrs:
+            document.attrs = sanitize_dict_for_mongo(document.attrs)
 
     def __str__(self):
-        return "Product<%s>, description=<%s>, engineering_ids=<%s>, attributes=<%s>,  created on %s, updated %s" % \
-               (self.name, self.description, self.engineering_ids, self.attrs, self.created, self.updated)
+        return "Product<%s, %s>, engineering_ids=<%s>, attributes=<%s>,  created on %s, updated %s" % \
+               (self.product_id, self.name, self.engineering_ids, self.attrs, self.created, self.updated)
+
+    def update_to(self, other):
+        self.product_id = other.product_id
+        self.name = other.name
+        self.engineering_ids = other.engineering_ids
+        self.created = other.created
+        self.updated = other.updated
+        self.eng_prods = other.eng_prods
+        self.attrs = other.attrs
+        self.dependent_product_ids = other.dependent_product_ids
 
 
 class Contract(Document):
@@ -271,3 +275,5 @@ signals.pre_save.connect(IdentitySyncInfo.pre_save, sender=IdentitySyncInfo)
 signals.pre_save.connect(ProductUsage.pre_save, sender=ProductUsage)
 signals.pre_save.connect(SpliceServer.pre_save, sender=SpliceServer)
 signals.pre_save.connect(Pool.pre_save, sender=Pool)
+signals.pre_save.connect(Product.pre_save, sender=Product)
+signals.pre_save.connect(MarketingProductUsage.pre_save, sender=MarketingProductUsage)
