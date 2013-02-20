@@ -15,17 +15,9 @@ if [ $? -eq 1 ]; then
     }
 fi
 
-if [ ! -f /etc/yum/repos.d/splice-candlepin.repo ]; then
-    cat > /etc/yum.repos.d/splice-candlepin.repo << EOF
-[splice-candlepin]
-name=Splice Candlepin
-baseurl=http://ec2-23-22-86-129.compute-1.amazonaws.com/pub/candlepin
-enabled=1
-gpgcheck=0
-EOF
-fi
 
-yum install -y candlepin candlepin-tomcat6 liquibase
+# FIXME: make quartz2-candlepin a dep of candlepin-tomcat6
+yum install -y candlepin candlepin-tomcat6 liquibase quartz2-candlepin
 echo "##Begin Splice Candlepin install script" >> /var/lib/pgsql/data/pg_hba.conf
 echo "local   all       all                               trust" >> /var/lib/pgsql/data/pg_hba.conf
 echo "host    all       all         127.0.0.1/32          trust" >> /var/lib/pgsql/data/pg_hba.conf

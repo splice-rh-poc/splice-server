@@ -29,7 +29,7 @@ pushd .
 git clone git://git.fedorahosted.org/git/spacewalk.git/
 cd ~/spacewalk
 git remote add spacewalk-splice https://github.com/splice/spacewalk.git
-git fetch spacewalk-splice master:spacewalk-splice-master
+git fetch spacewalk-splice buildtest:spacewalk-splice-master
 git checkout spacewalk-splice-master
 echo "Build & Install modified spacewalk/java RPM"
 cd ~/spacewalk/java && tito build --test --rpm --install &> /root/spacewalk_java_rpm_build.log #this builds and installs spacewalk-java

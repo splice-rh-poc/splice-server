@@ -66,6 +66,7 @@ if __name__ == "__main__":
     # Begin CandlePin Install
     print "Beginning Candlepin Install: %s" % (datetime.now())
     scp_to_command(hostname, ssh_user, ssh_key, opts.manifest, "~")
+    ssh_command(hostname, ssh_user, ssh_key, "mv %s manifest.zip" % os.path.basename(opts.manifest))
     scp_to_command(hostname, ssh_user, ssh_key, "./etc/tomcat/context.xml", "~/context.xml")
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_candlepin.sh", "~") 
     ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_candlepin.sh")
@@ -77,6 +78,12 @@ if __name__ == "__main__":
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_splice_spacewalk.sh", "~") 
     ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_splice_spacewalk.sh")
     cmd = "time ./install_splice_spacewalk.sh %s %s %s &> ./splice_spacewalk_setup.log" % (opts.rhn_user, opts.rhn_pass, "~/satellite_cert.xml")
+    ssh_command(hostname, ssh_user, ssh_key, cmd)
+    # Begin Candlepin Modifed install
+    print "Building modified Candlepin RPMs: %s" % (datetime.now())
+    scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_src_candlepin.sh", "~") 
+    ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_src_candlepin.sh")
+    cmd = "time ./install_src_candlepin.sh &> ./src_candlepin_setup.log"
     ssh_command(hostname, ssh_user, ssh_key, cmd)
     #
     # Update EC2 tag with version of RCS installed
