@@ -85,6 +85,12 @@ if __name__ == "__main__":
     ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_src_candlepin.sh")
     cmd = "time ./install_src_candlepin.sh &> ./src_candlepin_setup.log"
     ssh_command(hostname, ssh_user, ssh_key, cmd)
+    # Begin python-rhsm install
+    print "Building modified python-rhsm and spacewalk-splice-tool RPMs: %s" % (datetime.now())
+    scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_src_sst.sh", "~") 
+    ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_src_sst.sh")
+    cmd = "time ./install_src_sst.sh &> ./src_sst.log"
+    ssh_command(hostname, ssh_user, ssh_key, cmd)
     #
     # Update EC2 tag with version of RCS installed
     #
