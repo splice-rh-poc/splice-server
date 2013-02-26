@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import json
 import os
+import sys
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "splice.checkin_service.settings")
 
 from optparse import OptionParser
@@ -59,6 +60,10 @@ if __name__ == "__main__":
     https = not opts.http
     username = opts.user
     password = opts.password
+
+    if not host:
+        print "Please re-run with --host"
+        sys.exit(1)
 
     retval = get_consumers(host, port, username, password, https)
     print "\nget_consumers = "
