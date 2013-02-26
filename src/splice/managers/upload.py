@@ -51,7 +51,7 @@ def _process_splice_server_metadata_upload(addr, port, url, since=None):
     if not data:
         _LOG.info("No new splice server data to upload")
         return True
-    last_timestamp = data[-1].modified
+    last_timestamp = data[-1].updated
     try:
         _LOG.info("Uploading %s SpliceServer objects to %s:%s/%s" % (len(data), addr, port, url))
         splice_server_client.upload_splice_server_metadata(addr, port, url, data)
@@ -132,10 +132,10 @@ def _get_splice_server_metadata(addr, since=None):
     if not last_timestamp and data_transfer:
         last_timestamp = data_transfer.last_timestamp
     if last_timestamp:
-        data = SpliceServer.objects(modified__gt=last_timestamp)
+        data = SpliceServer.objects(updated__gt=last_timestamp)
     else:
         data = SpliceServer.objects()
-    data = data.order_by("modified")
+    data = data.order_by("updated")
     _LOG.info("Retrieved %s items to send to %s, since last timestamp of %s" % (len(data), addr, last_timestamp))
     return data
 

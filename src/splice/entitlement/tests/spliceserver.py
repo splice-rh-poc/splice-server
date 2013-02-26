@@ -41,7 +41,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         server.hostname = "server.example.com"
         server.environment = "environment info"
         server.created = "2012-12-06T11:13:06.432367"
-        server.modified = "2012-12-06T11:13:06.432367"
+        server.updated = "2012-12-06T11:13:06.432367"
         server.save()
 
         found = SpliceServer.objects()
@@ -52,8 +52,8 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].environment, server.environment)
         self.assertIsNotNone(found[0].created)
         self.assertEquals(type(found[0].created), datetime.datetime)
-        self.assertIsNotNone(found[0].modified)
-        self.assertEquals(type(found[0].modified), datetime.datetime)
+        self.assertIsNotNone(found[0].updated)
+        self.assertEquals(type(found[0].updated), datetime.datetime)
 
     def test_get_splice_server_metadata_collection(self):
         a = SpliceServer(uuid="uuid a", description="descr a",
@@ -71,13 +71,13 @@ class SpliceServerTest(BaseEntitlementTestCase):
         example = {"objects": [
             {"created": "2012-12-07T15:35:54.448000", "description": "descr a",
             "environment": "environment a", "hostname": "a.example.com",
-            "id": "50c20cda5c99cb55d9000001", "modified": "2012-12-07T15:35:54.448000",
+            "id": "50c20cda5c99cb55d9000001", "updated": "2012-12-07T15:35:54.448000",
             "resource_uri": "/api/v1/spliceserver/50c20cda5c99cb55d9000001/",
             "uuid": "uuid a"},
 
             {"created": "2012-12-07T15:35:54.686000", "description": "descr b",
             "environment": "environment b", "hostname": "b.example.com",
-            "id": "50c20cda5c99cb55d9000002", "modified": "2012-12-07T15:35:54.686000",
+            "id": "50c20cda5c99cb55d9000002", "updated": "2012-12-07T15:35:54.686000",
             "resource_uri": "/api/v1/spliceserver/50c20cda5c99cb55d9000002/",
             "uuid": "uuid b"
             }]}
@@ -114,7 +114,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].hostname, server.hostname)
         self.assertEquals(found[0].environment, server.environment)
         self.assertIsNotNone(found[0].created)
-        self.assertIsNotNone(found[0].modified)
+        self.assertIsNotNone(found[0].updated)
 
     def test_uploading_duplicate(self):
         found = SpliceServer.objects()
@@ -127,7 +127,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         server.environment = "environment info"
         # Note this tests save()'s the instance to the DB
         server.save()
-        self.assertIsNotNone(server.modified.tzinfo)
+        self.assertIsNotNone(server.updated.tzinfo)
 
         example = {"objects":[server]}
         post_data = utils.obj_to_json(example)
@@ -144,7 +144,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].hostname, server.hostname)
         self.assertEquals(found[0].environment, server.environment)
         self.assertIsNotNone(found[0].created)
-        self.assertIsNotNone(found[0].modified)
+        self.assertIsNotNone(found[0].updated)
 
     def test_upload_older_spliceserver(self):
         found = SpliceServer.objects()
@@ -160,7 +160,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         newer.hostname = orig_hostname
         newer.environment = orig_environment
         newer.created = "2011-01-01T11:13:06.432367"
-        newer.modified = "2012-12-01T11:13:06.432367"
+        newer.updated = "2012-12-01T11:13:06.432367"
         newer.save()
         found = SpliceServer.objects()
         self.assertEquals(len(found), 1)
@@ -172,7 +172,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         older.hostname = "updated.server.example.com"
         older.environment = "Updated environment info"
         older.created = "2011-01-01T11:13:06.432367"
-        older.modified = "2012-11-01T11:13:06.432367"
+        older.updated = "2012-11-01T11:13:06.432367"
 
         example = {"objects": [older._data]}
         post_data = utils.obj_to_json(example)
@@ -188,7 +188,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].description, orig_description)
         self.assertEquals(found[0].hostname, orig_hostname)
         self.assertEquals(found[0].environment, orig_environment)
-        self.assertEquals(str(found[0].modified), "2012-12-01 11:13:06.432000+00:00")
+        self.assertEquals(str(found[0].updated), "2012-12-01 11:13:06.432000+00:00")
 
     def test_upload_newer_spliceserver(self):
         found = SpliceServer.objects()
@@ -204,7 +204,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         older.hostname = orig_hostname
         older.environment = orig_environment
         older.created = "2011-01-01T11:13:06.432367"
-        older.modified = "2012-12-01T11:13:06.432367"
+        older.updated = "2012-12-01T11:13:06.432367"
         older.save()
         found = SpliceServer.objects()
         self.assertEquals(len(found), 1)
@@ -216,7 +216,7 @@ class SpliceServerTest(BaseEntitlementTestCase):
         newer.hostname = "updated.server.example.com"
         newer.environment = "Updated environment info"
         newer.created = "2011-01-01T11:13:06.432367"
-        newer.modified = "2012-12-31T11:13:06.432367"
+        newer.updated = "2012-12-31T11:13:06.432367+00:00"
 
         example = {"objects": [newer]}
         post_data = utils.obj_to_json(example)
@@ -232,4 +232,4 @@ class SpliceServerTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].description, newer.description)
         self.assertEquals(found[0].hostname, newer.hostname)
         self.assertEquals(found[0].environment, newer.environment)
-        self.assertEquals(str(found[0].modified), "2012-12-31 11:13:06.432000+00:00")
+        self.assertEquals(str(found[0].updated), "2012-12-31 11:13:06.432000+00:00")
