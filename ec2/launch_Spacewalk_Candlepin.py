@@ -65,8 +65,8 @@ if __name__ == "__main__":
 
     # Begin CandlePin Install
     print "Beginning Candlepin Install: %s" % (datetime.now())
-    scp_to_command(hostname, ssh_user, ssh_key, opts.manifest, "~")
-    ssh_command(hostname, ssh_user, ssh_key, "mv %s manifest.zip" % os.path.basename(opts.manifest))
+    scp_to_command(hostname, ssh_user, ssh_key, opts.manifest, "~/manifest.zip")
+    # ssh_command(hostname, ssh_user, ssh_key, "mv %s manifest.zip" % os.path.basename(opts.manifest))
     scp_to_command(hostname, ssh_user, ssh_key, "./etc/tomcat/context.xml", "~/context.xml")
     scp_to_command(hostname, ssh_user, ssh_key, "./scripts/install_candlepin.sh", "~") 
     ssh_command(hostname, ssh_user, ssh_key, "chmod +x ./install_candlepin.sh")
