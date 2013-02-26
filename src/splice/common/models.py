@@ -26,10 +26,11 @@ def get_now():
 
 
 class Pool(Document):
+    uuid = StringField(unique=True, required=True)
     account = IntField()
     active = BooleanField()
     contract = IntField()
-    product_id = StringField(required=True, unique=True)
+    product_id = StringField(required=True)
     product_name = StringField(required=True)
     # product_attributes may vary common keys are:
     #  "option_code", "enabled_consumer_types", "variant"
@@ -77,7 +78,7 @@ class Pool(Document):
 
 
 class Product(Document):
-    product_id = StringField(required=True)
+    product_id = StringField(required=True, unique=True)
     name = StringField(required=True)
     engineering_ids = ListField()
     created = IsoDateTimeField(required=True)
@@ -117,27 +118,27 @@ class Contract(Document):
     products = ListField(StringField)  # Product Names
 
 
-
 class SpliceServer(Document):
     uuid = StringField(required=True, unique=True)
     description = StringField() # Example what datacenter is this deployed to, i.e. us-east-1
     hostname = StringField(required=True)
     environment = StringField(required=True)
     created = IsoDateTimeField(required=True, default=get_now)
-    modified = IsoDateTimeField(required=True, default=get_now)
+    updated = IsoDateTimeField(required=True, default=get_now)
 
     meta = {'allow_inheritance': True}
 
     def __str__(self):
-        return "SpliceServer<%s>, hostname=<%s>, environment=<%s>, created on %s, last modified %s" % \
-               (self.uuid, self.hostname, self.environment, self.created, self.modified)
+        return "SpliceServer<%s>, hostname=<%s>, environment=<%s>, created on %s, last updated %s" % \
+               (self.uuid, self.hostname, self.environment, self.created, self.updated)
 
     @classmethod
     def pre_save(cls, sender, document, **kwargs):
         if isinstance(document.created, basestring):
             document.created = convert_to_datetime(document.created)
-        if isinstance(document.modified, basestring):
-            document.modified = convert_to_datetime(document.modified)
+        if isinstance(document.updated, basestring):
+            document.updated = convert_to_datetime(document.updated)
+
 
 class RHICLookupTask(Document):
     meta = {
@@ -170,6 +171,7 @@ class IdentitySyncInfo(Document):
     def __str__(self):
         return "IdentitySyncInfo, server_hostname = %s, last_sync = %s" % (self.server_hostname, self.last_sync)
 
+
 class SpliceServerTransferInfo(Document):
     server_hostname = StringField(required=True, unique=True)
     last_timestamp = IsoDateTimeField(required=True)
@@ -177,11 +179,12 @@ class SpliceServerTransferInfo(Document):
     def __str__(self):
         return "%s, server_hostname = %s, last_timestamp = %s" % (self.__class__, self.server_hostname, self.last_timestamp)
 
+
 class ConsumerIdentity(RHIC):
 
     def __str__(self):
         msg = "Consumer Identity '%s' with engineering_ids '%s', " \
-              "created_date '%s', modified_date '%s'" %\
+              "created_date '%s', q_date '%s'" %\
               (self.uuid, self.engineering_ids, self.created_date,
                     self.modified_date)
         if self.deleted:

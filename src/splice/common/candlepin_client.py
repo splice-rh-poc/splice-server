@@ -168,6 +168,7 @@ def translate_pools(data):
     pools = []
     for item in data:
         p = Pool()
+        p.uuid = item["id"]
         p.account = item["accountNumber"]
         p.created = convert_to_datetime(item["created"])
         p.quantity = item["quantity"]

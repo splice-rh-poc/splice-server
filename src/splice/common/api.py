@@ -18,14 +18,14 @@ from tastypie_mongoengine.resources import MongoEngineResource
 
 from splice.common import certs, utils
 from splice.common.auth import X509CertificateAuthentication
-from splice.common.models import SpliceServer
+from splice.common.models import Pool, Product, SpliceServer
 
 _LOG = logging.getLogger(__name__)
 
-class SpliceServerResource(MongoEngineResource):
+
+class BaseResource(MongoEngineResource):
 
     class Meta:
-        queryset = SpliceServer.objects.all()
         authorization = Authorization()
         authentication = X509CertificateAuthentication(verification_ca=certs.get_splice_server_identity_ca_pem())
         list_allowed_methods = ['get', 'post']
@@ -35,8 +35,8 @@ class SpliceServerResource(MongoEngineResource):
         bundle.data["created"] = utils.convert_to_datetime(bundle.data["created"])
         return bundle
 
-    def hydrate_modified(self, bundle):
-        bundle.data["modified"] = utils.convert_to_datetime(bundle.data["modified"])
+    def hydrate_updated(self, bundle):
+        bundle.data["updated"] = utils.convert_to_datetime(bundle.data["updated"])
         return bundle
 
     def post_list(self, request, **kwargs):
@@ -46,52 +46,70 @@ class SpliceServerResource(MongoEngineResource):
         #                      'post_list' to update a single element of a collection
         #
         # Further...'put_list' defaults to deleting the existing items in a collection before adding the new items
-        super(SpliceServerResource, self).put_list(request, **kwargs)
+        super(BaseResource, self).put_list(request, **kwargs)
 
     def obj_delete_list(self, request=None, **kwargs):
         # We are intentionally changing the tastypie default behavior of
         # deleting the entire collection on each collection 'PUT'
         pass
 
-    def find_by_uuid(self, uuid):
-        #
-        # Breaking this out so it can be overriden in ReportServer
-        # Need a different SpliceServer model to contain db_alias info
-        #
-        _LOG.info("splice.common.api.SpliceServerResource::find_by_uuid(%s) SpliceServer=%s" % (uuid, SpliceServer))
-        return SpliceServer.objects(uuid=uuid).first()
-
     def obj_create(self, bundle, request=None, **kwargs):
+        _LOG.info("obj_create invoked")
         bundle.obj = self._meta.object_class()
-        _LOG.info("SpliceServerResource type(bundle.obj) = '%s', bundle.obj = '%s'" % (type(bundle.obj), bundle.obj))
-
         for key, value in kwargs.items():
             setattr(bundle.obj, key, value)
         bundle = self.full_hydrate(bundle)
-        self.is_valid(bundle,request)
-
+        self.is_valid(bundle, request)
         if bundle.errors:
             self.error_response(bundle.errors, request)
-
-        # Our change to ignore older objects and only save if this object is "new" or "newer"
-        existing = self.find_by_uuid(bundle.obj.uuid)
-        _LOG.info("existing = '%s'" % (existing))
-        if existing:
-            _LOG.info("SpliceServerResource:obj_create()  bundle.obj.modified = '%s', existing.modified = '%s'" % \
-                      (bundle.obj.modified, existing.modified))
-            if bundle.obj.modified > existing.modified:
-                # Request's object is newer than what's in our DB
-                for key, value in bundle.obj._data.items():
-                    if key and key != "id":
-                        # Skip the 'None' which is part of the data sent if the obj has not been saved previously
-                        _LOG.info("Updating '%s'='%s'" % (key, value))
-                        setattr(existing, key, value)
-                _LOG.info("Calling existing.save(): type(existing) = %s" % (type(existing)))
-                _LOG.info("existing.id = %s" % (existing.id))
-                existing.save()
-            else:
-                _LOG.debug("Ignorning %s since it is not newer than what is in DB" % (bundle.obj))
-        else:
-            _LOG.info("Calling bundle.obj.save()")
-            bundle.obj.save()
+        self.update_if_newer(bundle)
         return bundle
+
+    def update_if_newer(self, bundle):
+        existing = self.get_existing(bundle.obj)
+        if not existing:
+            bundle.obj.save()
+            return
+
+        _LOG.info("existing = '%s'" % (existing))
+        if bundle.obj.updated > existing.updated:
+            for key, value in bundle.obj._data.items():
+                if key and key != "id":
+                    # Skip the 'None' which is part of the data sent if the obj has not been saved previously
+                    _LOG.info("Updating '%s'='%s'" % (key, value))
+                    setattr(existing, key, value)
+            existing.save()
+        else:
+            _LOG.debug("Ignoring %s since it is not newer than what is in DB" % (bundle.obj))
+
+    ##
+    ## Below needs to be implemented by those who inherit
+    ##
+    def get_existing(self, obj):
+        raise NotImplementedError()
+
+
+class PoolResource(MongoEngineResource):
+    class Meta(BaseResource.Meta):
+        queryset = Product.objects.all()
+
+    def get_existing(self, obj):
+        return Pool.objects(uuid=obj.uuid).first()
+
+
+class ProductResource(BaseResource):
+
+    class Meta(BaseResource.Meta):
+        queryset = Product.objects.all()
+
+    def get_existing(self, obj):
+        return Product.objects(product_id=obj.product_id).first()
+
+
+class SpliceServerResource(BaseResource):
+    class Meta(BaseResource.Meta):
+        queryset = SpliceServer.objects.all()
+
+    def get_existing(self, obj):
+        return SpliceServer.objects(uuid=obj.uuid).first()
+
