@@ -27,9 +27,9 @@ def get_now():
 
 class Pool(Document):
     uuid = StringField(unique=True, required=True)
-    account = IntField()
-    active = BooleanField()
-    contract = IntField()
+    account = IntField(required=True)
+    active = BooleanField(default=True)
+    contract = IntField(required=True)
     product_id = StringField(required=True)
     product_name = StringField(required=True)
     # product_attributes may vary common keys are:

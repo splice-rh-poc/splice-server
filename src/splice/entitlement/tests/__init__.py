@@ -7,6 +7,8 @@ from entitlement_resource import *
 from identity import *
 from identity_lookup import *
 from mongotests import *
+from pools import *
+from products import *
 from productusage import *
 from spliceserver import *
 from upload_manager import *

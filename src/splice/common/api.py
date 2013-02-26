@@ -54,8 +54,8 @@ class BaseResource(MongoEngineResource):
         pass
 
     def obj_create(self, bundle, request=None, **kwargs):
-        _LOG.info("obj_create invoked")
         bundle.obj = self._meta.object_class()
+        _LOG.info("obj_create invoked for %s with bundle: %s" % (bundle.obj.__class__, bundle))
         for key, value in kwargs.items():
             setattr(bundle.obj, key, value)
         bundle = self.full_hydrate(bundle)
@@ -89,16 +89,19 @@ class BaseResource(MongoEngineResource):
         raise NotImplementedError()
 
 
-class PoolResource(MongoEngineResource):
+class PoolResource(BaseResource):
     class Meta(BaseResource.Meta):
-        queryset = Product.objects.all()
+        queryset = Pool.objects.all()
 
     def get_existing(self, obj):
         return Pool.objects(uuid=obj.uuid).first()
 
+    def hydrate_active(self, bundle):
+        bundle.data["active"] = utils.str2bool(bundle.data["active"])
+        return bundle
+
 
 class ProductResource(BaseResource):
-
     class Meta(BaseResource.Meta):
         queryset = Product.objects.all()
 

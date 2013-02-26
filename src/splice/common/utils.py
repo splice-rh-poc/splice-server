@@ -116,3 +116,9 @@ def convert_to_datetime(input_date_str):
             pass
         _LOG.exception("Unable to parse date: %s" % (input_date_str))
         raise UnsupportedDateFormatException(input_date_str)
+
+
+def str2bool(v):
+    if isinstance(v, basestring):
+        return v.lower() in ("yes", "true", "t", "1")
+    return v

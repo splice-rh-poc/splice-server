@@ -22,7 +22,7 @@ from tastypie.api import Api
 from splice.entitlement import on_startup
 on_startup.run()
 
-from splice.common.api import SpliceServerResource
+from splice.common.api import SpliceServerResource, PoolResource, ProductResource
 from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource, ModifiedProductUsageResource
 
 _LOG = logging.getLogger(__name__)
@@ -31,6 +31,8 @@ v1_api = Api(api_name='v1')
 v1_api.register(EntitlementResource())
 v1_api.register(RHICRCSModifiedResource())
 v1_api.register(ModifiedProductUsageResource())
+v1_api.register(PoolResource())
+v1_api.register(ProductResource())
 v1_api.register(SpliceServerResource())
 
 urlpatterns = patterns('',
@@ -45,6 +47,7 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     (r'^api/', include(v1_api.urls)),
 )
+
 
 # TODO:  Exception handler needs more work, doesn't print out to apache log as we want.
 # Print all exceptions to apache error log
