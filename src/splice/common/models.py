@@ -111,6 +111,17 @@ class Product(Document):
         self.dependent_product_ids = other.dependent_product_ids
 
 
+class Rules(Document):
+    version = StringField(required=True, unique=True)
+    data = StringField(required=True)
+
+    def __str__(self):
+        data_len = 0
+        if self.data:
+            data_len = len(self.data)
+        return "Rules version=<%s> rules data is %s bytes" % (self.version, data_len)
+
+
 class Contract(Document):
     # Unique Contract identifier
     contract_id = StringField(unique=True, required=True)

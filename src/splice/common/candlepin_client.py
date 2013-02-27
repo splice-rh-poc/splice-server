@@ -13,6 +13,7 @@
 
 # Responsible for making a remote call to candlepin and retrieve an entitlement certificate
 
+import base64
 import logging
 import os
 import urllib
@@ -30,10 +31,10 @@ def get_connection(host, port, username, password, https=False, baseurl=""):
     return BaseConnection(host, port, handler=baseurl, https=https, username=username, password=password)
 
 
-def GET(host, port, username, password, https, url):
+def GET(host, port, username, password, https, url, decode_json=True):
     try:
         conn = get_connection(host, port, username, password, https)
-        status, data = conn.GET(url)
+        status, data = conn.GET(url, decode_json)
         if status == 200:
             return data
         raise RequestException(status, data)
@@ -52,8 +53,8 @@ def get_rules(host, port, username, password, https=False, baseurl="/candlepin")
     #TODO
     # - Response is a base 64 encoded string
     #"Decoded String: " + decoded.decode('base64', 'strict')
-    return GET(host, port, username, password, https, url)
-
+    encoded_rules = GET(host, port, username, password, https, url, decode_json=False)
+    return base64.b64decode(encoded_rules)
 
 def get_products(host, port, username, password, https=False, baseurl="/candlepin"):
     url = os.path.join(baseurl, "products")

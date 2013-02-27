@@ -80,7 +80,7 @@ class BaseConnection(object):
         ret_val = out.getvalue()
         return ret_val
 
-    def _request(self, request_type, method, body=None, gzip_body=False):
+    def _request(self, request_type, method, body=None, gzip_body=False, decode_json=True):
         """
 
         @param request_type: HTTP request such as 'GET', 'PUT', 'POST'
@@ -115,11 +115,12 @@ class BaseConnection(object):
         _LOG.info("Received '%s' from '%s %s'" % (response.status, request_type, url))
         if response.status in [200, 202] and response_body:
             _LOG.info("Response body = \n'%s'" % (response_body))
-            response_body = json.loads(response_body)
+            if decode_json:
+                response_body = json.loads(response_body)
         return response.status, response_body
 
-    def GET(self, method):
-        return self._request("GET", method)
+    def GET(self, method, decode_json=True):
+        return self._request("GET", method, decode_json=decode_json)
 
     def POST(self, method, params="", gzip_body=False):
         return self._request("POST", method, params, gzip_body)

@@ -10,6 +10,7 @@ from mongotests import *
 from pools import *
 from products import *
 from productusage import *
+from rules import *
 from spliceserver import *
 from upload_manager import *
 from utils import *

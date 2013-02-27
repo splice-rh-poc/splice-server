@@ -18,7 +18,7 @@ from tastypie_mongoengine.resources import MongoEngineResource
 
 from splice.common import certs, utils
 from splice.common.auth import X509CertificateAuthentication
-from splice.common.models import Pool, Product, SpliceServer
+from splice.common.models import Pool, Product, Rules, SpliceServer
 
 _LOG = logging.getLogger(__name__)
 
@@ -109,10 +109,35 @@ class ProductResource(BaseResource):
         return Product.objects(product_id=obj.product_id).first()
 
 
+class RulesResource(BaseResource):
+    class Meta(BaseResource.Meta):
+        queryset = Rules.objects.all()
+
+    def get_existing(self, obj):
+        return Rules.objects(version=obj.version).first()
+
+    def update_if_newer(self, bundle):
+        existing = self.get_existing(bundle.obj)
+        if not existing:
+            bundle.obj.save()
+            return
+
+        _LOG.info("existing = '%s'" % (existing))
+        if bundle.obj.version > existing.version:
+            for key, value in bundle.obj._data.items():
+                if key and key != "id":
+                    setattr(existing, key, value)
+            existing.save()
+        else:
+            _LOG.debug("Ignoring version %s of Rules since it is not newer than what is in DB: version %s" % \
+                       (bundle.obj.version, existing.version))
+
+
 class SpliceServerResource(BaseResource):
     class Meta(BaseResource.Meta):
         queryset = SpliceServer.objects.all()
 
     def get_existing(self, obj):
         return SpliceServer.objects(uuid=obj.uuid).first()
+
 

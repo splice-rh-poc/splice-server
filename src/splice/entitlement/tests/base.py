@@ -121,7 +121,8 @@ class MockedConnection(BaseConnection):
     def __init__(self, status_code, data):
         self.data = data
         self.status_code = status_code
-    def _request(self, request_type, method, body=None):
+
+    def _request(self, request_type, method, body=None, decode_json=True):
         return self.status_code, self.data
 
 def mocked_candlepin_client_get_connection(host, port, username=None, password=None):
