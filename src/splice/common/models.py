@@ -240,18 +240,19 @@ class ProductUsage(Document):
 
 
 class MarketingProductUsage(Document):
-    splice_server = StringField(required=True) # uuid of Splice Server
+    splice_server = StringField(required=True) # uuid of Splice Server data came from
     date = DateTimeField(required=True)
-    instance_identifier = StringField(required=True, unique_with=['splice_server', 'date']) # example: MAC Address
+    instance_identifier = StringField(required=True, unique_with=['date'])
+    updated = IsoDateTimeField(required=True, default=get_now)
+    created = IsoDateTimeField(required=True, default=get_now)
 
     product_info = ListField(DictField())  # [{"account":value, "contract":value, "id":value}]
-    tracker = ListField(StringField())
 
     facts = DictField()
 
     meta = {
         'allow_inheritance': True,
-        'indexes': ['date', 'splice_server', 'instance_identifier', 'tracker'],
+        'indexes': ['date', 'instance_identifier'],
         }
 
     @classmethod
@@ -260,9 +261,6 @@ class MarketingProductUsage(Document):
             document.date = convert_to_datetime(document.date)
         if document.facts:
             document.facts = sanitize_dict_for_mongo(document.facts)
-            # Ensure no duplicate entries are stored for document.tracker
-        if document.tracker:
-            document.tracker = list(set(document.tracker))
 
     def __str__(self):
         return "MarketingProductUsage for <%s> on Splice Server <%s> at <%s> with instance identifier <%s>" % \

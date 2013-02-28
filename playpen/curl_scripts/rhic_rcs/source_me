@@ -1,3 +1,3 @@
 export CA_CERT=/etc/pki/splice/generated/Splice_HTTPS_CA.cert
-export CLIENT_CERT=/etc/pki/splice/generated/Splice_identity.cert
-export CLIENT_KEY=/etc/pki/splice/generated/Splice_identity.key
+export CLIENT_CERT=/etc/pki/consumer/Splice_identity.cert
+export CLIENT_KEY=/etc/pki/consumer/Splice_identity.key

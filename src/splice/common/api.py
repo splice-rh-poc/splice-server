@@ -18,7 +18,7 @@ from tastypie_mongoengine.resources import MongoEngineResource
 
 from splice.common import certs, utils
 from splice.common.auth import X509CertificateAuthentication
-from splice.common.models import Pool, Product, Rules, SpliceServer
+from splice.common.models import Pool, Product, Rules, SpliceServer, MarketingProductUsage
 
 _LOG = logging.getLogger(__name__)
 
@@ -108,6 +108,12 @@ class ProductResource(BaseResource):
     def get_existing(self, obj):
         return Product.objects(product_id=obj.product_id).first()
 
+class MarketingProductUsageResource(BaseResource):
+    class Meta(BaseResource.Meta):
+        queryset = MarketingProductUsage.objects.all()
+
+    def get_existing(self, obj):
+        return MarketingProductUsage.objects(instance_identifier=obj.instance_identifier, date=obj.date).first()
 
 class RulesResource(BaseResource):
     class Meta(BaseResource.Meta):

@@ -1,0 +1,14 @@
+{"meta": {"limit": 20, "next": null, "offset": 0, "previous": null, "total_count": 1},
+"objects":[
+{"splice_server": "foofoofoo",
+ "date": "2006-10-25 14:30:59",
+ "created": "",
+ "updated": "",
+ "instance_identifier": "barbarbarbar"},
+{"splice_server": "foofoofoo",
+ "date": "2007-10-25 14:40:59",
+ "facts": {"fact1": "factresult1"},
+ "created": "",
+ "updated": "",
+ "instance_identifier": "barbarbarbar"}
+]}
