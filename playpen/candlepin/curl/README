@@ -1,0 +1,16 @@
+You can regenerate the test data by running:
+./form_test_json.py --host HOSTNAME
+
+This will fetch data from Candlepin and convert to splice.common.models.{Product, Pool, Rules}
+Next it outputs those converted models to their own .json file
+ - products.json
+ - rules.json
+ - pools.json
+
+
+Below scripts will read in the above sample .json files and use curl to upload to Splice
+./upload_pools.sh
+./upload_products.sh
+./upload_rules.sh
+
+

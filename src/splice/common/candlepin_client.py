@@ -20,7 +20,7 @@ import urllib
 
 from splice.common.connect import BaseConnection
 from splice.common.exceptions import RequestException
-from splice.common.models import Product, Pool
+from splice.common.models import Product, Pool, Rules
 from splice.common.utils import convert_to_datetime
 
 _LOG = logging.getLogger(__name__)
@@ -54,7 +54,8 @@ def get_rules(host, port, username, password, https=False, baseurl="/candlepin")
     # - Response is a base 64 encoded string
     #"Decoded String: " + decoded.decode('base64', 'strict')
     encoded_rules = GET(host, port, username, password, https, url, decode_json=False)
-    return base64.b64decode(encoded_rules)
+    decoded_rules = base64.b64decode(encoded_rules)
+    return Rules(version="0", data=decoded_rules)
 
 def get_products(host, port, username, password, https=False, baseurl="/candlepin"):
     url = os.path.join(baseurl, "products")

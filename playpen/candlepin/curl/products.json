@@ -1,0 +1,1372 @@
+{"objects": [
+  {
+    "updated": "2013-02-27 21:26:34.130000+00:00", 
+    "product_id": "85", 
+    "created": "2013-02-27 21:26:34.130000+00:00", 
+    "engineering_ids": [
+      "368", 
+      "366", 
+      "364", 
+      "365", 
+      "367", 
+      "363"
+    ], 
+    "eng_prods": [
+      {
+        "vendor": "Red Hat", 
+        "id": "368", 
+        "name": "Red Hat Enterprise Linux Load Balancer (for RHEL 6 Server) (Source RPMs)", 
+        "label": "rhel-lb-for-rhel-6-server-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "366", 
+        "name": "Red Hat Enterprise Linux Load Balancer (for RHEL 6 Server) (Debug RPMs)", 
+        "label": "rhel-lb-for-rhel-6-server-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "364", 
+        "name": "Red Hat Enterprise Linux Load Balancer (for RHEL 6 Server) Beta (RPMs)", 
+        "label": "rhel-lb-for-rhel-6-server-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "365", 
+        "name": "Red Hat Enterprise Linux Load Balancer (for RHEL 6 Server) Beta (Source RPMs)", 
+        "label": "rhel-lb-for-rhel-6-server-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "367", 
+        "name": "Red Hat Enterprise Linux Load Balancer (for RHEL 6 Server) (RPMs)", 
+        "label": "rhel-lb-for-rhel-6-server-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "363", 
+        "name": "Red Hat Enterprise Linux Load Balancer (for RHEL 6 Server) Beta (Debug RPMs)", 
+        "label": "rhel-lb-for-rhel-6-server-beta-debug-rpms"
+      }
+    ], 
+    "attrs": {
+      "arch": "x86_64,x86", 
+      "type": "SVC", 
+      "name": "Red Hat Enterprise Linux Load Balancer (for RHEL Server)"
+    }, 
+    "dependent_product_ids": [], 
+    "name": "Red Hat Enterprise Linux Load Balancer (for RHEL Server)"
+  }, 
+  {
+    "updated": "2013-02-27 21:26:34.566000+00:00", 
+    "product_id": "71", 
+    "created": "2013-02-27 21:26:34.566000+00:00", 
+    "engineering_ids": [
+      "199", 
+      "1708", 
+      "204", 
+      "901", 
+      "1323", 
+      "1709", 
+      "198", 
+      "196", 
+      "210", 
+      "201", 
+      "906", 
+      "898", 
+      "1370", 
+      "690", 
+      "195", 
+      "1321", 
+      "1369", 
+      "203", 
+      "209", 
+      "885", 
+      "1659", 
+      "205", 
+      "904", 
+      "692", 
+      "697", 
+      "1079", 
+      "891", 
+      "202", 
+      "208", 
+      "1710", 
+      "902", 
+      "890", 
+      "1320", 
+      "206", 
+      "886", 
+      "694", 
+      "1657", 
+      "1658", 
+      "892", 
+      "1319", 
+      "1304", 
+      "197", 
+      "900", 
+      "695", 
+      "899", 
+      "1305", 
+      "200", 
+      "907", 
+      "207", 
+      "1674", 
+      "1706", 
+      "1711", 
+      "1318", 
+      "909", 
+      "894", 
+      "1322", 
+      "1707", 
+      "893", 
+      "689", 
+      "1675"
+    ], 
+    "eng_prods": [
+      {
+        "vendor": "Red Hat", 
+        "id": "199", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Optional Beta (Source RPMs)", 
+        "label": "rhel-6-workstation-optional-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1708", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Workstation Beta (Source RPMs)", 
+        "label": "rhel-6-workstation-rhev-agent-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "204", 
+        "name": "Red Hat Enterprise Linux 6 Workstation (ISOs)", 
+        "label": "rhel-6-workstation-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "901", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Supplementary Beta (Debug RPMs)", 
+        "label": "rhel-5-workstation-supplementary-beta-debuginfo"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1323", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Virtualization (Source RPMs)", 
+        "label": "rhel-5-workstation-vt-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1709", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Workstation (Debug RPMs)", 
+        "label": "rhel-6-workstation-rhev-agent-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "198", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Optional Beta (RPMs)", 
+        "label": "rhel-6-workstation-optional-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "196", 
+        "name": "Red Hat Enterprise Linux 6 Workstation Beta (ISOs)", 
+        "label": "rhel-6-workstation-beta-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "210", 
+        "name": "Red Hat Enterprise Linux 6 Workstation (Source ISOs)", 
+        "label": "rhel-6-workstation-source-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "201", 
+        "name": "Red Hat Enterprise Linux 6 Workstation Beta (Source RPMs)", 
+        "label": "rhel-6-workstation-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "906", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Supplementary (Debug RPMs)", 
+        "label": "rhel-5-workstation-supplementary-debuginfo"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "898", 
+        "name": "Red Hat Enterprise Linux 5 Workstation (RPMs)", 
+        "label": "rhel-5-workstation-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1370", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Desktop Beta (Debug RPMs)", 
+        "label": "rhel-5-workstation-desktop-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "690", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Supplementary Beta (ISOs)", 
+        "label": "rhel-6-workstation-supplementary-beta-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "195", 
+        "name": "Red Hat Enterprise Linux 6 Workstation Beta (Debug RPMs)", 
+        "label": "rhel-6-workstation-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1321", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Virtualization (Debug RPMs)", 
+        "label": "rhel-5-workstation-vt-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1369", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Desktop (Debug RPMs)", 
+        "label": "rhel-5-workstation-desktop-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "203", 
+        "name": "Red Hat Enterprise Linux 6 Workstation (Debug RPMs)", 
+        "label": "rhel-6-workstation-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "209", 
+        "name": "Red Hat Enterprise Linux 6 Workstation (Source RPMs)", 
+        "label": "rhel-6-workstation-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "885", 
+        "name": "Red Hat Enterprise Linux 5 Workstation Beta (Debug RPMs)", 
+        "label": "rhel-5-workstation-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1659", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Supplementary (RPMs)", 
+        "label": "rhel-5-workstation-supplementary-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "205", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Optional (Debug RPMs)", 
+        "label": "rhel-6-workstation-optional-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "904", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Supplementary Beta (Source RPMs)", 
+        "label": "rhel-5-workstation-supplementary-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "692", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Supplementary Beta (Source RPMs)", 
+        "label": "rhel-6-workstation-supplementary-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "697", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Supplementary (Source RPMs)", 
+        "label": "rhel-6-workstation-supplementary-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1079", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Desktop (Source RPMs)", 
+        "label": "rhel-5-workstation-desktop-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "891", 
+        "name": "Red Hat Enterprise Linux 5 Workstation Beta (Source RPMs)", 
+        "label": "rhel-5-workstation-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "202", 
+        "name": "Red Hat Enterprise Linux 6 Workstation Beta (Source ISOs)", 
+        "label": "rhel-6-workstation-beta-source-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "208", 
+        "name": "Red Hat Enterprise Linux 6 Workstation (RPMs)", 
+        "label": "rhel-6-workstation-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1710", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Workstation (RPMs)", 
+        "label": "rhel-6-workstation-rhev-agent-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "902", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Supplementary Beta (ISOs)", 
+        "label": "rhel-5-workstation-supplementary-beta-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "890", 
+        "name": "Red Hat Enterprise Linux 5 Workstation Beta (RPMs)", 
+        "label": "rhel-5-workstation-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1320", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Virtualization Beta (Source RPMs)", 
+        "label": "rhel-5-workstation-vt-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "206", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Optional (RPMs)", 
+        "label": "rhel-6-workstation-optional-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "886", 
+        "name": "Red Hat Enterprise Linux 5 Workstation Beta (ISOs)", 
+        "label": "rhel-5-workstation-beta-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "694", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Supplementary (Debug RPMs)", 
+        "label": "rhel-6-workstation-supplementary-debuginfo"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1657", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Desktop (RPMs)", 
+        "label": "rhel-5-workstation-desktop-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1658", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Supplementary Beta (RPMs)", 
+        "label": "rhel-5-workstation-supplementary-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "892", 
+        "name": "Red Hat Enterprise Linux 5 Workstation Beta (Source ISOs)", 
+        "label": "rhel-5-workstation-beta-source-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1319", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Virtualization Beta (RPMs)", 
+        "label": "rhel-5-workstation-vt-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1304", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Desktop Beta (RPMs)", 
+        "label": "rhel-5-workstation-desktop-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "197", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Optional Beta (Debug RPMs)", 
+        "label": "rhel-6-workstation-optional-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "900", 
+        "name": "Red Hat Enterprise Linux 5 Workstation (Source ISOs)", 
+        "label": "rhel-5-workstation-source-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "695", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Supplementary (ISOs)", 
+        "label": "rhel-6-workstation-supplementary-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "899", 
+        "name": "Red Hat Enterprise Linux 5 Workstation (Source RPMs)", 
+        "label": "rhel-5-workstation-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1305", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Desktop Beta (Source RPMs)", 
+        "label": "rhel-5-workstation-desktop-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "200", 
+        "name": "Red Hat Enterprise Linux 6 Workstation Beta (RPMs)", 
+        "label": "rhel-6-workstation-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "907", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Supplementary (ISOs)", 
+        "label": "rhel-5-workstation-supplementary-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "207", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Optional (Source RPMs)", 
+        "label": "rhel-6-workstation-optional-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1674", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Supplementary Beta (RPMs)", 
+        "label": "rhel-6-workstation-supplementary-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1706", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Workstation Beta (Debug RPMs)", 
+        "label": "rhel-6-workstation-rhev-agent-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1711", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Workstation (Source RPMs)", 
+        "label": "rhel-6-workstation-rhev-agent-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1318", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Virtualization Beta (Debug RPMs)", 
+        "label": "rhel-5-workstation-vt-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "909", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Supplementary (Source RPMs)", 
+        "label": "rhel-5-workstation-supplementary-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "894", 
+        "name": "Red Hat Enterprise Linux 5 Workstation (ISOs)", 
+        "label": "rhel-5-workstation-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1322", 
+        "name": "Red Hat Enterprise Linux 5 Workstation - Virtualization (RPMs)", 
+        "label": "rhel-5-workstation-vt-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1707", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Workstation Beta (RPMs)", 
+        "label": "rhel-6-workstation-rhev-agent-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "893", 
+        "name": "Red Hat Enterprise Linux 5 Workstation (Debug RPMs)", 
+        "label": "rhel-5-workstation-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "689", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Supplementary Beta (Debug RPMs)", 
+        "label": "rhel-6-workstation-supplementary-beta-debuginfo"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1675", 
+        "name": "Red Hat Enterprise Linux 6 Workstation - Supplementary (RPMs)", 
+        "label": "rhel-6-workstation-supplementary-rpms"
+      }
+    ], 
+    "attrs": {
+      "arch": "x86_64,x86", 
+      "type": "SVC", 
+      "name": "Red Hat Enterprise Linux Workstation"
+    }, 
+    "dependent_product_ids": [], 
+    "name": "Red Hat Enterprise Linux Workstation"
+  }, 
+  {
+    "updated": "2013-02-27 21:26:34.662000+00:00", 
+    "product_id": "SYS0395", 
+    "created": "2013-02-27 21:26:34.662000+00:00", 
+    "engineering_ids": [], 
+    "eng_prods": [], 
+    "attrs": {
+      "name": "Red Hat Employee Subscription", 
+      "support_level": "None", 
+      "variant": "Employee Subscription", 
+      "support_type": "None", 
+      "option_code": "30", 
+      "subtype": "None", 
+      "virt_limit": "unlimited", 
+      "enabled_consumer_types": "SAM", 
+      "type": "MKT", 
+      "sockets": "128", 
+      "product_family": "Red Hat Enterprise Linux", 
+      "description": "Red Hat Enterprise Linux"
+    }, 
+    "dependent_product_ids": [], 
+    "name": "Red Hat Employee Subscription"
+  }, 
+  {
+    "updated": "2013-02-27 21:26:35.321000+00:00", 
+    "product_id": "69", 
+    "created": "2013-02-27 21:26:35.321000+00:00", 
+    "engineering_ids": [
+      "861", 
+      "1400", 
+      "1698", 
+      "867", 
+      "157", 
+      "1404", 
+      "1696", 
+      "159", 
+      "862", 
+      "679", 
+      "1656", 
+      "168", 
+      "1398", 
+      "167", 
+      "1687", 
+      "170", 
+      "1082", 
+      "1699", 
+      "1399", 
+      "1673", 
+      "1328", 
+      "166", 
+      "870", 
+      "680", 
+      "854", 
+      "1401", 
+      "1408", 
+      "160", 
+      "1403", 
+      "873", 
+      "1655", 
+      "1685", 
+      "1409", 
+      "869", 
+      "1684", 
+      "1429", 
+      "871", 
+      "1081", 
+      "1686", 
+      "162", 
+      "1695", 
+      "863", 
+      "1405", 
+      "1080", 
+      "1407", 
+      "1327", 
+      "161", 
+      "1324", 
+      "1406", 
+      "1697", 
+      "1683", 
+      "674", 
+      "1700", 
+      "1688", 
+      "1326", 
+      "156", 
+      "1672", 
+      "855", 
+      "876", 
+      "158", 
+      "675", 
+      "155", 
+      "868", 
+      "1402", 
+      "878", 
+      "164", 
+      "1325", 
+      "1430", 
+      "163", 
+      "677", 
+      "1410", 
+      "1329", 
+      "1431", 
+      "859", 
+      "682", 
+      "165", 
+      "875", 
+      "860", 
+      "169"
+    ], 
+    "eng_prods": [
+      {
+        "vendor": "Red Hat", 
+        "id": "861", 
+        "name": "Red Hat Enterprise Linux 5 Server Beta (Source ISOs)", 
+        "label": "rhel-5-server-beta-source-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1400", 
+        "name": "Red Hat CloudForms Tools for RHEL 6 (Source RPMs)", 
+        "label": "rhel-6-server-cf-tools-1-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1698", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Server (Debug RPMs)", 
+        "label": "rhel-6-server-rhev-agent-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "867", 
+        "name": "Red Hat Enterprise Linux 5 Server (RPMs)", 
+        "label": "rhel-5-server-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "157", 
+        "name": "Red Hat Enterprise Linux 6 Server - Optional Beta (Debug RPMs)", 
+        "label": "rhel-6-server-optional-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1404", 
+        "name": "Red Hat CloudForms Tools for RHEL 5 (RPMs)", 
+        "label": "rhel-5-server-cf-tools-1-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1696", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Server Beta (RPMs)", 
+        "label": "rhel-6-server-rhev-agent-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "159", 
+        "name": "Red Hat Enterprise Linux 6 Server - Optional Beta (Source RPMs)", 
+        "label": "rhel-6-server-optional-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "862", 
+        "name": "Red Hat Enterprise Linux 5 Server (Debug RPMs)", 
+        "label": "rhel-5-server-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "679", 
+        "name": "Red Hat Enterprise Linux 6 Server - Supplementary (Debug RPMs)", 
+        "label": "rhel-6-server-supplementary-debuginfo"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1656", 
+        "name": "Red Hat Enterprise Linux 5 Server - Supplementary (RPMs)", 
+        "label": "rhel-5-server-supplementary-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "168", 
+        "name": "Red Hat Enterprise Linux 6 Server (RPMs)", 
+        "label": "rhel-6-server-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1398", 
+        "name": "Red Hat CloudForms Tools for RHEL 6 (RPMs)", 
+        "label": "rhel-6-server-cf-tools-1-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "167", 
+        "name": "Red Hat Enterprise Linux 6 Server - Optional (Source RPMs)", 
+        "label": "rhel-6-server-optional-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1687", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 5 Server (RPMs)", 
+        "label": "rhel-5-server-rhev-agent-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "170", 
+        "name": "Red Hat Enterprise Linux 6 Server (Source ISOs)", 
+        "label": "rhel-6-server-source-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1082", 
+        "name": "Red Hat Enterprise Linux 5 Server - Optional Productivity Applications (Source RPMs)", 
+        "label": "rhel-5-server-productivity-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1699", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Server (RPMs)", 
+        "label": "rhel-6-server-rhev-agent-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1399", 
+        "name": "Red Hat CloudForms Tools for RHEL 6 (Debug RPMs)", 
+        "label": "rhel-6-server-cf-tools-1-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1673", 
+        "name": "Red Hat Enterprise Linux 6 Server - Supplementary (RPMs)", 
+        "label": "rhel-6-server-supplementary-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1328", 
+        "name": "Red Hat Enterprise Linux 5 Server - Virtualization (RPMs)", 
+        "label": "rhel-5-server-vt-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "166", 
+        "name": "Red Hat Enterprise Linux 6 Server - Optional (RPMs)", 
+        "label": "rhel-6-server-optional-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "870", 
+        "name": "Red Hat Enterprise Linux 5 Server - Supplementary Beta (Debug RPMs)", 
+        "label": "rhel-5-server-supplementary-beta-debuginfo"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "680", 
+        "name": "Red Hat Enterprise Linux 6 Server - Supplementary (ISOs)", 
+        "label": "rhel-6-server-supplementary-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "854", 
+        "name": "Red Hat Enterprise Linux 5 Server Beta (Debug RPMs)", 
+        "label": "rhel-5-server-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1401", 
+        "name": "Red Hat Subscription Asset Manager (for RHEL 6 Server) Beta (Debug RPMs)", 
+        "label": "rhel-6-server-sam-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1408", 
+        "name": "Red Hat CloudForms Tools for RHEL 6 Beta (RPMs)", 
+        "label": "rhel-6-server-cf-tools-1-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "160", 
+        "name": "Red Hat Enterprise Linux 6 Server Beta (RPMs)", 
+        "label": "rhel-6-server-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1403", 
+        "name": "Red Hat Subscription Asset Manager (for RHEL 6 Server) Beta (Source RPMs)", 
+        "label": "rhel-6-server-sam-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "873", 
+        "name": "Red Hat Enterprise Linux 5 Server - Supplementary Beta (Source RPMs)", 
+        "label": "rhel-5-server-supplementary-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1655", 
+        "name": "Red Hat Enterprise Linux 5 Server - Supplementary Beta (RPMs)", 
+        "label": "rhel-5-server-supplementary-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1685", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 5 Server Beta (Source RPMs)", 
+        "label": "rhel-5-server-rhev-agent-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1409", 
+        "name": "Red Hat CloudForms Tools for RHEL 6 Beta (Debug RPMs)", 
+        "label": "rhel-6-server-cf-tools-1-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "869", 
+        "name": "Red Hat Enterprise Linux 5 Server (Source ISOs)", 
+        "label": "rhel-5-server-source-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1684", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 5 Server Beta (RPMs)", 
+        "label": "rhel-5-server-rhev-agent-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1429", 
+        "name": "Red Hat Subscription Asset Manager (for RHEL 6 Server) (Debug RPMs)", 
+        "label": "rhel-6-server-sam-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "871", 
+        "name": "Red Hat Enterprise Linux 5 Server - Supplementary Beta (ISOs)", 
+        "label": "rhel-5-server-supplementary-beta-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1081", 
+        "name": "Red Hat Enterprise Linux 5 Server - Optional Productivity Applications (Debug RPMs)", 
+        "label": "rhel-5-server-productivity-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1686", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 5 Server (Debug RPMs)", 
+        "label": "rhel-5-server-rhev-agent-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "162", 
+        "name": "Red Hat Enterprise Linux 6 Server Beta (Source ISOs)", 
+        "label": "rhel-6-server-beta-source-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1695", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Server Beta (Debug RPMs)", 
+        "label": "rhel-6-server-rhev-agent-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "863", 
+        "name": "Red Hat Enterprise Linux 5 Server (ISOs)", 
+        "label": "rhel-5-server-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1405", 
+        "name": "Red Hat CloudForms Tools for RHEL 5 (Source RPMs)", 
+        "label": "rhel-5-server-cf-tools-1-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1080", 
+        "name": "Red Hat Enterprise Linux 5 Server - Optional Productivity Applications (RPMs)", 
+        "label": "rhel-5-server-productivity-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1407", 
+        "name": "Red Hat CloudForms Tools for RHEL 5 Beta (Source RPMs)", 
+        "label": "rhel-5-server-cf-tools-1-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1327", 
+        "name": "Red Hat Enterprise Linux 5 Server - Virtualization (Debug RPMs)", 
+        "label": "rhel-5-server-vt-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "161", 
+        "name": "Red Hat Enterprise Linux 6 Server Beta (Source RPMs)", 
+        "label": "rhel-6-server-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1324", 
+        "name": "Red Hat Enterprise Linux 5 Server - Virtualization Beta (Debug RPMs)", 
+        "label": "rhel-5-server-vt-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1406", 
+        "name": "Red Hat CloudForms Tools for RHEL 5 Beta (RPMs)", 
+        "label": "rhel-5-server-cf-tools-1-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1697", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Server Beta (Source RPMs)", 
+        "label": "rhel-6-server-rhev-agent-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1683", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 5 Server Beta (Debug RPMs)", 
+        "label": "rhel-5-server-rhev-agent-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "674", 
+        "name": "Red Hat Enterprise Linux 6 Server - Supplementary Beta (Debug RPMs)", 
+        "label": "rhel-6-server-supplementary-beta-debuginfo"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1700", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 6 Server (Source RPMs)", 
+        "label": "rhel-6-server-rhev-agent-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1688", 
+        "name": "Red Hat Enterprise Virtualization Agents for RHEL 5 Server (Source RPMs)", 
+        "label": "rhel-5-server-rhev-agent-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1326", 
+        "name": "Red Hat Enterprise Linux 5 Server - Virtualization Beta (Source RPMs)", 
+        "label": "rhel-5-server-vt-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "156", 
+        "name": "Red Hat Enterprise Linux 6 Server Beta (ISOs)", 
+        "label": "rhel-6-server-beta-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1672", 
+        "name": "Red Hat Enterprise Linux 6 Server - Supplementary Beta (RPMs)", 
+        "label": "rhel-6-server-supplementary-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "855", 
+        "name": "Red Hat Enterprise Linux 5 Server Beta (ISOs)", 
+        "label": "rhel-5-server-beta-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "876", 
+        "name": "Red Hat Enterprise Linux 5 Server - Supplementary (ISOs)", 
+        "label": "rhel-5-server-supplementary-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "158", 
+        "name": "Red Hat Enterprise Linux 6 Server - Optional Beta (RPMs)", 
+        "label": "rhel-6-server-optional-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "675", 
+        "name": "Red Hat Enterprise Linux 6 Server - Supplementary Beta (ISOs)", 
+        "label": "rhel-6-server-supplementary-beta-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "155", 
+        "name": "Red Hat Enterprise Linux 6 Server Beta (Debug RPMs)", 
+        "label": "rhel-6-server-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "868", 
+        "name": "Red Hat Enterprise Linux 5 Server (Source RPMs)", 
+        "label": "rhel-5-server-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1402", 
+        "name": "Red Hat Subscription Asset Manager (for RHEL 6 Server) Beta (RPMs)", 
+        "label": "rhel-6-server-sam-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "878", 
+        "name": "Red Hat Enterprise Linux 5 Server - Supplementary (Source RPMs)", 
+        "label": "rhel-5-server-supplementary-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "164", 
+        "name": "Red Hat Enterprise Linux 6 Server (ISOs)", 
+        "label": "rhel-6-server-isos"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1325", 
+        "name": "Red Hat Enterprise Linux 5 Server - Virtualization Beta (RPMs)", 
+        "label": "rhel-5-server-vt-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1430", 
+        "name": "Red Hat Subscription Asset Manager (for RHEL 6 Server) (RPMs)", 
+        "label": "rhel-6-server-sam-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "163", 
+        "name": "Red Hat Enterprise Linux 6 Server (Debug RPMs)", 
+        "label": "rhel-6-server-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "677", 
+        "name": "Red Hat Enterprise Linux 6 Server - Supplementary Beta (Source RPMs)", 
+        "label": "rhel-6-server-supplementary-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1410", 
+        "name": "Red Hat CloudForms Tools for RHEL 6 Beta (Source RPMs)", 
+        "label": "rhel-6-server-cf-tools-1-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1329", 
+        "name": "Red Hat Enterprise Linux 5 Server - Virtualization (Source RPMs)", 
+        "label": "rhel-5-server-vt-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1431", 
+        "name": "Red Hat Subscription Asset Manager (for RHEL 6 Server) (Source RPMs)", 
+        "label": "rhel-6-server-sam-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "859", 
+        "name": "Red Hat Enterprise Linux 5 Server Beta (RPMs)", 
+        "label": "rhel-5-server-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "682", 
+        "name": "Red Hat Enterprise Linux 6 Server - Supplementary (Source RPMs)", 
+        "label": "rhel-6-server-supplementary-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "165", 
+        "name": "Red Hat Enterprise Linux 6 Server - Optional (Debug RPMs)", 
+        "label": "rhel-6-server-optional-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "875", 
+        "name": "Red Hat Enterprise Linux 5 Server - Supplementary (Debug RPMs)", 
+        "label": "rhel-5-server-supplementary-debuginfo"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "860", 
+        "name": "Red Hat Enterprise Linux 5 Server Beta (Source RPMs)", 
+        "label": "rhel-5-server-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "169", 
+        "name": "Red Hat Enterprise Linux 6 Server (Source RPMs)", 
+        "label": "rhel-6-server-source-rpms"
+      }
+    ], 
+    "attrs": {
+      "arch": "x86_64,ia64,x86", 
+      "type": "SVC", 
+      "name": "Red Hat Enterprise Linux Server"
+    }, 
+    "dependent_product_ids": [], 
+    "name": "Red Hat Enterprise Linux Server"
+  }, 
+  {
+    "updated": "2013-02-27 21:26:35.443000+00:00", 
+    "product_id": "83", 
+    "created": "2013-02-27 21:26:35.443000+00:00", 
+    "engineering_ids": [
+      "350", 
+      "348", 
+      "1306", 
+      "965", 
+      "352", 
+      "963", 
+      "964", 
+      "1309", 
+      "1308", 
+      "1310", 
+      "1307", 
+      "961", 
+      "353", 
+      "962", 
+      "966", 
+      "1311", 
+      "349", 
+      "351"
+    ], 
+    "eng_prods": [
+      {
+        "vendor": "Red Hat", 
+        "id": "350", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 6 Server) Beta (Source RPMs)", 
+        "label": "rhel-ha-for-rhel-6-server-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "348", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 6 Server) Beta (Debug RPMs)", 
+        "label": "rhel-ha-for-rhel-6-server-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1306", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 for IBM Power) Beta (Debug RPMs)", 
+        "label": "rhel-ha-for-rhel-5-for-power-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "965", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 Server) (RPMs)", 
+        "label": "rhel-ha-for-rhel-5-server-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "352", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 6 Server) (RPMs)", 
+        "label": "rhel-ha-for-rhel-6-server-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "963", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 Server) Beta (Source RPMs)", 
+        "label": "rhel-ha-for-rhel-5-server-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "964", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 Server) (Debug RPMs)", 
+        "label": "rhel-ha-for-rhel-5-server-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1309", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 for IBM Power) (Debug RPMs)", 
+        "label": "rhel-ha-for-rhel-5-for-power-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1308", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 for IBM Power) Beta (Source RPMs)", 
+        "label": "rhel-ha-for-rhel-5-for-power-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1310", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 for IBM Power) (RPMs)", 
+        "label": "rhel-ha-for-rhel-5-for-power-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1307", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 for IBM Power) Beta (RPMs)", 
+        "label": "rhel-ha-for-rhel-5-for-power-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "961", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 Server) Beta (Debug RPMs)", 
+        "label": "rhel-ha-for-rhel-5-server-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "353", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 6 Server) (Source RPMs)", 
+        "label": "rhel-ha-for-rhel-6-server-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "962", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 Server) Beta (RPMs)", 
+        "label": "rhel-ha-for-rhel-5-server-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "966", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 Server) (Source RPMs)", 
+        "label": "rhel-ha-for-rhel-5-server-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1311", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 5 for IBM Power) (Source RPMs)", 
+        "label": "rhel-ha-for-rhel-5-for-power-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "349", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 6 Server) Beta (RPMs)", 
+        "label": "rhel-ha-for-rhel-6-server-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "351", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL 6 Server) (Debug RPMs)", 
+        "label": "rhel-ha-for-rhel-6-server-debug-rpms"
+      }
+    ], 
+    "attrs": {
+      "arch": "x86_64,ppc64,ia64,ppc,x86", 
+      "type": "SVC", 
+      "name": "Red Hat Enterprise Linux High Availability (for RHEL Server)"
+    }, 
+    "dependent_product_ids": [], 
+    "name": "Red Hat Enterprise Linux High Availability (for RHEL Server)"
+  }, 
+  {
+    "updated": "2013-02-27 21:26:35.659000+00:00", 
+    "product_id": "90", 
+    "created": "2013-02-27 21:26:35.659000+00:00", 
+    "engineering_ids": [
+      "968", 
+      "1317", 
+      "393", 
+      "967", 
+      "395", 
+      "1315", 
+      "972", 
+      "397", 
+      "1312", 
+      "396", 
+      "970", 
+      "1313", 
+      "398", 
+      "394", 
+      "969", 
+      "971", 
+      "1316", 
+      "1314"
+    ], 
+    "eng_prods": [
+      {
+        "vendor": "Red Hat", 
+        "id": "968", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 Server) Beta (RPMs)", 
+        "label": "rhel-rs-for-rhel-5-server-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1317", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 for IBM Power) (Source RPMs)", 
+        "label": "rhel-rs-for-rhel-5-for-power-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "393", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 6 Server) Beta (Debug RPMs)", 
+        "label": "rhel-rs-for-rhel-6-server-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "967", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 Server) Beta (Debug RPMs)", 
+        "label": "rhel-rs-for-rhel-5-server-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "395", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 6 Server) Beta (Source RPMs)", 
+        "label": "rhel-rs-for-rhel-6-server-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1315", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 for IBM Power) (Debug RPMs)", 
+        "label": "rhel-rs-for-rhel-5-for-power-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "972", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 Server) (Source RPMs)", 
+        "label": "rhel-rs-for-rhel-5-server-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "397", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 6 Server) (RPMs)", 
+        "label": "rhel-rs-for-rhel-6-server-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1312", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 for IBM Power) Beta (Debug RPMs)", 
+        "label": "rhel-rs-for-rhel-5-for-power-beta-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "396", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 6 Server) (Debug RPMs)", 
+        "label": "rhel-rs-for-rhel-6-server-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "970", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 Server) (Debug RPMs)", 
+        "label": "rhel-rs-for-rhel-5-server-debug-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1313", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 for IBM Power) Beta (RPMs)", 
+        "label": "rhel-rs-for-rhel-5-for-power-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "398", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 6 Server) (Source RPMs)", 
+        "label": "rhel-rs-for-rhel-6-server-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "394", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 6 Server) Beta (RPMs)", 
+        "label": "rhel-rs-for-rhel-6-server-beta-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "969", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 Server) Beta (Source RPMs)", 
+        "label": "rhel-rs-for-rhel-5-server-beta-source-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "971", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 Server) (RPMs)", 
+        "label": "rhel-rs-for-rhel-5-server-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1316", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 for IBM Power) (RPMs)", 
+        "label": "rhel-rs-for-rhel-5-for-power-rpms"
+      }, 
+      {
+        "vendor": "Red Hat", 
+        "id": "1314", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL 5 for IBM Power) Beta (Source RPMs)", 
+        "label": "rhel-rs-for-rhel-5-for-power-beta-source-rpms"
+      }
+    ], 
+    "attrs": {
+      "arch": "x86_64,ppc64,ia64,ppc,x86", 
+      "type": "SVC", 
+      "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL Server)"
+    }, 
+    "dependent_product_ids": [], 
+    "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL Server)"
+  }
+]}

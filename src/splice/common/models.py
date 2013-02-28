@@ -29,7 +29,7 @@ class Pool(Document):
     uuid = StringField(unique=True, required=True)
     account = IntField(required=True)
     active = BooleanField(default=True)
-    contract = IntField(required=True)
+    contract = IntField()
     product_id = StringField(required=True)
     product_name = StringField(required=True)
     # product_attributes may vary common keys are:
