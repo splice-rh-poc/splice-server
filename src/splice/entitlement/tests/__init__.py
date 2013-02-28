@@ -6,6 +6,7 @@ from enforce_single_tasks import *
 from entitlement_resource import *
 from identity import *
 from identity_lookup import *
+from marketingproductusage import *
 from mongotests import *
 from pools import *
 from products import *
