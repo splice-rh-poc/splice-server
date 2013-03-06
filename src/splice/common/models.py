@@ -245,6 +245,7 @@ class MarketingProductUsage(Document):
     instance_identifier = StringField(required=True, unique_with=['date'])
     updated = IsoDateTimeField(required=True, default=get_now)
     created = IsoDateTimeField(required=True, default=get_now)
+    entitlement_status = StringField()
 
     product_info = ListField(DictField())  # [{"account":value, "contract":value, "id":value}]
 
