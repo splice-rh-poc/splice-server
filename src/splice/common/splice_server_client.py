@@ -49,7 +49,7 @@ def upload_splice_server_metadata(host, port, url, metadata):
 
 def upload_product_usage_data(host, port, url, pu_data, accept_gzip=False, gzip_body=False):
     status, data = send_data(host, port, url, pu_data, accept_gzip=accept_gzip, gzip_body=gzip_body)
-    if status not in [200, 202]:
+    if status not in [200, 202, 204]:
         raise RequestException(status, data)
     return status, data
 

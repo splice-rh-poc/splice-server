@@ -16,7 +16,7 @@ from django.conf import settings
 from optparse import OptionParser
 
 from splice.common import config, splice_server_client, utils
-from splice.common.models import ProductUsage
+from splice.common.models import MarketingProductUsage
 
 # Requires subscription-manager RPM to be installed
 SUB_MGR_PATH = "/usr/share/rhsm"
@@ -61,19 +61,16 @@ def create_fake_instance_identifier():
         random.randint(0x00, 0xff) ]
     return ':'.join(map(lambda x: "%02x" % x, mac))
 
-def create_product_usage(checkin_date, instance_identifier, facts):
-    pu = ProductUsage()
-    pu.consumer = CONSUMER
-    pu.splice_server = SPLICE_SERVER
-    pu.instance_identifier = instance_identifier
-    pu.allowed_product_info = ["69"]
-    pu.unallowed_product_info = []
-    pu.facts = facts
-    pu.date = checkin_date
-    return pu
+def create_marketing_product_usage(checkin_date, instance_identifier, facts):
+    mpu = MarketingProductUsage()
+    mpu.splice_server = SPLICE_SERVER
+    mpu.instance_identifier = instance_identifier
+    mpu.facts = facts
+    mpu.date = checkin_date
+    return mpu
 
 def create_data(num_instances, num_entries, begin):
-    # Return ProductUsage objects, created so they have hourly checkins
+    # Return MarketingProductUsage objects, created so they have hourly checkins
     # going back 'num' hours ago
     now = datetime.now(tzutc())
     items = []
@@ -82,7 +79,7 @@ def create_data(num_instances, num_entries, begin):
         for inst_index in range(0, num_instances):
             inst_id = INSTANCE_IDS[inst_index]
             facts = FACTS[inst_index]
-            items.append(create_product_usage(checkin_date, inst_id, facts))
+            items.append(create_marketing_product_usage(checkin_date, inst_id, facts))
     return items
 
 def send(host, port, url, data, batch_size=5000, gzip_body=False):
@@ -95,7 +92,7 @@ def send(host, port, url, data, batch_size=5000, gzip_body=False):
             end_index = len(data)
         sub_data = data[start_index:end_index]
         start = time.time()
-        resp = splice_server_client.upload_product_usage_data(host, port, url, sub_data, gzip_body=gzip_body)
+        resp = splice_server_client.upload_product_usage_data(host, port, url, {"objects": sub_data}, gzip_body=gzip_body)
         end = time.time()
         print "Sent %s items in %.4f seconds" % (len(sub_data), end-start)
         start_index += batch_size
@@ -118,7 +115,7 @@ if __name__ == "__main__":
     # Parse CLI
     host = opts.host
     port = int(opts.port)
-    url = '/splice/api/v1/productusage/'
+    url = '/splice/api/v1/marketingproductusage/'
     num_entries = int(opts.num_entries)
     num_instances = int(opts.num_instances)
     gzip_body = not opts.nogzip
@@ -144,7 +141,7 @@ if __name__ == "__main__":
     # Create checkin data
     data = create_data(num_instances, num_entries, begin=begin)
     end = time.time()
-    print "\nCreated %s ProductUsage objects for %s instances each having %s checkins" % (len(data), num_instances, num_entries)
+    print "\nCreated %s MarketingProductUsage objects for %s instances each having %s checkins" % (len(data), num_instances, num_entries)
     print "%.3f seconds to create simulated data, %.3f seconds to init system facts, %.3f seconds to generate checkins" % \
             (end-start_a, start_b-start_a, end-start_b)
     start = time.time()

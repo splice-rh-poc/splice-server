@@ -19,9 +19,9 @@ from tastypie_mongoengine.resources import MongoEngineResource
 from splice.common import certs, utils
 from splice.common.auth import X509CertificateAuthentication
 from splice.common.models import Pool, Product, Rules, SpliceServer, MarketingProductUsage
+from splice.common.deserializer import JsonGzipSerializer
 
 _LOG = logging.getLogger(__name__)
-
 
 class BaseResource(MongoEngineResource):
 
@@ -30,6 +30,7 @@ class BaseResource(MongoEngineResource):
         authentication = X509CertificateAuthentication(verification_ca=certs.get_splice_server_identity_ca_pem())
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get']
+        serializer = JsonGzipSerializer()
 
     def hydrate_created(self, bundle):
         bundle.data["created"] = utils.convert_to_datetime(bundle.data["created"])
