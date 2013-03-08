@@ -7,6 +7,7 @@ from entitlement_resource import *
 from identity import *
 from identity_lookup import *
 from marketingproductusage import *
+from deserializer import *
 from mongotests import *
 from pools import *
 from products import *
