@@ -50,12 +50,10 @@ def get_subscriptions(host, port, username, password, https=False, baseurl="/can
 
 def get_rules(host, port, username, password, https=False, baseurl="/candlepin"):
     url = os.path.join(baseurl, "rules")
-    #TODO
-    # - Response is a base 64 encoded string
-    #"Decoded String: " + decoded.decode('base64', 'strict')
     encoded_rules = GET(host, port, username, password, https, url, decode_json=False)
     decoded_rules = base64.b64decode(encoded_rules)
     return Rules(version="0", data=decoded_rules)
+
 
 def get_products(host, port, username, password, https=False, baseurl="/candlepin"):
     url = os.path.join(baseurl, "products")

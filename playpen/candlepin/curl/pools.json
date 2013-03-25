@@ -2,20 +2,20 @@
   {
     "provided_products": [
       {
-        "id": "83", 
-        "name": "Red Hat Enterprise Linux High Availability (for RHEL Server)"
+        "id": "90", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL Server)"
       }, 
       {
-        "id": "69", 
-        "name": "Red Hat Enterprise Linux Server"
+        "id": "83", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL Server)"
       }, 
       {
         "id": "85", 
         "name": "Red Hat Enterprise Linux Load Balancer (for RHEL Server)"
       }, 
       {
-        "id": "90", 
-        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL Server)"
+        "id": "69", 
+        "name": "Red Hat Enterprise Linux Server"
       }, 
       {
         "id": "71", 
