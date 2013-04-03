@@ -55,6 +55,14 @@ if [ $? -ne 0 ]; then
 fi
 echo "spacewalk/backend RPM has been built & installed"
 popd
+cd ~/spacewalk/reporting && tito build --test --rpm --install &> /root/spacewalk_reporting_rpm_build.log #this builds and installs spacewalk-reports
+if [ $? -ne 0 ]; then
+    echo "Failed to build spacewalk/reporting"
+    exit 1
+fi
+echo "spacewalk/reporting RPM has been built & installed"
+popd
+yum update -y subscription-manager
 service httpd restart
 service tomcat6 restart
 echo "Wait for tomcat6 to restart: `date`"
