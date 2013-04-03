@@ -11,19 +11,29 @@
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
 
+import gzip
 import logging
+import time
+import StringIO
+import json
+from bson import json_util
 
+from tastypie import http
 from tastypie.authorization import Authorization
 from tastypie_mongoengine.resources import MongoEngineResource
 
 from splice.common import certs, utils
 from splice.common.auth import X509CertificateAuthentication
-from splice.common.models import Pool, Product, Rules, SpliceServer, MarketingProductUsage
+from splice.common.models import Pool, Product, Rules, SpliceServer, MarketingProductUsage, ProductUsage
 from splice.common.deserializer import JsonGzipSerializer
 
 _LOG = logging.getLogger(__name__)
 
 class BaseResource(MongoEngineResource):
+
+    def __init__(self):
+        super(BaseResource, self).__init__()
+        self.all_objects = []
 
     class Meta:
         authorization = Authorization()
@@ -47,7 +57,9 @@ class BaseResource(MongoEngineResource):
         #                      'post_list' to update a single element of a collection
         #
         # Further...'put_list' defaults to deleting the existing items in a collection before adding the new items
+        _LOG.debug("request data: " + request.raw_post_data)
         super(BaseResource, self).put_list(request, **kwargs)
+        self.complete_hook(self.all_objects)
 
     def obj_delete_list(self, request=None, **kwargs):
         # We are intentionally changing the tastypie default behavior of
@@ -63,25 +75,46 @@ class BaseResource(MongoEngineResource):
         self.is_valid(bundle, request)
         if bundle.errors:
             self.error_response(bundle.errors, request)
-        self.update_if_newer(bundle)
+        obj = self.create_hook(bundle.obj)
+        self.all_objects.append(obj)
         return bundle
 
-    def update_if_newer(self, bundle):
-        existing = self.get_existing(bundle.obj)
-        if not existing:
-            bundle.obj.save()
-            return
+    def create_hook(self, obj):
+        """
+        Called to save a single object after it's been deserialized.
+        This method is responsible for determining if this object is new/updated and should
+        be saved to database, or is it an older version and should be ignored.
 
-        _LOG.info("existing = '%s'" % (existing))
-        if bundle.obj.updated > existing.updated:
-            for key, value in bundle.obj._data.items():
-                if key and key != "id":
-                    # Skip the 'None' which is part of the data sent if the obj has not been saved previously
-                    _LOG.info("Updating '%s'='%s'" % (key, value))
-                    setattr(existing, key, value)
-            existing.save()
+        @param obj: serialized object
+        @return: the object 'obj' or a modified version of it needs to be returned
+        """
+        existing = self.get_existing(obj)
+        if not existing:
+            obj.save()
         else:
-            _LOG.debug("Ignoring %s since it is not newer than what is in DB" % (bundle.obj))
+            _LOG.info("existing = '%s'" % (existing))
+            if obj.updated > existing.updated:
+                for key, value in obj._data.items():
+                    if key and key != "id":
+                        # Skip the 'None' which is part of the data sent if the obj has not been saved previously
+                        _LOG.info("Updating '%s'='%s'" % (key, value))
+                        setattr(existing, key, value)
+                existing.save()
+            else:
+                _LOG.debug("Ignoring %s since it is not newer than what is in DB" % (obj))
+        return obj
+
+    def complete_hook(self, objects):
+        """
+        Called after all items have been serialized and create_hook has fired for each item.
+        Used primarily by ReportServer to process "import" of items, where the items sent in this
+        request are not saved directly to DB...instead they are batch processed and transformed 
+        into ReportData.
+
+        @param objects: list of all serialized objects from this request
+        @return None
+        """
+        pass
 
     ##
     ## Below needs to be implemented by those who inherit
@@ -116,6 +149,7 @@ class MarketingProductUsageResource(BaseResource):
     def get_existing(self, obj):
         return MarketingProductUsage.objects(instance_identifier=obj.instance_identifier, date=obj.date).first()
 
+
 class RulesResource(BaseResource):
     class Meta(BaseResource.Meta):
         queryset = Rules.objects.all()
@@ -123,21 +157,21 @@ class RulesResource(BaseResource):
     def get_existing(self, obj):
         return Rules.objects(version=obj.version).first()
 
-    def update_if_newer(self, bundle):
-        existing = self.get_existing(bundle.obj)
+    def create_hook(self, obj):
+        existing = self.get_existing(obj)
         if not existing:
-            bundle.obj.save()
+            obj.save()
             return
 
         _LOG.info("existing = '%s'" % (existing))
-        if bundle.obj.version > existing.version:
-            for key, value in bundle.obj._data.items():
+        if obj.version > existing.version:
+            for key, value in obj._data.items():
                 if key and key != "id":
                     setattr(existing, key, value)
             existing.save()
         else:
             _LOG.debug("Ignoring version %s of Rules since it is not newer than what is in DB: version %s" % \
-                       (bundle.obj.version, existing.version))
+                       (obj.version, existing.version))
 
 
 class SpliceServerResource(BaseResource):
@@ -148,3 +182,64 @@ class SpliceServerResource(BaseResource):
         return SpliceServer.objects(uuid=obj.uuid).first()
 
 
+###
+# TODO:  Consider refactoring ProductUsageResource to inherit from BaseResource
+#        this will change the usage of the API, therefore clients will need to make changes
+#
+#         Background:  ProductUsageResource was one of the first REST APIs we wrote, originally resided in ReportServer
+#                      now exists in splice.common.api so we can keep all common APIs together
+###
+class ProductUsageResource(MongoEngineResource):
+
+    class Meta:
+        queryset = ProductUsage.objects.all()
+        authorization = Authorization()
+
+
+    def post_list(self, request, **kwargs):
+        if not request.raw_post_data:
+            _LOG.info("Empty body in request")
+            return http.HttpBadRequest("Empty body in request")
+        try:
+            raw_post_data = request.raw_post_data
+            _LOG.info("ProductUsageResource::post_list() processing %s KB." % (len(request.raw_post_data)/1024.0))
+            if request.META.has_key("HTTP_CONTENT_ENCODING") and request.META["HTTP_CONTENT_ENCODING"] == "gzip":
+                start_unzip = time.time()
+                data = StringIO.StringIO(raw_post_data)
+                gzipper = gzip.GzipFile(fileobj=data)
+                raw_post_data = gzipper.read()
+                end_unzip = time.time()
+                _LOG.info("ProductUsageResource::post_list() uncompressed %s KB to %s KB in %s seconds" % \
+                          (len(request.raw_post_data)/float(1024),
+                           len(raw_post_data)/float(1024), end_unzip - start_unzip))
+            a = time.time()
+            product_usage = json.loads(raw_post_data, object_hook=json_util.object_hook)
+            if isinstance(product_usage, dict):
+                product_usage = [product_usage]
+            pu_models = [ProductUsage._from_son(p) for p in product_usage]
+            for pu in pu_models:
+                if isinstance(pu.date, basestring):
+                    # We must convert from str to datetime for ReportServer to be able to process this data
+                    pu.date = utils.convert_to_datetime(pu.date)
+            b = time.time()
+            items_not_imported = self.import_hook(pu_models)
+            c = time.time()
+            _LOG.info("ProductUsageResource::post_list() Total Time: %s,  %s seconds to convert %s KB to JSON. "
+                  "%s seconds to import %s objects into mongo with %s errors." % (c-a, b-a,
+                        len(raw_post_data)/1024.0, c-b, len(pu_models), items_not_imported))
+            if not items_not_imported:
+                return http.HttpAccepted()
+            else:
+                return http.HttpConflict(items_not_imported)
+        except Exception, e:
+            _LOG.exception("Unable to process request with %s bytes in body" % (len(raw_post_data)))
+            _LOG.info("Snippet of failed request body: \n%s\n" % (raw_post_data[:8*1024]))
+            return http.HttpBadRequest(e)
+
+# import hook is overriden in sreport.api
+    def import_hook(self, product_usage):
+        """
+        @param product_usage:
+        @return: a list of items which failed to import.
+        """
+        raise NotImplementedError
