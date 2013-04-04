@@ -17,7 +17,7 @@ fi
 
 
 # FIXME: make quartz2-candlepin a dep of candlepin-tomcat6
-yum install -y candlepin candlepin-tomcat6 liquibase quartz2-candlepin
+yum install -y candlepin candlepin-tomcat6 liquibase
 echo "##Begin Splice Candlepin install script" >> /var/lib/pgsql/data/pg_hba.conf
 echo "local   all       all                               trust" >> /var/lib/pgsql/data/pg_hba.conf
 echo "host    all       all         127.0.0.1/32          trust" >> /var/lib/pgsql/data/pg_hba.conf
