@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.104
+Version:    0.105
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -273,6 +273,68 @@ exit 0
 
 
 %changelog
+* Mon Apr 08 2013 John Matthews <jwmatthews@gmail.com> 0.105-1
+- Add allow inheritance to splice.common.models (jwmatthews@gmail.com)
+- use candlepin from upstream (cduryee@redhat.com)
+- Updated BaseResource based on integration work getting
+  MarkertingProductUsageResouce to work with Report Server  - added the
+  'complete_hook' to be called after all objects have been serialized from REST
+  request  - move some base classes from unit tests to splice.common so we can
+  reuse functionality in ReportServer  - Moved ProductUsageResource into
+  splice.common.api, more updates may be desired so inherits from BaseResource
+  (jwmatthews@gmail.com)
+- add additional fields per wes (cduryee@redhat.com)
+- add spacewalk-reports rpm (cduryee@redhat.com)
+- Changed sample data and removed comment (jwmatthews@gmail.com)
+- add unit tests for deserializer (cduryee@redhat.com)
+- Add new deserializer to handle zipped json data (cduryee@redhat.com)
+- add entitlement status field to MPU (cduryee@redhat.com)
+- Updates to Pool/Product/Rules API, curl scripts to upload real data from
+  Candlepin to Splice APIs - from_test_json.py  will talk to candlepin and form
+  sample .json data - then upload*.sh scripts under playpen will send the
+  sample .json to splice APIs (jwmatthews@gmail.com)
+- unit tests for MarketingProductUsage (cduryee@redhat.com)
+- marketing product tracking support (cduryee@redhat.com)
+- Added support for decoding base64 rules from Candlepin as well as
+  splice.common API to accept Rules being uploaded to us (jwmatthews@gmail.com)
+- Updates and unit tests for Pool & Product API (jwmatthews@gmail.com)
+- Fixes problem when passed in manifest is called manifest.zip
+  (jwmatthews@gmail.com)
+- Require a --host to be specified (jwmatthews@gmail.com)
+- Introduced a BaseResource to handle most of the update logic we want for our
+  APIs Reworked SpliceServerResource to use BaseResource Added Product & Pool
+  API, unit tests lacking, will be in commit later today (jwmatthews@gmail.com)
+- Changing SpliceServer models attribute of "modified" to "updated"
+  (jwmatthews@gmail.com)
+- add spacewalk-splice-tool (cduryee@redhat.com)
+- forgot a file (cduryee@redhat.com)
+- use master instead of buildtest branch for spacewalk (cduryee@redhat.com)
+- rebuild candlepin from source, and install newer candlepin.
+  (cduryee@redhat.com)
+- Added ability to fetch Pool & Product data from Candlepin and save to mongo
+  (jwmatthews@gmail.com)
+- Fetch/Parse Pool & Product data from Candlepin (jwmatthews@gmail.com)
+- First steps for getting subscription manifest data from Candlepin
+  (jwmatthews@gmail.com)
+- Open 8443 for Candlepin in iptables (jwmatthews@gmail.com)
+- Fixed issue with using pub sshkey instead of priv for ssh, added more print
+  statements (jwmatthews@gmail.com)
+- Tweaks to fix provisioning a Spacewalk+Candlepin (jwmatthews@gmail.com)
+- Provisioning script to lauch a modified Spacewalk with Candlepin
+  (jwmatthews@gmail.com)
+- EC2 provisioning script to install Spacewalk & Candlepin together on same
+  instance (jwmatthews@gmail.com)
+- EC2 provisioning script to install Spacewalk & Candlepin together on same
+  instance (jwmatthews@gmail.com)
+- EC2 provisioning scripts to launch a Spacewalk instance
+  (jwmatthews@gmail.com)
+- Touchups to launch Report Server and fix to source functions.sh for launch
+  RCS (jwmatthews@gmail.com)
+- Added a provisioning script for ReportServer, fixed EBS volume to be set to
+  delete on termination (jwmatthews@gmail.com)
+- Minor cleanup of Log statements no longer needed (jwmatthews@gmail.com)
+- Moved launch EC2 scripts to python-boto (jwmatthews@gmail.com)
+
 * Thu Jan 31 2013 John Matthews <jwmatthews@gmail.com> 0.104-1
 - Adding debug info to track down issue with SpliceServer upload in
   ReportServer (jwmatthews@gmail.com)
