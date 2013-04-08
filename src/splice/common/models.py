@@ -43,6 +43,10 @@ class Pool(Document):
     end_date = IsoDateTimeField(required=True)
     updated = IsoDateTimeField(required=True)
     quantity = IntField(required=True)
+    
+    meta = {
+        'allow_inheritance': True,
+    }
 
     @classmethod
     def pre_save(cls, sender, document, **kwargs):
@@ -87,6 +91,10 @@ class Product(Document):
     attrs = DictField()  # Product Attributes
     dependent_product_ids = ListField()
 
+    meta = {
+        'allow_inheritance': True,
+    }
+
     @classmethod
     def pre_save(cls, sender, document, **kwargs):
         for attr_name in ["created", "updated"]:
@@ -115,6 +123,10 @@ class Rules(Document):
     version = StringField(required=True, unique=True)
     data = StringField(required=True)
 
+    meta = {
+        'allow_inheritance': True,
+    }
+
     def __str__(self):
         data_len = 0
         if self.data:
@@ -127,6 +139,10 @@ class Contract(Document):
     contract_id = StringField(unique=True, required=True)
     # List of products associated with this contract
     products = ListField(StringField)  # Product Names
+
+    meta = {
+        'allow_inheritance': True,
+    }
 
 
 class SpliceServer(Document):
@@ -192,6 +208,9 @@ class SpliceServerTransferInfo(Document):
 
 
 class ConsumerIdentity(RHIC):
+    meta = {
+        'allow_inheritance': True,
+    }
 
     def __str__(self):
         msg = "Consumer Identity '%s' with engineering_ids '%s', " \
