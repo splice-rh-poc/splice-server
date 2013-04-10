@@ -266,7 +266,7 @@ class MarketingProductUsage(Document):
     created = IsoDateTimeField(required=True, default=get_now)
     # XXX: a few of these may be required data
     entitlement_status = StringField()
-    hostname = StringField()
+    name = StringField()
     service_level = StringField()
     active = BooleanField()
     organization_id = StringField()
