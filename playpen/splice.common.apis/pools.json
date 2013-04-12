@@ -1,0 +1,51 @@
+{"objects": [
+  {
+    "provided_products": [
+      {
+        "id": "90", 
+        "name": "Red Hat Enterprise Linux Resilient Storage (for RHEL Server)"
+      }, 
+      {
+        "id": "83", 
+        "name": "Red Hat Enterprise Linux High Availability (for RHEL Server)"
+      }, 
+      {
+        "id": "85", 
+        "name": "Red Hat Enterprise Linux Load Balancer (for RHEL Server)"
+      }, 
+      {
+        "id": "69", 
+        "name": "Red Hat Enterprise Linux Server"
+      }, 
+      {
+        "id": "71", 
+        "name": "Red Hat Enterprise Linux Workstation"
+      }
+    ], 
+    "account": "1212729", 
+    "uuid": "8ad597ee3d1d8c2b013d1d8cc18c0023", 
+    "end_date": "2022-01-01 04:59:59+00:00", 
+    "created": "2013-02-27 21:26:36.684000+00:00", 
+    "updated": "2013-02-27 21:26:36.684000+00:00", 
+    "contract": null, 
+    "product_name": "Red Hat Employee Subscription", 
+    "product_attributes": {
+      "name": "Red Hat Employee Subscription", 
+      "support_level": "None", 
+      "support_type": "None", 
+      "variant": "Employee Subscription", 
+      "option_code": "30", 
+      "subtype": "None", 
+      "virt_limit": "unlimited", 
+      "enabled_consumer_types": "SAM", 
+      "type": "MKT", 
+      "sockets": "128", 
+      "product_family": "Red Hat Enterprise Linux", 
+      "description": "Red Hat Enterprise Linux"
+    }, 
+    "product_id": "SYS0395", 
+    "active": true, 
+    "start_date": "2011-10-11 04:00:00+00:00", 
+    "quantity": 2
+  }
+]}

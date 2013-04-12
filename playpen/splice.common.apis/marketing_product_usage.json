@@ -1,0 +1,55 @@
+{
+    "objects": [{
+        "updated": "2013-03-06T00:00:00Z",
+        "splice_server": "ec2-23-20-217-133.compute-1.amazonaws.com",
+        "facts": {
+            "net_dot_interface_dot_lo_dot_mac_address": "00:00:00:00:00:00",
+            "memory_dot_memtotal": "604160",
+            "lscpu_dot_on-line_cpu(s)_list": "",
+            "lscpu_dot_l1d_cache": "6144 KB",
+            "systemid": "1000010003",
+            "net_dot_interface_dot_eth0_dot_ipv4_netmask": "255.255.254.0",
+            "lscpu_dot_architecture": "x86_64",
+            "lscpu_dot_model": "Intel(R) Xeon(R) CPU           E5430  @ 2.66GHz",
+            "net_dot_interface_dot_lo_dot_ipv4_broadcast": "10.243.3.255",
+            "lscpu_dot_cpu_op-mode(s)": "",
+            "uname_dot_machine": "x86_64",
+            "lscpu_dot_l3_cache": "",
+            "lscpu_dot_core(s)_per_socket": "1",
+            "lscpu_dot_cpu_family": "",
+            "lscpu_dot_cpu(s)": "1",
+            "lscpu_dot_l1i_cache": "",
+            "lscpu_dot_virtualization_type": "",
+            "net_dot_interface_dot_lo_dot_ipv4_address": "127.0.0.1",
+            "cpu_dot_cpu_socket(s)": "0",
+            "cpu_dot_cpu(s)": "1",
+            "net_dot_ipv4_address": "10.243.2.179",
+            "lscpu_dot_bogomips": "",
+            "lscpu_dot_l2_cache": "",
+            "memory_dot_swaptotal": "0",
+            "net_dot_interface_dot_eth0_dot_ipv4_address": "10.243.2.179",
+            "lscpu_dot_stepping": "10",
+            "lscpu_dot_cpu_mhz": "2659",
+            "net_dot_interface_dot_eth0_dot_mac_address": "12:31:3b:02:01:45",
+            "lscpu_dot_hypervisor_vendor": "",
+            "lscpu_dot_vendor_id": "GenuineIntel",
+            "net_dot_interface_dot_lo_dot_ipv4_netmask": "255.0.0.0",
+            "lscpu_dot_byte_order": "",
+            "lscpu_dot_cpu_socket(s)": "0"
+        },
+        "created": "2013-03-06T00:00:00Z",
+        "entitlement_status": "partial",
+        "product_info": [
+            {
+                "account": "1212729",
+                "product": "SYS0395",
+                "contract": "2595500",
+                "quantity": 1,
+                "sla": "prem",
+                "support_level": "l1-l3"
+            }
+        ],
+        "instance_identifier": "608626c6-ee7b-4c21-92f7-f769ff230b46",
+        "date": "2013-03-06T16:32:52Z"
+    }]
+}
