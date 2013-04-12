@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.105
+Version:    0.106
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -273,6 +273,15 @@ exit 0
 
 
 %changelog
+* Fri Apr 12 2013 John Matthews <jwmatthews@gmail.com> 0.106-1
+- Small cleanup (jwmatthews@gmail.com)
+- Update for spliceserver API (jwmatthews@gmail.com)
+- Removing sphix generated _build from git (jwmatthews@gmail.com)
+- Updated shinx docs for splice.common.apis (jwmatthews@gmail.com)
+- Sample curl script and json to exercise splice.common.apis
+  (jwmatthews@gmail.com)
+- use server name instead of server hostname (cduryee@redhat.com)
+
 * Mon Apr 08 2013 John Matthews <jwmatthews@gmail.com> 0.105-1
 - Add allow inheritance to splice.common.models (jwmatthews@gmail.com)
 - use candlepin from upstream (cduryee@redhat.com)
