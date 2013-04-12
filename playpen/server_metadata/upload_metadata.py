@@ -42,6 +42,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Send to RCS
+    print "Data = \n%s" % (data)
     response = upload(opts.host, opts.port, data)
     #print "Uploaded: \n%s\n\nReceived Reponse:\n%s" % (data, response)
 
