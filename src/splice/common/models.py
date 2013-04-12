@@ -272,7 +272,10 @@ class MarketingProductUsage(Document):
     organization_id = StringField()
     organization_name = StringField()
 
-    product_info = ListField(DictField())  # [{"account":value, "contract":value, "product":value, "quantity":value}]
+    # product_info expected 'keys'
+    # [{"account":value, "contract":value, "product":value, "quantity":value, 
+    #   "sla":value, "support_level":value}]
+    product_info = ListField(DictField())  
 
     facts = DictField()
 

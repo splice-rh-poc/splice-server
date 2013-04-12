@@ -112,7 +112,7 @@ class RulesTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].version, version)
         self.assertEquals(found[0].data, data)
 
-    def test_upload_older_product(self):
+    def test_upload_older(self):
         ##
         #  We want to accept an older upload, this is diff than most of the other API tests
         ##
@@ -142,7 +142,7 @@ class RulesTest(BaseEntitlementTestCase):
         self.assertEquals(found[0].version, newer.version)
         self.assertEquals(found[0].data, newer.data)
 
-    def test_upload_newer_product(self):
+    def test_upload_newer(self):
         ##
         # A newer version will be saved, but not it doesn't delete the older, this is diff than other API tests
         ##
