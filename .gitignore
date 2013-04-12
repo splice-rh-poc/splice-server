@@ -39,3 +39,6 @@ pip-log.txt
 # selinux build files
 selinux/*.pp.targeted
 
+#sphinx auto generated _build dir
+doc/_build
+
