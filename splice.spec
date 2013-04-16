@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.106
+Version:    0.107
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -273,6 +273,10 @@ exit 0
 
 
 %changelog
+* Tue Apr 16 2013 John Matthews <jwmatthews@gmail.com> 0.107-1
+- Fix for splice.common.api 'complete_hook', reset 'self.all_objects' on each
+  request (jwmatthews@gmail.com)
+
 * Fri Apr 12 2013 John Matthews <jwmatthews@gmail.com> 0.106-1
 - Small cleanup (jwmatthews@gmail.com)
 - Update for spliceserver API (jwmatthews@gmail.com)
