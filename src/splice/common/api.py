@@ -33,7 +33,7 @@ class BaseResource(MongoEngineResource):
 
     def __init__(self):
         super(BaseResource, self).__init__()
-        self.all_objects = []
+        self.all_objects = [] 
 
     class Meta:
         authorization = Authorization()
@@ -57,6 +57,10 @@ class BaseResource(MongoEngineResource):
         #                      'post_list' to update a single element of a collection
         #
         # Further...'put_list' defaults to deleting the existing items in a collection before adding the new items
+        
+        self.all_objects = []   # We need to reset 'all_objects' on each request, this is intended
+                                # to save the objects from this request which are created with obj_create
+                                # we want to invoke self.complete_hook() with all objects in request
         _LOG.debug("request data: " + request.raw_post_data)
         super(BaseResource, self).put_list(request, **kwargs)
         self.complete_hook(self.all_objects)
