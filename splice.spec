@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.107
+Version:    0.108
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -273,6 +273,10 @@ exit 0
 
 
 %changelog
+* Wed Apr 24 2013 John Matthews <jwmatthews@gmail.com> 0.108-1
+- Added OAuth Authentication and a 'ping' API to test SpliceAuth which contains
+  both OAuth and X509 as Authentication methods (jwmatthews@gmail.com)
+
 * Tue Apr 16 2013 John Matthews <jwmatthews@gmail.com> 0.107-1
 - Fix for splice.common.api 'complete_hook', reset 'self.all_objects' on each
   request (jwmatthews@gmail.com)
