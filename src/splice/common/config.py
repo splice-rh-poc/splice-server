@@ -100,7 +100,12 @@ defaults = \
     'report_server': {
         'db_name': 'results',
         'db_host': 'localhost',              
-    }
+    },
+    'oauth': {
+        'enabled': False,
+        'oauth_key': '',
+        'oauth_secert': '',
+    },
 }
 
 
@@ -281,3 +286,10 @@ def get_crl_path():
 
 def get_logging_config_file():
     return CONFIG.get("logging", "config")
+
+def get_oauth_params():
+    ret_val = {}
+    ret_val["enabled"] = CONFIG.getboolean("oauth", "enabled")
+    ret_val["key"] = CONFIG.get("oauth", "oauth_key")
+    ret_val["secret"] = CONFIG.get("oauth", "oauth_secret")
+    return ret_val

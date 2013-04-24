@@ -64,7 +64,6 @@ class EntitlementResourceTest(BaseEntitlementTestCase):
             data=self.post_data,
             SSL_CLIENT_CERT=self.invalid_identity_cert_pem)
         self.assertHttpUnauthorized(resp)
-        self.assertEqual("Unable to verify SSL client's identity certificate was signed by configured CA", resp.content)
 
     def test_post_entitlement_deleted_identity(self):
         resp = self.api_client.post('/api/v1/entitlement/%s/' % (self.deleted_identity_uuid),

@@ -16,18 +16,47 @@ import logging
 import time
 import StringIO
 import json
+
 from bson import json_util
+from datetime import datetime
+from dateutil.tz import tzutc
 
 from tastypie import http
+from tastypie.authentication import MultiAuthentication
 from tastypie.authorization import Authorization
+from tastypie.resources import Resource
 from tastypie_mongoengine.resources import MongoEngineResource
 
-from splice.common import certs, utils
-from splice.common.auth import X509CertificateAuthentication
+from splice.common import certs, config, utils
+from splice.common.auth import X509CertificateAuthentication, TwoLeggedOAuthAuthentication, SpliceAuth
 from splice.common.models import Pool, Product, Rules, SpliceServer, MarketingProductUsage, ProductUsage
 from splice.common.deserializer import JsonGzipSerializer
 
 _LOG = logging.getLogger(__name__)
+
+
+class PingResource(Resource):
+    # Simple API used to test if basic 'plumbing' is working
+    # Returns a 'pong' message with current datetime
+    class Meta:
+        resource_name = 'ping'
+        list_allowed_methods = ["get", "post", "put"]
+        authentication = SpliceAuth()
+        authorization = Authorization()
+
+    def get_list(self, request, **kwargs):
+        return self.pong()
+
+    def put_list(self, request, **kwargs):
+        return self.pong()
+
+    def post_list(self, request, **kwargs):
+        return self.pong()
+
+    def pong(self):
+        message = {"pong": str(datetime.now(tzutc()))}
+        return http.HttpAccepted(utils.obj_to_json(message))
+
 
 class BaseResource(MongoEngineResource):
 

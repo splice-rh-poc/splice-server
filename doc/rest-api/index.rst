@@ -403,3 +403,31 @@ REST API
 
    :statuscode 204: No Content
 
+.. http:post:: /api/v1/ping/
+
+   A simple API that will return a 'pong' with the current datetime from server.
+
+   **Sample Request**:
+
+   .. sourcecode:: http
+
+      POST /api/v1/ping/ HTTP/1.1
+      Host: example.com
+      Accept: application/json
+
+      {
+      }
+
+   **Sample Response**:
+
+   .. sourcecode:: http
+
+      HTTP/1.0 202 ACCEPTED
+      Content-Type: application/json
+
+      {
+        "pong": "2013-04-24 11:49:47.925829+00:00"}
+      }
+
+   :statuscode 202: ACCEPTED
+
