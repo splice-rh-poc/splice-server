@@ -16,8 +16,7 @@ from dateutil.tz import tzutc
 
 from mongoengine import DateTimeField, Document, ListField, StringField, DictField, IntField, BooleanField
 from mongoengine import signals
-from rhic_serve.common.fields import IsoDateTimeField
-from rhic_serve.rhic_rcs.models import RHIC
+from splice.common.fields import IsoDateTimeField
 from splice.common.utils import sanitize_key_for_mongo, sanitize_dict_for_mongo, convert_to_datetime
 
 
@@ -207,10 +206,22 @@ class SpliceServerTransferInfo(Document):
         return "%s, server_hostname = %s, last_timestamp = %s" % (self.__class__, self.server_hostname, self.last_timestamp)
 
 
-class ConsumerIdentity(RHIC):
+class ConsumerIdentity(Document):
     meta = {
         'allow_inheritance': True,
     }
+
+    uuid = UUIDField(binary=False)
+    # List of Products associated with the Consumer.
+    engineering_ids = ListField()
+    # Date Consumer was created
+    created_date = IsoDateTimeField(default=datetime.now(tzutc()))
+    # Date Consumer was last modified
+    modified_date = IsoDateTimeField(default=datetime.now(tzutc()))
+    # Flag to indicate if this Consumer has been deleted.
+    deleted = BooleanField(default=False)
+    # Date Consumer was deleted
+    deleted_date = IsoDateTimeField()
 
     def __str__(self):
         msg = "Consumer Identity '%s' with engineering_ids '%s', " \
