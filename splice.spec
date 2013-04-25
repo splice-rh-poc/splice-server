@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.108
+Version:    0.109
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -273,6 +273,9 @@ exit 0
 
 
 %changelog
+* Thu Apr 25 2013 James Slagle <jslagle@redhat.com> 0.109-1
+- Remove dependencies on rhic-serve. (jslagle@redhat.com)
+
 * Wed Apr 24 2013 John Matthews <jwmatthews@gmail.com> 0.108-1
 - Added OAuth Authentication and a 'ping' API to test SpliceAuth which contains
   both OAuth and X509 as Authentication methods (jwmatthews@gmail.com)
