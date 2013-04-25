@@ -14,10 +14,13 @@
 from datetime import datetime
 from dateutil.tz import tzutc
 
-from mongoengine import DateTimeField, Document, ListField, StringField, DictField, IntField, BooleanField
+from mongoengine import (DateTimeField, Document, ListField, StringField,
+                         DictField, IntField, BooleanField, UUIDField)
 from mongoengine import signals
 from splice.common.fields import IsoDateTimeField
-from splice.common.utils import sanitize_key_for_mongo, sanitize_dict_for_mongo, convert_to_datetime
+from splice.common.utils import (sanitize_key_for_mongo,
+                                 sanitize_dict_for_mongo,
+                                 convert_to_datetime)
 
 
 def get_now():
