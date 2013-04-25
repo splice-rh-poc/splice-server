@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.110
+Version:    0.111
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -273,6 +273,9 @@ exit 0
 
 
 %changelog
+* Thu Apr 25 2013 James Slagle <jslagle@redhat.com> 0.111-1
+- Add missing import (jslagle@redhat.com)
+
 * Thu Apr 25 2013 James Slagle <jslagle@redhat.com> 0.110-1
 - Update test for different dep (jslagle@redhat.com)
 
