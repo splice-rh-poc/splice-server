@@ -19,7 +19,7 @@ from mongoengine import signals, Document, StringField
 
 from base import MongoTestCase
 
-from rhic_serve.common.fields import IsoDateTimeField
+from splice.common.fields import IsoDateTimeField
 from splice.common import utils
 
 class MongoTestsTestCase(MongoTestCase):
