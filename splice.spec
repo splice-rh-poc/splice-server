@@ -19,8 +19,6 @@ BuildRequires: rpm-python
 BuildRequires: python-sphinx
 BuildRequires: python-sphinxcontrib-httpdomain
 Requires: mongodb-server
-Requires: pymongo
-Requires: pymongo-gridfs
 Requires: mod_ssl
 Requires: mod_wsgi
 Requires: rabbitmq-server
@@ -31,7 +29,6 @@ Requires: librabbitmq
 #
 Requires: Django >= 1.4.1
 Requires: python-django-tastypie >= 0.9.12pre
-Requires: python-mongoengine >= 0.7.5
 Requires: python-celery >= 3.0
 Requires: django-celery >= 3.0.9
 Requires: m2crypto >= 0.21.1.pulp-7
@@ -77,6 +74,9 @@ Summary:        Splice common components
 Group:          Development/Languages
 Requires:       %{name}-common-config = %{version}-%{release}
 Requires:       python-certutils >= 0.15
+Requires:       python-mongoengine >= 0.7.5
+Requires:       pymongo
+Requires:       pymongo-gridfs
 
 %description    common
 Splice common components
