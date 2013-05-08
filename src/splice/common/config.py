@@ -135,7 +135,7 @@ def set_defaults():
         if not CONFIG.has_section(section):
             CONFIG.add_section(section)
         for config, value in configs.items():
-            CONFIG.set(section, config, value)
+            CONFIG.set(section, config, str(value))
 
 
 def read_config_files():
