@@ -279,7 +279,7 @@ class MarketingProductUsage(Document):
     updated = IsoDateTimeField(required=True, default=get_now)
     created = IsoDateTimeField(required=True, default=get_now)
     # XXX: a few of these may be required data
-    entitlement_status = StringField()
+    entitlement_status = DictField()
     name = StringField()
     service_level = StringField()
     active = BooleanField()
