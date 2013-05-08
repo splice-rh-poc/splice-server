@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.111
+Version:    0.112
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -273,6 +273,11 @@ exit 0
 
 
 %changelog
+* Wed May 08 2013 John Matthews <jwmatthews@gmail.com> 0.112-1
+- Changing 'entitlement_status' to a Dictionary (jwmatthews@gmail.com)
+- Fix error: TypeError: option values must be strings (jwmatthews@gmail.com)
+- Fix deps on splice-common (jslagle@redhat.com)
+
 * Thu Apr 25 2013 James Slagle <jslagle@redhat.com> 0.111-1
 - Add missing import (jslagle@redhat.com)
 
