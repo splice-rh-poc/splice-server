@@ -105,7 +105,7 @@ class BaseResource(MongoEngineResource):
         for key, value in kwargs.items():
             setattr(bundle.obj, key, value)
         bundle = self.full_hydrate(bundle)
-        self.is_valid(bundle, request)
+        self.is_valid(bundle)
         if bundle.errors:
             self.error_response(bundle.errors, request)
         obj = self.create_hook(bundle.obj)

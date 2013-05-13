@@ -23,12 +23,14 @@ Requires: mod_ssl
 Requires: mod_wsgi
 Requires: rabbitmq-server
 Requires: librabbitmq
+Requires: python-oauth2
+Requires: python-httplib2
 #
 # Below RPMs are newer versions not yet in EPEL or RHEL
 # We have the source stored in our git repo under 'deps'
 #
 Requires: Django >= 1.4.1
-Requires: python-django-tastypie >= 0.9.12pre
+Requires: python-django-tastypie >= 0.9.14
 Requires: python-celery >= 3.0
 Requires: django-celery >= 3.0.9
 Requires: m2crypto >= 0.21.1.pulp-7
