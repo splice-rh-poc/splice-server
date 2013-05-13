@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.112
+Version:    0.113
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -275,6 +275,10 @@ exit 0
 
 
 %changelog
+* Mon May 13 2013 John Matthews <jwmatthews@gmail.com> 0.113-1
+- Update to work with python-django-tastypie-0.9.14, also add requires for
+  python-oauth2 and python-httplib2 (jwmatthews@gmail.com)
+
 * Wed May 08 2013 John Matthews <jwmatthews@gmail.com> 0.112-1
 - Changing 'entitlement_status' to a Dictionary (jwmatthews@gmail.com)
 - Fix error: TypeError: option values must be strings (jwmatthews@gmail.com)
