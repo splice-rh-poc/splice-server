@@ -103,7 +103,7 @@ def convert_to_datetime(input_date_str):
             return input.replace(tzinfo=tzutc())
         return input
 
-    if input_date_str is None:
+    if not input_date_str or not input_date_str.strip():
         return None
     try:
         return ensure_tzinfo(isodate.parse_datetime(input_date_str))

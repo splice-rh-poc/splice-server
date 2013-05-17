@@ -24,6 +24,7 @@ from dateutil.tz import tzutc
 from tastypie import http
 from tastypie.authentication import MultiAuthentication
 from tastypie.authorization import Authorization
+from tastypie.exceptions import NotFound, BadRequest, InvalidFilterError, HydrationError, InvalidSortError, ImmediateHttpResponse, Unauthorized
 from tastypie.resources import Resource
 from tastypie_mongoengine.resources import MongoEngineResource
 from tastypie.utils import dict_strip_unicode_keys
@@ -31,7 +32,7 @@ from tastypie.utils import dict_strip_unicode_keys
 
 from splice.common import certs, config, utils
 from splice.common.auth import X509CertificateAuthentication, TwoLeggedOAuthAuthentication, SpliceAuth
-from splice.common.models import Pool, Product, Rules, SpliceServer, MarketingProductUsage, ProductUsage
+from splice.common.models import Pool, Product, Rules, SpliceServer, MarketingProductUsage, ProductUsage, get_now
 from splice.common.deserializer import JsonGzipSerializer
 
 _LOG = logging.getLogger(__name__)
@@ -74,11 +75,19 @@ class BaseResource(MongoEngineResource):
         serializer = JsonGzipSerializer()
 
     def hydrate_created(self, bundle):
-        bundle.data["created"] = utils.convert_to_datetime(bundle.data["created"])
+        if bundle.data.has_key("created"):
+            value = utils.convert_to_datetime(bundle.data["created"])
+            if not value:
+                value = get_now()
+            bundle.data["created"] = value
         return bundle
 
     def hydrate_updated(self, bundle):
-        bundle.data["updated"] = utils.convert_to_datetime(bundle.data["updated"])
+        if bundle.data.has_key("updated"):
+            value = utils.convert_to_datetime(bundle.data["updated"])
+            if not value:
+                value = get_now()
+            bundle.data["updated"] = value
         return bundle
 
     def put_list(self, request, **kwargs):
