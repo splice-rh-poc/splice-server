@@ -134,10 +134,12 @@ class EntitlementResource(Resource):
     # To support a 'POST' on a 'detail', we need to override the tastypies 'post_detail' implementation
     # 'tastypie' by default does not implement a post_detail, so we fallback to behavior of a put
     def post_detail(self, request, **kwargs):
+        self.current_request = request
         resp = self.put_detail(request, **kwargs)
         return self.modify_response(resp)
 
     def put_detail(self, request, **kwargs):
+        self.current_request = request
         resp = super(EntitlementResource, self).put_detail(request, **kwargs)
         return self.modify_response(resp)
 
@@ -147,14 +149,14 @@ class EntitlementResource(Resource):
         resp['X-Entitlement-Time-Seconds'] = self.last_entitlement_call_length
         return resp
 
-    def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
+    def obj_update(self, bundle, skip_errors=False, **kwargs):
         try:
-            return self.process_checkin(bundle, request, skip_errors, **kwargs)
+            return self.process_checkin(bundle, skip_errors, **kwargs)
         except Exception, e:
             _LOG.exception(e)
             raise
 
-    def process_checkin(self, bundle, request, skip_errors, **kwargs):
+    def process_checkin(self, bundle, skip_errors, **kwargs):
         if not bundle.data.has_key("products"):
             raise BadRequest("Missing 'products'")
         if not bundle.data.has_key("consumer_identifier"):
@@ -172,7 +174,7 @@ class EntitlementResource(Resource):
                 raise BadRequest("Unable to convert 'minutes' with value of '%s' to an integer" % (bundle.data["minutes"]))
 
         # Read the SSL identity certificate from the SSL request environment variables
-        identity_cert = certs.get_client_cert_from_request(request)
+        identity_cert = certs.get_client_cert_from_request(self.current_request)
         #_LOG.info("Using 'identity_cert': %s" % (identity_cert))
         products = bundle.data["products"]
         consumer_identifier = bundle.data["consumer_identifier"]
