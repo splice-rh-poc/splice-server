@@ -10,7 +10,7 @@
 # NON-INFRINGEMENT, or FITNESS FOR A PARTICULAR PURPOSE. You should
 # have received a copy of GPLv2 along with this software; if not, see
 # http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
-
+import django
 import gzip
 import logging
 import time
@@ -26,6 +26,8 @@ from tastypie.authentication import MultiAuthentication
 from tastypie.authorization import Authorization
 from tastypie.resources import Resource
 from tastypie_mongoengine.resources import MongoEngineResource
+from tastypie.utils import dict_strip_unicode_keys
+
 
 from splice.common import certs, config, utils
 from splice.common.auth import X509CertificateAuthentication, TwoLeggedOAuthAuthentication, SpliceAuth
@@ -79,6 +81,60 @@ class BaseResource(MongoEngineResource):
         bundle.data["updated"] = utils.convert_to_datetime(bundle.data["updated"])
         return bundle
 
+    def put_list(self, request, **kwargs):
+        """
+        Replaces a collection of resources with another collection.
+
+        Calls ``delete_list`` to clear out the collection then ``obj_create``
+        with the provided the data to create the new collection.
+
+        Return ``HttpNoContent`` (204 No Content) if
+        ``Meta.always_return_data = False`` (default).
+
+        Return ``HttpAccepted`` (202 Accepted) if
+        ``Meta.always_return_data = True``.
+        """
+        ## Overwriting what default tastypie does because
+        ## We do _not_ want to delete all prior objects in collection, which is default behavior for tastypie
+        if django.VERSION >= (1, 4):
+            body = request.body
+        else:
+            body = request.raw_post_data
+        deserialized = self.deserialize(request, body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        deserialized = self.alter_deserialized_list_data(request, deserialized)
+
+        if not self._meta.collection_name in deserialized:
+            raise BadRequest("Invalid data sent.")
+
+        basic_bundle = self.build_bundle(request=request)
+        ##
+        ## This is the change we are doing from default tastypie, do not delete the collection details
+        ##
+        #self.obj_delete_list_for_update(bundle=basic_bundle, **self.remove_api_resource_names(kwargs))
+        ##
+        bundles_seen = []
+
+        for object_data in deserialized[self._meta.collection_name]:
+            bundle = self.build_bundle(data=dict_strip_unicode_keys(object_data), request=request)
+
+            # Attempt to be transactional, deleting any previously created
+            # objects if validation fails.
+            try:
+                self.obj_create(bundle=bundle, **self.remove_api_resource_names(kwargs))
+                bundles_seen.append(bundle)
+            except ImmediateHttpResponse:
+                self.rollback(bundles_seen)
+                raise
+
+        if not self._meta.always_return_data:
+            return http.HttpNoContent()
+        else:
+            to_be_serialized = {}
+            to_be_serialized[self._meta.collection_name] = [self.full_dehydrate(bundle, for_list=True) for bundle in bundles_seen]
+            to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
+            return self.create_response(request, to_be_serialized, response_class=http.HttpAccepted)
+
+
     def post_list(self, request, **kwargs):
         # Changing behavior so post to a list will update the collection opposed to
         # only working on a single item.
@@ -91,7 +147,7 @@ class BaseResource(MongoEngineResource):
                                 # to save the objects from this request which are created with obj_create
                                 # we want to invoke self.complete_hook() with all objects in request
         _LOG.debug("request data: " + request.raw_post_data)
-        super(BaseResource, self).put_list(request, **kwargs)
+        self.put_list(request, **kwargs)
         self.complete_hook(self.all_objects)
 
     def obj_delete_list(self, request=None, **kwargs):
@@ -125,7 +181,7 @@ class BaseResource(MongoEngineResource):
         if not existing:
             obj.save()
         else:
-            _LOG.info("existing = '%s'" % (existing))
+            _LOG.info("Existing = '%s'" % (existing))
             if obj.updated > existing.updated:
                 for key, value in obj._data.items():
                     if key and key != "id":
