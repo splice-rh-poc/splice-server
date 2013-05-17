@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.114
+Version:    0.115
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -275,6 +275,10 @@ exit 0
 
 
 %changelog
+* Fri May 17 2013 John Matthews <jwmatthews@gmail.com> 0.115-1
+- Handle if 'updated' or 'created' are passed into JSON with "" values
+  (jwmatthews@gmail.com)
+
 * Fri May 17 2013 John Matthews <jwmatthews@gmail.com> 0.114-1
 - Fix for newer version of tastypie so we don't delete the collection on upload
   (jwmatthews@gmail.com)
