@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.113
+Version:    0.114
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -275,6 +275,11 @@ exit 0
 
 
 %changelog
+* Fri May 17 2013 John Matthews <jwmatthews@gmail.com> 0.114-1
+- Fix for newer version of tastypie so we don't delete the collection on upload
+  (jwmatthews@gmail.com)
+- Updated marketing product usage JSON example (jwmatthews@gmail.com)
+
 * Mon May 13 2013 John Matthews <jwmatthews@gmail.com> 0.113-1
 - Update to work with python-django-tastypie-0.9.14, also add requires for
   python-oauth2 and python-httplib2 (jwmatthews@gmail.com)
