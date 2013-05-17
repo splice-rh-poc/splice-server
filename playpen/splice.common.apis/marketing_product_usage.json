@@ -1,55 +1,191 @@
 {
-    "objects": [{
-        "updated": "2013-03-06T00:00:00Z",
-        "splice_server": "ec2-23-20-217-133.compute-1.amazonaws.com",
-        "facts": {
-            "net_dot_interface_dot_lo_dot_mac_address": "00:00:00:00:00:00",
-            "memory_dot_memtotal": "604160",
-            "lscpu_dot_on-line_cpu(s)_list": "",
-            "lscpu_dot_l1d_cache": "6144 KB",
-            "systemid": "1000010003",
-            "net_dot_interface_dot_eth0_dot_ipv4_netmask": "255.255.254.0",
-            "lscpu_dot_architecture": "x86_64",
-            "lscpu_dot_model": "Intel(R) Xeon(R) CPU           E5430  @ 2.66GHz",
-            "net_dot_interface_dot_lo_dot_ipv4_broadcast": "10.243.3.255",
-            "lscpu_dot_cpu_op-mode(s)": "",
-            "uname_dot_machine": "x86_64",
-            "lscpu_dot_l3_cache": "",
-            "lscpu_dot_core(s)_per_socket": "1",
-            "lscpu_dot_cpu_family": "",
-            "lscpu_dot_cpu(s)": "1",
-            "lscpu_dot_l1i_cache": "",
-            "lscpu_dot_virtualization_type": "",
-            "net_dot_interface_dot_lo_dot_ipv4_address": "127.0.0.1",
-            "cpu_dot_cpu_socket(s)": "0",
-            "cpu_dot_cpu(s)": "1",
-            "net_dot_ipv4_address": "10.243.2.179",
-            "lscpu_dot_bogomips": "",
-            "lscpu_dot_l2_cache": "",
-            "memory_dot_swaptotal": "0",
-            "net_dot_interface_dot_eth0_dot_ipv4_address": "10.243.2.179",
-            "lscpu_dot_stepping": "10",
-            "lscpu_dot_cpu_mhz": "2659",
-            "net_dot_interface_dot_eth0_dot_mac_address": "12:31:3b:02:01:45",
-            "lscpu_dot_hypervisor_vendor": "",
-            "lscpu_dot_vendor_id": "GenuineIntel",
-            "net_dot_interface_dot_lo_dot_ipv4_netmask": "255.0.0.0",
-            "lscpu_dot_byte_order": "",
-            "lscpu_dot_cpu_socket(s)": "0"
-        },
-        "created": "2013-03-06T00:00:00Z",
-        "entitlement_status": "partial",
-        "product_info": [
+    "objects": [
+    {
+        "organization_name": "Red Hat (Internal Use Only)", 
+        "updated": "", 
+        "splice_server": "ec2-50-19-34-184.compute-1.amazonaws.com", 
+        "name": "TestThreeGuest0", 
+        "created": "", 
+        "hostname": "", 
+        "entitlement_status": 
             {
-                "account": "1212729",
-                "product": "SYS0395",
-                "contract": "2595500",
-                "quantity": 1,
-                "sla": "prem",
-                "support_level": "l1-l3"
-            }
-        ],
-        "instance_identifier": "608626c6-ee7b-4c21-92f7-f769ff230b46",
-        "date": "2013-03-06T16:32:52Z"
-    }]
-}
+                "status": "valid", 
+                "reasons": [], 
+                "compliantProducts": 
+                    {
+                        "69": [
+                            {
+                                "startDate": "2012-10-30T04:00:00.000+0000", 
+                                "updated": "2013-05-16T17:58:49.640+0000", 
+                                "endDate": "2013-10-30T03:59:59.000+0000", 
+                                "created": "2013-05-16T17:58:49.640+0000", 
+                                "href": "/entitlements/8a8c39353ea3ccbe013eae7e8e280266", 
+                                "certificates": [], 
+                                "consumer": null, 
+                                "id": "8a8c39353ea3ccbe013eae7e8e280266", 
+                                "pool": 
+                                    {
+                                        "startDate": "2012-10-30T04:00:00.000+0000", 
+                                        "endDate": "2013-10-30T03:59:59.000+0000", 
+                                        "activeSubscription": true, 
+                                        "orderNumber": null, 
+                                        "updated": "2013-05-16T17:58:49.643+0000", 
+                                        "href": "/pools/8a8c39353ea3ccbe013ea96b0983010c", 
+                                        "owner": 
+                                            {
+                                                "href": "/owners/satellite-1", 
+                                                "displayName": "Red Hat (Internal Use Only)", 
+                                                "id": "8a8c39353ea34e47013ea353a3eb0003", 
+                                                "key": "satellite-1"
+                                            }, 
+                                        "id": "8a8c39353ea3ccbe013ea96b0983010c", 
+                                        "contractNumber": null, 
+                                        "productAttributes": [
+                                            {
+                                                "name": "variant", 
+                                                "id": null, 
+                                                "value": "Server", 
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "enabled_consumer_types", 
+                                                "id": null, 
+                                                "value": "SAM", 
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "support_type", 
+                                                "id": null, 
+                                                "value": "L1-L3", 
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "type", 
+                                                "id": null, 
+                                                "value": "MKT", 
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "name", 
+                                                "id": null, 
+                                                "value": "Red Hat Enterprise Linux Server, Standard (4 sockets) (Unlimited guests)",
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "description", 
+                                                "id": null, 
+                                                "value": "Red Hat Enterprise Linux", 
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "option_code", 
+                                                "id": null, 
+                                                "value": "1", 
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "product_family", 
+                                                "id": null, 
+                                                "value": "Red Hat Enterprise Linux", 
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "support_level", 
+                                                "id": null, 
+                                                "value": "Standard", 
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "virt_limit", 
+                                                "id": null, 
+                                                "value": "unlimited", 
+                                                "productId": null
+                                            }, 
+                                            {
+                                                "name": "sockets", 
+                                                "id": null, 
+                                                "value": "4", 
+                                                "productId": null
+                                            }
+                                        ], 
+                                        "subscriptionId": "8a8c39353ea3ccbe013ea96b08b100e1", 
+                                        "productId": "RH0100931", 
+                                        "providedProducts": [
+                                            {
+                                                "productId": "180", 
+                                                "id": "8a8c39353ea3ccbe013ea96b09840119", 
+                                                "productName": "Red Hat Beta"
+                                            }, 
+                                            {
+                                                "productId": "69", 
+                                                "id": "8a8c39353ea3ccbe013ea96b09840118", 
+                                                "productName": "Red Hat Enterprise Linux Server"
+                                            }
+                                        ], 
+                                        "subscriptionSubKey": "master", 
+                                        "accountNumber": "5206832", 
+                                        "productName": "Red Hat Enterprise Linux Server, Standard (4 sockets) (Unlimited guests)", 
+                                        "restrictedToUsername": null, 
+                                        "exported": 0, 
+                                        "created": "2013-05-15T18:19:24.419+0000", 
+                                        "consumed": 2, 
+                                        "calculatedAttributes": null, 
+                                        "sourceEntitlement": null, 
+                                        "attributes": [], 
+                                        "quantity": 2
+                                    }, 
+                                    "quantity": 1
+                                }
+                            ]
+                        }, 
+                    "nonCompliantProducts": [], 
+                    "compliant": true, 
+                    "date": "2013-05-17T14:40:13.627+0000", 
+                    "partiallyCompliantProducts": {}, 
+                    "partialStacks": {}, 
+                    "compliantUntil": "2013-10-30T04:00:00.000+0000"
+                }, 
+            "organization_id": "2", 
+            "facts": {
+                "system_dot_certificate_version": "3.1", 
+                "lscpu_dot_on-line_cpu(s)_list": "", 
+                "lscpu_dot_l1d_cache": "", 
+                "systemid": "1000010123", 
+                "lscpu_dot_architecture": "x86_64", 
+                "lscpu_dot_cpu_op-mode(s)": "", 
+                "lscpu_dot_model": "", 
+                "uname_dot_machine": "x86_64", 
+                "lscpu_dot_l3_cache": "", 
+                "lscpu_dot_core(s)_per_socket": "1", 
+                "lscpu_dot_cpu_family": "", 
+                "lscpu_dot_cpu(s)": "1", 
+                "lscpu_dot_l1i_cache": "", 
+                "lscpu_dot_virtualization_type": "", 
+                "distribution_dot_name": "", 
+                "cpu_dot_cpu_socket(s)": "1", 
+                "cpu_dot_cpu(s)": "1", 
+                "net_dot_ipv4_address": "", 
+                "lscpu_dot_bogomips": "", 
+                "lscpu_dot_l2_cache": "", 
+                "lscpu_dot_stepping": "", 
+                "lscpu_dot_cpu_mhz": "", 
+                "lscpu_dot_hypervisor_vendor": "", 
+                "lscpu_dot_vendor_id": "", 
+                "network_dot_hostname": "", 
+                "lscpu_dot_byte_order": "", 
+                "lscpu_dot_cpu_socket(s)": "1"
+            }, 
+            "service_level": "", 
+            "instance_identifier": "049025ad-956b-4e3d-9911-f68f021d9c20", 
+            "date": "2013-05-16T14:39:48-04:00", 
+            "product_info": [
+                {
+                    "account": "5206832", 
+                    "product": "RH0100931", 
+                    "contract": null, 
+                    "quantity": 1
+                }
+            ]
+        }
+    ]}
+
