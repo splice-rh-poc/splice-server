@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.117
+Version:    0.118
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -275,6 +275,9 @@ exit 0
 
 
 %changelog
+* Thu May 23 2013 Chris Duryee (beav) <cduryee@redhat.com>
+- change 'date' field on MPU to 'checkin_date' (cduryee@redhat.com)
+
 * Wed May 22 2013 John Matthews <jwmatthews@gmail.com> 0.117-1
 - Removing pymongo-gridfs dep (jwmatthews@gmail.com)
 
