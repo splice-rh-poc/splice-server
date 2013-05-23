@@ -34,15 +34,11 @@ class MarketingProductUsageTest(BaseEntitlementTestCase):
     def test_example_with_raw_string_data(self):
 	example = {"objects":[
 			{"splice_server": "foofoofoo",
-			 "date": "2006-10-25 14:30:59",
-			 "created": "",
-			 "updated": "",
+			 "checkin_date": "2006-10-25 14:30:59",
 			 "instance_identifier": "bar"},
 			{"splice_server": "foofoofoo",
-			 "date": "2007-10-25 14:40:59",
+			 "checkin_date": "2007-10-25 14:40:59",
 			 "facts": {"fact1": "factresult1"},
-			 "created": "",
-			 "updated": "",
 			 "instance_identifier": "barbar"}
 		]}
 
@@ -64,7 +60,7 @@ class MarketingProductUsageTest(BaseEntitlementTestCase):
         mpu = MarketingProductUsage()
 	mpu.instance_identifier="instance-1"
 	mpu.splice_server = "ss-1"
-	mpu.date=datestr
+	mpu.checkin_date=datestr
         mpu.save()
 
         self.assertEquals(len(found), 1)

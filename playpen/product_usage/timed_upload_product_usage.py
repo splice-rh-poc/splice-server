@@ -66,7 +66,7 @@ def create_marketing_product_usage(checkin_date, instance_identifier, facts):
     mpu.splice_server = SPLICE_SERVER
     mpu.instance_identifier = instance_identifier
     mpu.facts = facts
-    mpu.date = checkin_date
+    mpu.checkin_date = checkin_date
     return mpu
 
 def create_data(num_instances, num_entries, begin):

@@ -274,8 +274,8 @@ class ProductUsage(Document):
 
 class MarketingProductUsage(Document):
     splice_server = StringField(required=True) # uuid of Splice Server data came from
-    date = DateTimeField(required=True)
-    instance_identifier = StringField(required=True, unique_with=['date'])
+    checkin_date = DateTimeField(required=True)
+    instance_identifier = StringField(required=True, unique_with=['checkin_date'])
     updated = IsoDateTimeField(required=True, default=get_now)
     created = IsoDateTimeField(required=True, default=get_now)
     # XXX: a few of these may be required data
@@ -295,19 +295,19 @@ class MarketingProductUsage(Document):
 
     meta = {
         'allow_inheritance': True,
-        'indexes': ['date', 'instance_identifier'],
+        'indexes': ['checkin_date', 'instance_identifier'],
         }
 
     @classmethod
     def pre_save(cls, sender, document, **kwargs):
-        if isinstance(document.date, basestring):
-            document.date = convert_to_datetime(document.date)
+        if isinstance(document.checkin_date, basestring):
+            document.checkin_date = convert_to_datetime(document.checkin_date)
         if document.facts:
             document.facts = sanitize_dict_for_mongo(document.facts)
 
     def __str__(self):
         return "MarketingProductUsage for <%s> on Splice Server <%s> at <%s> with instance identifier <%s>" % \
-               (self.product_info, self.splice_server, self.date, self.instance_identifier)
+               (self.product_info, self.splice_server, self.checkin_date, self.instance_identifier)
 
 
 class SingleTaskInfo(Document):

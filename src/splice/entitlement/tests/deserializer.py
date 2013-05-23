@@ -36,15 +36,11 @@ class JsonGzipSerializerTest(BaseEntitlementTestCase):
     def test_deserialize_json(self):
 	example = {"objects":[
 			{"splice_server": "foofoofoo",
-			 "date": "2006-10-25 14:30:59",
-			 "created": "",
-			 "updated": "",
+			 "checkin_date": "2006-10-25 14:30:59",
 			 "instance_identifier": "bar"},
 			{"splice_server": "foofoofoo",
-			 "date": "2007-10-25 14:40:59",
+			 "checkin_date": "2007-10-25 14:40:59",
 			 "facts": {"fact1": "factresult1"},
-			 "created": "",
-			 "updated": "",
 			 "instance_identifier": "barbar"}
 		]}
 
@@ -58,15 +54,11 @@ class JsonGzipSerializerTest(BaseEntitlementTestCase):
     def test_deserialize_json_gzip(self):
 	example = {"objects":[
 			{"splice_server": "foofoofoo",
-			 "date": "2006-10-25 14:30:59",
-			 "created": "",
-			 "updated": "",
+			 "checkin_date": "2006-10-25 14:30:59",
 			 "instance_identifier": "bar"},
 			{"splice_server": "foofoofoo",
-			 "date": "2007-10-25 14:40:59",
+			 "checkin_date": "2007-10-25 14:40:59",
 			 "facts": {"fact1": "factresult1"},
-			 "created": "",
-			 "updated": "",
 			 "instance_identifier": "barbar"}
 		]}
 

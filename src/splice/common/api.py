@@ -245,7 +245,7 @@ class MarketingProductUsageResource(BaseResource):
         queryset = MarketingProductUsage.objects.all()
 
     def get_existing(self, obj):
-        return MarketingProductUsage.objects(instance_identifier=obj.instance_identifier, date=obj.date).first()
+        return MarketingProductUsage.objects(instance_identifier=obj.instance_identifier, checkin_date=obj.checkin_date).first()
 
 
 class RulesResource(BaseResource):
