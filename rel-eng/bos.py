@@ -57,6 +57,8 @@ def build(git_dir, temp_dir, proj_name, proj_url):
     cmd = "cd %s && git pull --rebase" % (expected_source_dir)
     run_command(cmd)
     cmd = "cd %s && tito build --rpm -o %s" % (expected_source_dir, temp_dir)
+    if CFG["scls"].has_key(proj_name):
+        cmd += " --scl %s" % (CFG["scls"][proj_name])
     run_command(cmd)
 
 def copy_deps(dest_dir):
