@@ -1,0 +1,130 @@
+#!/usr/bin/python
+#
+# Copyright (c) 2013 Red Hat, Inc.
+#
+#
+# This software is licensed to you under the GNU General Public
+# License as published by the Free Software Foundation; either version
+# 2 of the License (GPLv2) or (at your option) any later version.
+# There is NO WARRANTY for this software, express or implied,
+# including the implied warranties of MERCHANTABILITY,
+# NON-INFRINGEMENT, or FITNESS FOR A PARTICULAR PURPOSE. You should
+# have received a copy of GPLv2 along with this software; if not, see
+# http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt.
+#
+# Sayli Karmarkar <skarmark@redhat.com>
+# James Slagle <jslagle@redhat.com>
+
+from datetime import datetime
+from optparse import OptionParser
+import os
+import sys
+import shutil
+
+
+SCRIPT_PREFIX = 'splice-debug-'
+
+
+# Contents of these files, directories and output of commands will be copied
+# when Splice is installed
+SPLICE_DIRS =  [ "/etc/splice/",
+                 "/var/log/splice",
+               ]
+               
+SPLICE_FILES = [ "/etc/httpd/conf.d/splice.conf",
+                 "/etc/cron.d/spacewalk-sst-sync",
+                 "/etc/cron.d/splice-sst-sync",
+               ] 
+
+SPLICE_COMMANDS = {}
+
+
+def __parser():
+    parser = OptionParser()
+    parser.add_option(
+        '--dir',
+        dest='dir',
+        help='Directory to place the tree containing debugging information; defaults to /tmp',
+        default='/tmp')
+    return parser
+
+def check_root():
+    """
+    Checks whether user has root access to run this script
+    """
+    if not os.geteuid() == 0:
+        sys.exit("You need to have root access to run this script")
+
+def copy_dirs(dirs, base_dir):
+    """
+    If directory exists, copies contents of each directory into base directory
+    """
+    for dir in dirs:
+        if not os.path.exists(dir):
+            continue
+        dst = os.path.join(base_dir, dir.lstrip('/'))
+        try:
+            print "Copying contents of directory [%s] to [%s] " % (dir, dst) 
+            shutil.copytree(dir, dst, symlinks=False)
+        except:
+            # Ignore error raised by shutil when a sub-directory already exists
+            pass
+        
+def copy_files(files, base_dir):
+    """
+    If file exists, copies the file into base directory.
+    """
+    for file in files:
+        if not os.path.exists(file):
+            continue
+        path, filename = os.path.split(file)
+        path = os.path.join(base_dir, path.lstrip('/'))
+        if not os.path.exists(path):
+            os.makedirs(path)
+        print "Copying file [%s] to [%s]" % (file, path)
+        shutil.copy(file, path)
+        
+def run_commands(commands, base_dir):
+    """
+    Runs given commands and copies output under commands directory into the 
+    base directory.
+    """
+    commands_dir = os.path.join(base_dir, 'commands')
+    if not os.path.exists(commands_dir):
+        print "Creating commands directory [%s]" % commands_dir
+        os.mkdir(commands_dir)
+
+    for command, command_info in commands.items():
+        if os.access(command_info['access_path'], os.R_OK):
+            location = os.path.join(commands_dir, command_info['filename'])
+            print "Storing output of command [%s] in [%s]" % (commands_dir, location)
+            os.system(command + ' >> ' + location)
+        
+
+if __name__=="__main__":
+    
+    # Get the location to store debugging content
+    parser = __parser()
+    (opt, args) = parser.parse_args()
+    
+    if not os.path.exists(opt.dir):
+        sys.exit('Directory [%s] does not exists' % opt.dir)
+    
+    # Make sure user has root access to run this script
+    check_root()
+    
+    # Create a base directory to store debugging information 
+    now = datetime.now().strftime("%Y-%m-%d-T%H-%M-%S")
+    time_dir = SCRIPT_PREFIX + now
+    base_dir = os.path.join(opt.dir, time_dir)
+
+    if os.path.exists(base_dir):
+        sys.exit("Directory with path [%s] already exists; please delete and re-run the script" % time_dir)
+    else:
+        os.makedirs(base_dir)
+        print("Successfully created directory [%s]" % base_dir)
+        
+    # Collect RHUA specific debugging information
+    copy_dirs(SPLICE_DIRS, base_dir)
+    copy_files(SPLICE_FILES, base_dir)
+    run_commands(SPLICE_COMMANDS, base_dir)
