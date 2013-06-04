@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.119
+Version:    0.120
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -295,6 +295,9 @@ exit 0
 
 
 %changelog
+* Tue Jun 04 2013 James Slagle <jslagle@redhat.com> 0.120-1
+- Require pymongo-gridfs (jslagle@redhat.com)
+
 * Tue Jun 04 2013 James Slagle <jslagle@redhat.com> 0.119-1
 - Add sphinx deps (jslagle@redhat.com)
 - Refactor packaging a bit to not require celery (jslagle@redhat.com)
