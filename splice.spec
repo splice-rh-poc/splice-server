@@ -85,7 +85,7 @@ Requires:       %{name}-common-config = %{version}-%{release}
 Requires:       python-certutils >= 0.15
 Requires:       python-mongoengine >= 0.7.5
 Requires:       pymongo
-#Requires:       pymongo-gridfs
+Requires:       pymongo-gridfs
 
 %description    common
 Splice common components
