@@ -78,24 +78,8 @@ SESSION_ENGINE = 'mongoengine.django.sessions'
 #############################
 # Celery Configuration
 #
-import djcelery
-djcelery.setup_loader()
-
-from splice.common.constants import SPLICE_ENTITLEMENT_BASE_TASK_NAME
-## Broker settings.
-BROKER_URL = "amqp://guest:guest@localhost:5672//"
-# List of modules to import when celery starts.
-CELERY_IMPORTS = ("splice.entitlement.tasks", )
-## Using the database to store task state and results.
-CELERY_RESULT_BACKEND = "mongodb"
-CELERY_MONGODB_BACKEND_SETTINGS = {
-    "host": "localhost"
-}
-CELERY_ANNOTATIONS = {"%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME): {"rate_limit": "10/s"}}
-
-CELERY_TIMEZONE = 'UTC'
-
-CELERYBEAT_SCHEDULE = {}
+# Only configured if celery is enabled in the config file.
+CELERY_ENABLED = config.CONFIG.get('celery', 'enabled')
 
 def set_celerybeat_schedule():
     global CELERYBEAT_SCHEDULE
@@ -151,10 +135,30 @@ def set_celerybeat_schedule():
     #}
     #LOG.debug("CeleryBeat configuration: %s" % (CELERYBEAT_SCHEDULE))
 
-if on_startup.check_valid_identity():
-    set_celerybeat_schedule()
-else:
-    LOG.error("Skipping setup of Celery tasks since Server's Identity certificate is invalid.")
+if CELERY_ENABLED:
+    import djcelery
+    djcelery.setup_loader()
+
+    from splice.common.constants import SPLICE_ENTITLEMENT_BASE_TASK_NAME
+    ## Broker settings.
+    BROKER_URL = "amqp://guest:guest@localhost:5672//"
+    # List of modules to import when celery starts.
+    CELERY_IMPORTS = ("splice.entitlement.tasks", )
+    ## Using the database to store task state and results.
+    CELERY_RESULT_BACKEND = "mongodb"
+    CELERY_MONGODB_BACKEND_SETTINGS = {
+        "host": "localhost"
+    }
+    CELERY_ANNOTATIONS = {"%s.add" % (SPLICE_ENTITLEMENT_BASE_TASK_NAME): {"rate_limit": "10/s"}}
+
+    CELERY_TIMEZONE = 'UTC'
+
+    CELERYBEAT_SCHEDULE = {}
+
+    if on_startup.check_valid_identity():
+        set_celerybeat_schedule()
+    else:
+        LOG.error("Skipping setup of Celery tasks since Server's Identity certificate is invalid.")
 #
 # End of Celery Configuration
 #############################

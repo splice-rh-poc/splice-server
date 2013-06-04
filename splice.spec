@@ -21,8 +21,6 @@ BuildRequires: python-sphinxcontrib-httpdomain
 Requires: mongodb-server
 Requires: mod_ssl
 Requires: mod_wsgi
-Requires: rabbitmq-server
-Requires: librabbitmq
 Requires: python-oauth2
 Requires: python-httplib2
 #
@@ -31,8 +29,6 @@ Requires: python-httplib2
 #
 Requires: Django >= 1.4.1
 Requires: python-django-tastypie >= 0.9.14
-Requires: python-celery >= 3.0
-Requires: django-celery >= 3.0.9
 Requires: m2crypto >= 0.21.1.pulp-7
 #
 # RPMs from Splice Project
@@ -51,6 +47,17 @@ Conflicts: rhic-serve
 #
 %description
 Framework for metering entitlement consumption
+
+%package        celery
+Summary:        Splice Celery Tasks
+Group:          Development/Languages
+Requires: python-celery >= 3.0
+Requires: django-celery >= 3.0.9
+Requires: rabbitmq-server
+Requires: librabbitmq
+
+%description    celery
+Splice Celery Tasks
 
 %package        selinux
 Summary:        Splice SELinux policy
@@ -226,17 +233,30 @@ exit 0
 
 %files
 %defattr(-,root,root,-)
-%{python_sitelib}/%{name}
+%{python_sitelib}/%{name}/checkin_service
+%{python_sitelib}/%{name}/entitlement/__init__.py*
+%{python_sitelib}/%{name}/entitlement/apis.py*
+%{python_sitelib}/%{name}/entitlement/checkin.py*
+%{python_sitelib}/%{name}/entitlement/models.py*
+%{python_sitelib}/%{name}/entitlement/on_startup.py*
+%{python_sitelib}/%{name}/entitlement/tests
+%{python_sitelib}/%{name}/entitlement/views.py*
+%{python_sitelib}/%{name}/manage.py*
+%{python_sitelib}/%{name}/managers
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
-%config(noreplace) %{_sysconfdir}/splice/celery/celerybeat
-%config(noreplace) %{_sysconfdir}/splice/celery/celeryd
-%config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celerybeat
-%config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celeryd
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_all
 %defattr(-,apache,apache,-)
 %dir /srv/%{name}
 /srv/%{name}/webservices.wsgi
 %doc
+
+%files celery
+%defattr(-,root,root,-)
+%{python_sitelib}/%{name}/entitlement/tasks.py*
+%config(noreplace) %{_sysconfdir}/splice/celery/celerybeat
+%config(noreplace) %{_sysconfdir}/splice/celery/celeryd
+%config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celerybeat
+%config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celeryd
 
 %files common
 %defattr(-,root,root,-)
