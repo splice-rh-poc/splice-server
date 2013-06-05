@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.120
+Version:    0.121
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -295,6 +295,13 @@ exit 0
 
 
 %changelog
+* Wed Jun 05 2013 John Matthews <jwmatthews@gmail.com> 0.121-1
+- Comment out requires on rhic_serve and report-server.  Testing to confirm
+  they are not needed (jwmatthews@gmail.com)
+- Updating bos.py script to use chcon instead of restorecon to work past an
+  issue when applying a context to a path that contains a symlink which breaks
+  regexes restorecon relies on (jwmatthews@gmail.com)
+
 * Tue Jun 04 2013 James Slagle <jslagle@redhat.com> 0.120-1
 - Require pymongo-gridfs (jslagle@redhat.com)
 
