@@ -33,8 +33,8 @@ Requires: m2crypto >= 0.21.1.pulp-7
 #
 # RPMs from Splice Project
 #
-Requires: report-server-import >= 0.53
-Requires: rhic-serve-rcs >= 0.15
+#Requires: report-server-import >= 0.53
+#Requires: rhic-serve-rcs >= 0.15
 #
 # Our own sub RPMs
 #
