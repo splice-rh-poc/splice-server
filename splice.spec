@@ -29,6 +29,7 @@ Requires: python-httplib2
 #
 Requires: Django >= 1.4.1
 Requires: python-django-tastypie >= 0.9.14
+Requires: python-django-tastypie-mongoengine
 Requires: m2crypto >= 0.21.1.pulp-7
 #
 # RPMs from Splice Project
