@@ -1,0 +1,316 @@
+From defd01b6932a4c1b79e5513db4fe0713501ba696 Mon Sep 17 00:00:00 2001
+From: Nathaniel Tucker <me@ntucker.me>
+Date: Fri, 8 Feb 2013 09:47:29 -0800
+Subject: [PATCH 1/4] Django 1.5 custom user model compatability
+
+---
+ tastypie/authentication.py                        | 4 ++--
+ tastypie/compat.py                                | 9 +++++++++
+ tastypie/management/commands/backfill_api_keys.py | 2 +-
+ tastypie/models.py                                | 4 ++--
+ 4 files changed, 14 insertions(+), 5 deletions(-)
+ create mode 100644 tastypie/compat.py
+
+diff --git a/tastypie/authentication.py b/tastypie/authentication.py
+index 562f67d..9779230 100644
+--- a/tastypie/authentication.py
++++ b/tastypie/authentication.py
+@@ -178,7 +178,7 @@ def is_authenticated(self, request, **kwargs):
+         Should return either ``True`` if allowed, ``False`` if not or an
+         ``HttpResponse`` if you need something custom.
+         """
+-        from django.contrib.auth.models import User
++        from tastypie.compat import User
+ 
+         try:
+             username, api_key = self.extract_credentials(request)
+@@ -357,7 +357,7 @@ def is_authenticated(self, request, **kwargs):
+         return True
+ 
+     def get_user(self, username):
+-        from django.contrib.auth.models import User
++        from tastypie.compat import User
+ 
+         try:
+             user = User.objects.get(username=username)
+diff --git a/tastypie/compat.py b/tastypie/compat.py
+new file mode 100644
+index 0000000..20fae94
+--- /dev/null
++++ b/tastypie/compat.py
+@@ -0,0 +1,9 @@
++import django
++__all__ = ['User']
++
++# Django 1.5+ compatibility
++if django.VERSION >= (1, 5):
++    from django.contrib.auth import get_user_model
++    User = get_user_model()
++else:
++    from django.contrib.auth.models import User
+\ No newline at end of file
+diff --git a/tastypie/management/commands/backfill_api_keys.py b/tastypie/management/commands/backfill_api_keys.py
+index a3c9f60..27f30a4 100644
+--- a/tastypie/management/commands/backfill_api_keys.py
++++ b/tastypie/management/commands/backfill_api_keys.py
+@@ -1,5 +1,5 @@
+-from django.contrib.auth.models import User
+ from django.core.management.base import NoArgsCommand
++from tastypie.compat import User
+ from tastypie.models import ApiKey
+ 
+ 
+diff --git a/tastypie/models.py b/tastypie/models.py
+index ce980ca..cbb9cb9 100644
+--- a/tastypie/models.py
++++ b/tastypie/models.py
+@@ -28,10 +28,10 @@ def save(self, *args, **kwargs):
+ 
+ if 'django.contrib.auth' in settings.INSTALLED_APPS:
+     import uuid
+-    from django.contrib.auth.models import User
++    AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
+     
+     class ApiKey(models.Model):
+-        user = models.OneToOneField(User, related_name='api_key')
++        user = models.OneToOneField(AUTH_USER_MODEL, related_name='api_key')
+         key = models.CharField(max_length=256, blank=True, default='', db_index=True)
+         created = models.DateTimeField(default=now)
+ 
+-- 
+1.8.1.5
+
+
+From 8390f1e965cb64d6dc6c569c6aa66416d090655b Mon Sep 17 00:00:00 2001
+From: marblar <pub@mblar.us>
+Date: Fri, 15 Feb 2013 19:00:00 -0500
+Subject: [PATCH 2/4] Added unit tests for Django 1.5 custom AUTH_USER_MODEL.
+
+---
+ tests/customuser/__init__.py          |  0
+ tests/customuser/models.py            |  1 +
+ tests/customuser/tests/__init__.py    |  1 +
+ tests/customuser/tests/custom_user.py | 47 +++++++++++++++++++++++++++++++++++
+ tests/manage_customuser.py            | 18 ++++++++++++++
+ tests/settings_customuser.py          | 26 +++++++++++++++++++
+ 6 files changed, 93 insertions(+)
+ create mode 100644 tests/customuser/__init__.py
+ create mode 100644 tests/customuser/models.py
+ create mode 100644 tests/customuser/tests/__init__.py
+ create mode 100644 tests/customuser/tests/custom_user.py
+ create mode 100755 tests/manage_customuser.py
+ create mode 100644 tests/settings_customuser.py
+
+diff --git a/tests/customuser/__init__.py b/tests/customuser/__init__.py
+new file mode 100644
+index 0000000..e69de29
+diff --git a/tests/customuser/models.py b/tests/customuser/models.py
+new file mode 100644
+index 0000000..71ace1d
+--- /dev/null
++++ b/tests/customuser/models.py
+@@ -0,0 +1 @@
++from django.contrib.auth.tests.custom_user import CustomUser
+diff --git a/tests/customuser/tests/__init__.py b/tests/customuser/tests/__init__.py
+new file mode 100644
+index 0000000..bc76405
+--- /dev/null
++++ b/tests/customuser/tests/__init__.py
+@@ -0,0 +1 @@
++from customuser.tests import *
+diff --git a/tests/customuser/tests/custom_user.py b/tests/customuser/tests/custom_user.py
+new file mode 100644
+index 0000000..5789856
+--- /dev/null
++++ b/tests/customuser/tests/custom_user.py
+@@ -0,0 +1,47 @@
++from django.conf import settings
++from django.http import HttpRequest
++from django.test import TestCase
++from tastypie.models import ApiKey, create_api_key
++from django import get_version as django_version
++from django.test import TestCase
++from django.contrib.auth.tests.custom_user import CustomUser
++
++class CustomUserTestCase(TestCase):
++    fixtures = ['custom_user.json']
++    def setUp(self):
++        if django_version() < '1.5':
++            self.skipTest('This test requires Django 1.5 or higher')
++        else:
++            super(CustomUserTestCase, self).setUp()
++            ApiKey.objects.all().delete()
++
++    def test_is_authenticated_get_params(self):
++        auth = ApiKeyAuthentication()
++        request = HttpRequest()
++
++        # Simulate sending the signal.
++        john_doe = CustomUser.objects.get(pk=1)
++        create_api_key(CustomUser, instance=john_doe, created=True)
++
++        # No username/api_key details should fail.
++        self.assertEqual(isinstance(auth.is_authenticated(request), HttpUnauthorized), True)
++
++        # Wrong username details.
++        request.GET['username'] = 'foo'
++        self.assertEqual(isinstance(auth.is_authenticated(request), HttpUnauthorized), True)
++
++        # No api_key.
++        request.GET['username'] = 'daniel'
++        self.assertEqual(isinstance(auth.is_authenticated(request), HttpUnauthorized), True)
++
++        # Wrong user/api_key.
++        request.GET['username'] = 'daniel'
++        request.GET['api_key'] = 'foo'
++        self.assertEqual(isinstance(auth.is_authenticated(request), HttpUnauthorized), True)
++
++        # Correct user/api_key.
++        create_api_key(CustomUser, instance=john_doe, created=True)
++        request.GET['username'] = 'johndoe'
++        request.GET['api_key'] = john_doe.api_key.key
++        self.assertEqual(auth.is_authenticated(request), True)
++        self.assertEqual(auth.get_identifier(request), 'johndoe')
+diff --git a/tests/manage_customuser.py b/tests/manage_customuser.py
+new file mode 100755
+index 0000000..895ecda
+--- /dev/null
++++ b/tests/manage_customuser.py
+@@ -0,0 +1,18 @@
++#!/usr/bin/env python
++
++import os
++import sys
++
++from os.path import abspath, dirname, join
++from django.core.management import execute_manager
++sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
++try:
++    import settings_core as settings
++except ImportError:
++    import sys
++    sys.stderr.write("Error: Can't find the file 'settings_core.py' in the directory containing %r. It appears you've customized things.\nYou'll have to run django-admin.py, passing it your settings module.\n(If the file settings.py does indeed exist, it's causing an ImportError somehow.)\n" % __file__)
++    sys.exit(1)
++
++if __name__ == "__main__":
++    execute_manager(settings)
++
+diff --git a/tests/settings_customuser.py b/tests/settings_customuser.py
+new file mode 100644
+index 0000000..12d6b40
+--- /dev/null
++++ b/tests/settings_customuser.py
+@@ -0,0 +1,26 @@
++from settings import *
++INSTALLED_APPS.append('customuser')
++INSTALLED_APPS.append('django.contrib.auth')
++
++ROOT_URLCONF = 'core.tests.api_urls'
++MEDIA_URL = 'http://localhost:8080/media/'
++
++LOGGING = {
++    'version': 1,
++    'disable_existing_loggers': True,
++    'handlers': {
++        'simple': {
++            'level': 'ERROR',
++            'class': 'core.utils.SimpleHandler',
++        }
++    },
++    'loggers': {
++        'django.request': {
++            'handlers': ['simple'],
++            'level': 'ERROR',
++            'propagate': False,
++        },
++    }
++}
++
++AUTH_USER_MODEL = 'auth.CustomUser'
+-- 
+1.8.1.5
+
+
+From 8b1c0fad039365c4a2a34cdba22b4ecbac611e4e Mon Sep 17 00:00:00 2001
+From: Jharrod LaFon <jlafon@eyesopen.com>
+Date: Fri, 22 Mar 2013 16:09:30 -0600
+Subject: [PATCH 3/4] Added new attribute to Bundle to contain related objects
+ to be saved in ModelResource.save_related
+
+---
+ tastypie/bundle.py | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/tastypie/bundle.py b/tastypie/bundle.py
+index 3499881..5602279 100644
+--- a/tastypie/bundle.py
++++ b/tastypie/bundle.py
+@@ -16,7 +16,9 @@ def __init__(self,
+                  request=None,
+                  related_obj=None,
+                  related_name=None,
+-                 objects_saved=None):
++                 objects_saved=None,
++                 related_objects_to_save=None,
++                 ):
+         self.obj = obj
+         self.data = data or {}
+         self.request = request or HttpRequest()
+@@ -24,6 +26,7 @@ def __init__(self,
+         self.related_name = related_name
+         self.errors = {}
+         self.objects_saved = objects_saved or set()
++        self.related_objects_to_save = related_objects_to_save or {}
+ 
+     def __repr__(self):
+         return "<Bundle for obj: '%s' and with data: '%s'>" % (self.obj, self.data)
+-- 
+1.8.1.5
+
+
+From 431aaa9a17498a475df3ab26529cf0a94175a7af Mon Sep 17 00:00:00 2001
+From: Jharrod LaFon <jlafon@eyesopen.com>
+Date: Fri, 22 Mar 2013 16:13:47 -0600
+Subject: [PATCH 4/4] Due to a bug in Django (ticket
+ https://code.djangoproject.com/ticket/18153) and the corresponding patch
+ (https://github.com/django/django/commit/3190abcd75b1fcd660353da4001885ef82cbc596),
+ tests were failing with Django 1.5 (tests/validation/). This commit modifies
+ ModelResource so that related resources no longer rely on this incorrect
+ Django behavior by storing the objects to be saved in save_related (which is
+ called after authentication/authorization checks).
+
+---
+ tastypie/resources.py | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/tastypie/resources.py b/tastypie/resources.py
+index d8e9c08..4ea5284 100644
+--- a/tastypie/resources.py
++++ b/tastypie/resources.py
+@@ -905,7 +905,13 @@ def full_hydrate(self, bundle):
+                         setattr(bundle.obj, field_object.attribute, value)
+                     elif not getattr(field_object, 'is_m2m', False):
+                         if value is not None:
+-                            setattr(bundle.obj, field_object.attribute, value.obj)
++                            # NOTE: A bug fix in Django (ticket #18153) fixes incorrect behavior
++                            # which Tastypie was relying on.  To fix this, we store value.obj to
++                            # be saved later in save_related.
++                            try:
++                                setattr(bundle.obj, field_object.attribute, value.obj)
++                            except (ValueError, ObjectDoesNotExist):
++                                bundle.related_objects_to_save[field_object.attribute] = value.obj
+                         elif field_object.blank:
+                             continue
+                         elif field_object.null:
+@@ -2294,7 +2300,7 @@ def save_related(self, bundle):
+             try:
+                 related_obj = getattr(bundle.obj, field_object.attribute)
+             except ObjectDoesNotExist:
+-                related_obj = None
++                related_obj = bundle.related_objects_to_save.get(field_object.attribute, None)
+ 
+             # Because sometimes it's ``None`` & that's OK.
+             if related_obj:
+-- 
+1.8.1.5
+
