@@ -26,17 +26,17 @@ from splice.common.api import SpliceServerResource, PoolResource, \
     ProductResource, RulesResource, MarketingProductUsageResource, \
     PingResource
 
-from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource, ModifiedProductUsageResource
+#from splice.entitlement.apis import EntitlementResource, RHICRCSModifiedResource, ModifiedProductUsageResource
 
 _LOG = logging.getLogger(__name__)
 
 v1_api = Api(api_name='v1')
-v1_api.register(EntitlementResource())
-v1_api.register(RHICRCSModifiedResource())
-v1_api.register(ModifiedProductUsageResource())
-v1_api.register(PoolResource())
-v1_api.register(ProductResource())
-v1_api.register(RulesResource())
+#v1_api.register(EntitlementResource())
+#v1_api.register(RHICRCSModifiedResource())
+#v1_api.register(ModifiedProductUsageResource())
+#v1_api.register(PoolResource())
+#v1_api.register(ProductResource())
+#v1_api.register(RulesResource())
 v1_api.register(MarketingProductUsageResource())
 v1_api.register(SpliceServerResource())
 v1_api.register(PingResource())

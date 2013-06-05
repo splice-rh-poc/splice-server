@@ -51,9 +51,11 @@ INSTALLED_APPS = (
     #'django.contrib.staticfiles',
     'tastypie',
     'splice.entitlement',
-    'djcelery',
-    'rhic_serve.rhic_rcs',
-    'report_server.report_import',
+    # Commenting out below for SAM integration  
+    #'djcelery',
+    #'rhic_serve.rhic_rcs',
+    #'report_server.report_import',
+    # End of SAM integration change.
 )
 
 ##
@@ -79,7 +81,8 @@ SESSION_ENGINE = 'mongoengine.django.sessions'
 # Celery Configuration
 #
 # Only configured if celery is enabled in the config file.
-CELERY_ENABLED = config.CONFIG.get('celery', 'enabled')
+CELERY_ENABLED = config.CONFIG.getboolean('celery', 'enabled')
+
 
 def set_celerybeat_schedule():
     global CELERYBEAT_SCHEDULE
