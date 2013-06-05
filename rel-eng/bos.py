@@ -79,7 +79,11 @@ def createrepo(temp_repo_dir, repo_dir):
     run_command(cmd)
     cmd = "chmod -R go+rX %s" % (repo_dir)
     run_command(cmd)
-    cmd = "restorecon -R %s" % (repo_dir)
+    # Note hit issues of restorecon not resetting file context
+    # might be related to a symlink being in the path
+    # this issue showed up after we switch the repo dir to a 
+    # different partition and used a symlink 
+    cmd = "chcon -R -t httpd_sys_content_t %s" % (repo_dir)
     run_command(cmd)
 
 def clean_temp_dir(temp_dir):
