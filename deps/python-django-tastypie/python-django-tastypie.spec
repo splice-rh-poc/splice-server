@@ -1,7 +1,7 @@
 %global pypi_name django-tastypie
 Name:           python-%{pypi_name}
 Version:        0.9.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A flexible and capable API layer for Django
 
 Group:          Development/Languages
@@ -134,6 +134,10 @@ popd
 # %%exclude %{docdir}/html/.*
 
 %changelog
+* Wed Jun 05 2013 John Matthews <jwmatthews@gmail.com> 0.9.14-2
+- Removed older files from python-django-tastypie 0.9.12 (jwmatthews@gmail.com)
+- Upgrade python-django-tastypie to 0.9.14 (jwmatthews@gmail.com)
+
 * Tue Mar 26 2013 Miro Hrončok <mhroncok@redhat.com> - 0.9.14-1
 - New version
 - Using new GitHub rule to get archive with tests
