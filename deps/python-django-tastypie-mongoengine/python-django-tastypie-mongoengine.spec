@@ -3,7 +3,7 @@
 
 Name:		python-django-tastypie-mongoengine
 Version:	0.2.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 Summary:	MongoEngine support for django-tastypie.
 
 Group:		Development/Languages
@@ -59,6 +59,9 @@ cp -p LICENSE README.rst -t $RPM_BUILD_ROOT%{docdir}
 
 
 %changelog
+* Wed Jun 05 2013 John Matthews <jwmatthews@gmail.com> 0.2.3-5
+- new package built with tito
+
 * Mon Sep 17 2012 James Slagle <slagle@redhat.com> 0.2.3-4
 - Add missing Requires (slagle@redhat.com)
 
