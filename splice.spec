@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.121
+Version:    0.122
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -295,6 +295,12 @@ exit 0
 
 
 %changelog
+* Wed Jun 05 2013 John Matthews <jwmatthews@gmail.com> 0.122-1
+- Automatic commit of package [python-django-tastypie] minor release
+  [0.9.14-2]. (jwmatthews@gmail.com)
+- Removed older files from python-django-tastypie 0.9.12 (jwmatthews@gmail.com)
+- Upgrade python-django-tastypie to 0.9.14 (jwmatthews@gmail.com)
+
 * Wed Jun 05 2013 John Matthews <jwmatthews@gmail.com> 0.121-1
 - Comment out requires on rhic_serve and report-server.  Testing to confirm
   they are not needed (jwmatthews@gmail.com)
