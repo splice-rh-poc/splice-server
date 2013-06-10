@@ -95,6 +95,7 @@ Splice common components
 Summary:        Splice common config components
 Group:          Development/Languages
 Requires:       python-isodate
+Requires:       httpd
 
 %description    common-config
 Splice common config components
@@ -188,6 +189,10 @@ getent passwd splice >/dev/null || \
 exit 0
 
 %post common
+touch %{_var}/log/%{name}/general.log
+touch %{_var}/log/%{name}/splice.log
+touch %{_var}/log/%{name}/spacewalk_splice_tool.log
+
 chown -R apache:splice %{_var}/log/%{name}
 chown -R splice:splice %{_var}/log/%{name}/celery
 chmod -R g+rwX %{_var}/log/%{name}
