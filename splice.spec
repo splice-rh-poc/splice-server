@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.124
+Version:    0.125
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -301,6 +301,11 @@ exit 0
 
 
 %changelog
+* Mon Jun 10 2013 John Matthews <jwmatthews@gmail.com> 0.125-1
+- 928372 - Missing dependencies for splice-common package
+  (jwmatthews@gmail.com)
+- Update sample to use 'checkin_date' (jwmatthews@gmail.com)
+
 * Wed Jun 05 2013 John Matthews <jwmatthews@gmail.com> 0.124-1
 - Add python-django-tastypie-mongoengine to Requires (jwmatthews@gmail.com)
 - Automatic commit of package [python-django-tastypie-mongoengine] minor
