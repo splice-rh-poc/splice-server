@@ -263,6 +263,8 @@ exit 0
 %config(noreplace) %{_sysconfdir}/splice/celery/celeryd
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celerybeat
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_celeryd
+%dir %{_var}/log/%{name}/celery
+%attr(775,root,splice) %{_var}/log/%{name}/celery
 
 %files common
 %defattr(-,root,root,-)
@@ -278,7 +280,7 @@ exit 0
 %{_sysconfdir}/pki/%{name}
 %dir %{_var}/lib/%{name}
 %dir %{_var}/log/%{name}
-%dir %{_var}/log/%{name}/celery
+%attr(775,root,splice) %{_var}/log/%{name}
 
 %files common-config
 %defattr(-,root,root,-)
