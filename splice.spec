@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.125
+Version:    0.126
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -303,6 +303,9 @@ exit 0
 
 
 %changelog
+* Thu Jun 13 2013 John Matthews <jwmatthews@gmail.com> 0.126-1
+- Fix permissions on /var/log/splice in the spec file (jslagle@redhat.com)
+
 * Mon Jun 10 2013 John Matthews <jwmatthews@gmail.com> 0.125-1
 - 928372 - Missing dependencies for splice-common package
   (jwmatthews@gmail.com)
