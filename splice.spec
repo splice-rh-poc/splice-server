@@ -141,6 +141,7 @@ mkdir -p %{buildroot}/%{_sysconfdir}/rc.d/init.d
 mkdir -p %{buildroot}/%{_var}/lib/%{name}
 mkdir -p %{buildroot}/%{_var}/log/%{name}
 mkdir -p %{buildroot}/%{_var}/log/%{name}/celery
+mkdir -p %{buildroot}/%{_bindir}
 
 
 # Install WSGI script & httpd conf
@@ -168,6 +169,9 @@ cd -
 mkdir -p %{buildroot}/%{_docdir}/%{name}
 cp LICENSE %{buildroot}/%{_docdir}/%{name}
 cp -R doc/_build/html %{buildroot}/%{_docdir}/%{name}
+
+# Scripts
+cp bin/splice-debug %{buildroot}/%{_bindir}/splice-debug
 
 %clean
 rm -rf %{buildroot}
@@ -251,6 +255,7 @@ exit 0
 %{python_sitelib}/%{name}/managers
 %config(noreplace) %{_sysconfdir}/httpd/conf.d/%{name}.conf
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/splice_all
+%attr(755,root,root) %{_bindir}/splice-debug
 %defattr(-,apache,apache,-)
 %dir /srv/%{name}
 /srv/%{name}/webservices.wsgi
