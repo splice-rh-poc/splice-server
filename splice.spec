@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.126
+Version:    0.127
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -308,6 +308,11 @@ exit 0
 
 
 %changelog
+* Fri Jun 14 2013 James Slagle <jslagle@redhat.com> 0.127-1
+- Remove rhic_serve log file handler.  It creates a superfulous file.
+  (jslagle@redhat.com)
+- Package splice-debug script (jslagle@redhat.com)
+
 * Thu Jun 13 2013 John Matthews <jwmatthews@gmail.com> 0.126-1
 - Fix permissions on /var/log/splice in the spec file (jslagle@redhat.com)
 
