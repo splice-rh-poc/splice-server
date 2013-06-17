@@ -22,27 +22,27 @@ force_log_perms() {
 start() {
     force_log_perms
     service httpd start
-    service splice_celeryd start
-    service splice_celerybeat start
+    #service splice_celeryd start
+    #service splice_celerybeat start
 }
 
 stop() {
     service httpd stop
-    service splice_celeryd stop
-    service splice_celerybeat stop
+    #service splice_celeryd stop
+    #service splice_celerybeat stop
 }
 
 restart() {
     force_log_perms
     service httpd restart
-    service splice_celeryd restart
-    service splice_celerybeat stop
-    service splice_celerybeat start
+    #service splice_celeryd restart
+    #service splice_celerybeat stop
+    #service splice_celerybeat start
 }
 
 status() {
     service httpd status
-    service splice_celeryd status
+    #service splice_celeryd status
 }
 
 case "$1" in
