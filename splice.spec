@@ -87,6 +87,10 @@ Requires:       python-certutils >= 0.15
 Requires:       python-mongoengine >= 0.7.5
 Requires:       pymongo
 Requires:       pymongo-gridfs
+# Explicity require the v8 package.  The ruby-v8 package has a false provides
+# that makes it so that v8 is not installed.
+# See https://bugzilla.redhat.com/show_bug.cgi?id=971595
+Requires:       v8
 
 %description    common
 Splice common components
