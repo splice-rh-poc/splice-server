@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.128
+Version:    0.129
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -316,6 +316,10 @@ exit 0
 
 
 %changelog
+* Mon Jun 17 2013 James Slagle <jslagle@redhat.com> 0.129-1
+- Enable and start mongod (jslagle@redhat.com)
+- Require v8 package (jslagle@redhat.com)
+
 * Mon Jun 17 2013 John Matthews <jwmatthews@gmail.com> 0.128-1
 - 974966 - Comment out calls to celery components (jwmatthews@gmail.com)
 
