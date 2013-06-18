@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.129
+Version:    0.130
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -317,6 +317,11 @@ exit 0
 
 
 %changelog
+* Tue Jun 18 2013 James Slagle <jslagle@redhat.com> 0.130-1
+- 972915 - set perms/owner on /var/lib/splice as well (jslagle@redhat.com)
+- Update build config to remove git repos that no longer exist
+  (jwmatthews@gmail.com)
+
 * Mon Jun 17 2013 James Slagle <jslagle@redhat.com> 0.129-1
 - Enable and start mongod (jslagle@redhat.com)
 - Require v8 package (jslagle@redhat.com)
