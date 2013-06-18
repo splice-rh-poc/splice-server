@@ -294,6 +294,7 @@ exit 0
 %dir %{_var}/lib/%{name}
 %dir %{_var}/log/%{name}
 %attr(775,root,splice) %{_var}/log/%{name}
+%attr(775,apache,splice) %{_var}/lib/%{name}
 
 %files common-config
 %defattr(-,root,root,-)
