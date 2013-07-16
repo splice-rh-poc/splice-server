@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.131
+Version:    0.132
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -317,6 +317,10 @@ exit 0
 
 
 %changelog
+* Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.132-1
+- 978409 - (CVE-2009-3555) splice: /etc/httpd/conf.d/splice.conf has default
+  "SSLInsecureRenegotiation on" setting (jwmatthews@gmail.com)
+
 * Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.131-1
 - 977453 - splice components should use same license (jwmatthews@gmail.com)
 - Commented out several tests based on our pieces of functionality we have
