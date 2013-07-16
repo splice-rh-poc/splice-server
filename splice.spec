@@ -160,6 +160,9 @@ cp -R etc/pki/%{name} %{buildroot}/%{_sysconfdir}/pki/
 # Remove egg info
 rm -rf %{buildroot}/%{python_sitelib}/*.egg-info
 
+# Remove unit tests
+rm -rf %{buildroot}/%{python_sitelib}/splice/entitlement/tests
+
 # Install SELinux policy modules
 cd selinux
 ./install.sh %{buildroot}%{_datadir}
