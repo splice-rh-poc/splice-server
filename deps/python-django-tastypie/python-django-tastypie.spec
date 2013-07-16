@@ -40,12 +40,8 @@ BuildRequires:  python-sphinx
 BuildRequires:  PyYAML
 
 %if 0%{?rhel}
-Requires:       python-dateutil15
 # also require setuptools to be able to use 'require' function from pkg_resources module
 Requires:       python-setuptools
-%else
-Requires:       python-dateutil >= 1.5
-Requires:       python-dateutil < 2.0
 %endif
 %if 0%{?fedora} >= 18
 Requires:       python-django >= 1.2.0
