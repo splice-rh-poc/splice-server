@@ -192,7 +192,7 @@ then
     splice_cert_gen_setup.py /etc/httpd/conf.d/splice.conf
 fi
 
-%pre common
+%pre common-config
 getent group splice >/dev/null || groupadd -r splice
 getent passwd splice >/dev/null || \
     useradd -r -g splice -G apache -d %{_var}/lib/%{name} -s /sbin/nologin \
