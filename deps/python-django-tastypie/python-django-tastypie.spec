@@ -49,6 +49,8 @@ Requires:       python-django >= 1.2.0
 Requires:       Django >= 1.2.0
 %endif
 Requires:       python-mimeparse >= 0.1.3
+Requires:       python-dateutil >= 1.5
+Requires:       python-dateutil < 2.0
 
 Provides:       %{pypi_name} = %{version}-%{release}
 Obsoletes:      %{pypi_name} < 0.9.11-3 
