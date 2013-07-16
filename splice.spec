@@ -7,7 +7,7 @@ Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
 Group:      Development/Languages
-License:    GPLv2
+License:    GPLv2+
 URL:        https://github.com/splice/splice-server
 # Source0:  https://github.com/splice/splice-server/zipball/master/
 Source0: %{name}-%{version}.tar.gz
