@@ -23,12 +23,9 @@ Patch0:         %{name}-django-1.5.patch
 BuildArch:      noarch
 # Let's keep Requires and BuildRequires sorted alphabetically
 BuildRequires:  python2-devel
-%if 0%{?rhel}
-BuildRequires:  python-dateutil
-%else
 BuildRequires:  python-dateutil >= 1.5
 BuildRequires:  python-dateutil < 2.0
-%endif
+
 %if 0%{?fedora} >= 18
 BuildRequires:  python-django >= 1.2.0
 %else
