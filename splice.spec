@@ -260,7 +260,6 @@ exit 0
 %{python_sitelib}/%{name}/entitlement/checkin.py*
 %{python_sitelib}/%{name}/entitlement/models.py*
 %{python_sitelib}/%{name}/entitlement/on_startup.py*
-%{python_sitelib}/%{name}/entitlement/tests
 %{python_sitelib}/%{name}/entitlement/views.py*
 %{python_sitelib}/%{name}/manage.py*
 %{python_sitelib}/%{name}/managers
