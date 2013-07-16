@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.135
+Version:    0.136
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -320,6 +320,9 @@ exit 0
 
 
 %changelog
+* Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.136-1
+- Moving creation of 'splice' group to common-config (jwmatthews@gmail.com)
+
 * Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.135-1
 - 978390 - splice config files should be protected (jwmatthews@gmail.com)
 
