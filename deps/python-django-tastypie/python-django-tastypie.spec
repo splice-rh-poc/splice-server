@@ -1,7 +1,7 @@
 %global pypi_name django-tastypie
 Name:           python-%{pypi_name}
 Version:        0.9.14
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A flexible and capable API layer for Django
 
 Group:          Development/Languages
@@ -129,6 +129,10 @@ popd
 # %%exclude %{docdir}/html/.*
 
 %changelog
+* Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.9.14-6
+- Adding python-dateutil back to Requires and requires >= 1.5, < 2.0
+  (jwmatthews@gmail.com)
+
 * Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.9.14-5
 - Missed a duplicate requires for python-dateutil15 (jwmatthews@gmail.com)
 
