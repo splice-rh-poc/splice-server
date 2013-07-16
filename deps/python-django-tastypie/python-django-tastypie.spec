@@ -1,7 +1,7 @@
 %global pypi_name django-tastypie
 Name:           python-%{pypi_name}
 Version:        0.9.14
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A flexible and capable API layer for Django
 
 Group:          Development/Languages
@@ -134,6 +134,10 @@ popd
 # %%exclude %{docdir}/html/.*
 
 %changelog
+* Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.9.14-3
+- 977890 - python-dateutil-1.5-4.el6sam.noarch.rpm is not being installed
+  (jwmatthews@gmail.com)
+
 * Wed Jun 05 2013 John Matthews <jwmatthews@gmail.com> 0.9.14-2
 - Removed older files from python-django-tastypie 0.9.12 (jwmatthews@gmail.com)
 - Upgrade python-django-tastypie to 0.9.14 (jwmatthews@gmail.com)
