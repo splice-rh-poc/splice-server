@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.130
+Version:    0.131
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -317,6 +317,11 @@ exit 0
 
 
 %changelog
+* Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.131-1
+- 977453 - splice components should use same license (jwmatthews@gmail.com)
+- Commented out several tests based on our pieces of functionality we have
+  commented out of the main server (jwmatthews@gmail.com)
+
 * Tue Jun 18 2013 James Slagle <jslagle@redhat.com> 0.130-1
 - 972915 - set perms/owner on /var/lib/splice as well (jslagle@redhat.com)
 - Update build config to remove git repos that no longer exist
