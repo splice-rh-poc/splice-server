@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.133
+Version:    0.134
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -319,6 +319,9 @@ exit 0
 
 
 %changelog
+* Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.134-1
+- Remove 'tests' dir from being packaged (jwmatthews@gmail.com)
+
 * Tue Jul 16 2013 John Matthews <jwmatthews@gmail.com> 0.133-1
 - 978432 - tests are packaged in splice (jwmatthews@gmail.com)
 
