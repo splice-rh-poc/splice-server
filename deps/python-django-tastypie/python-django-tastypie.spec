@@ -24,7 +24,7 @@ BuildArch:      noarch
 # Let's keep Requires and BuildRequires sorted alphabetically
 BuildRequires:  python2-devel
 %if 0%{?rhel}
-BuildRequires:  python-dateutil15
+BuildRequires:  python-dateutil
 %else
 BuildRequires:  python-dateutil >= 1.5
 BuildRequires:  python-dateutil < 2.0
