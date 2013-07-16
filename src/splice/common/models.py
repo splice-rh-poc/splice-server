@@ -283,6 +283,7 @@ class MarketingProductUsage(Document):
     name = StringField()
     service_level = StringField()
     active = BooleanField()
+    deleted = BooleanField()
     organization_id = StringField()
     organization_name = StringField()
 
