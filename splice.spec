@@ -304,6 +304,7 @@ exit 0
 %{python_sitelib}/%{name}/common/__init__.py*
 %{python_sitelib}/%{name}/common/config.py*
 %config(noreplace) %{_sysconfdir}/%{name}
+%attr(0640, root, splice) %{_sysconfdir}/%{name}/splice.conf
 %exclude %{_sysconfdir}/%{name}/conf.d
 
 
