@@ -284,7 +284,7 @@ class MarketingProductUsage(Document):
     service_level = StringField()
     active = BooleanField()
     deleted = BooleanField()
-    organization_id = StringField()
+    organization_label = StringField()
     organization_name = StringField()
 
     # product_info expected 'keys'
