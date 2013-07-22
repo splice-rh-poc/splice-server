@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.137
+Version:    0.138
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -320,6 +320,25 @@ exit 0
 
 
 %changelog
+* Mon Jul 22 2013 John Matthews <jwmatthews@gmail.com> 0.138-1
+- Changed name of field "organization_id" to "organization_label" to reflect
+  what we are storing (jwmatthews@gmail.com)
+- Automatic commit of package [python-django-tastypie] minor release
+  [0.9.14-6]. (jwmatthews@gmail.com)
+- Adding python-dateutil back to Requires and requires >= 1.5, < 2.0
+  (jwmatthews@gmail.com)
+- Automatic commit of package [python-django-tastypie] minor release
+  [0.9.14-5]. (jwmatthews@gmail.com)
+- Missed a duplicate requires for python-dateutil15 (jwmatthews@gmail.com)
+- Automatic commit of package [python-django-tastypie] minor release
+  [0.9.14-4]. (jwmatthews@gmail.com)
+- Modify python-dateutil requires to contain version 1.5 or greater
+  (jwmatthews@gmail.com)
+- Automatic commit of package [python-django-tastypie] minor release
+  [0.9.14-3]. (jwmatthews@gmail.com)
+- 977890 - python-dateutil-1.5-4.el6sam.noarch.rpm is not being installed
+  (jwmatthews@gmail.com)
+
 * Tue Jul 16 2013 Chris Duryee (beav) <cduryee@redhat.com>
 - add deleted field (cduryee@redhat.com)
 
