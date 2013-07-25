@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.139
+Version:    0.140
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -320,6 +320,11 @@ exit 0
 
 
 %changelog
+* Thu Jul 25 2013 John Matthews <jwmatthews@gmail.com> 0.140-1
+- Splice server 'mod_wsgi' app will now run as 'splice' group
+  (jwmatthews@gmail.com)
+- Update spelling error in Splice_CA (jwmatthews@gmail.com)
+
 * Thu Jul 25 2013 John Matthews <jwmatthews@gmail.com> 0.139-1
 - Change name of splice CA to Splice_CA.cert (jwmatthews@gmail.com)
 
