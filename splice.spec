@@ -218,7 +218,7 @@ then
     then
         mkdir /etc/pki/consumer
     fi
-    splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_testing_root_CA.crt --cakey /etc/pki/splice/Splice_testing_root_CA.key --outcert /etc/pki/consumer/Splice_identity.cert --outkey /etc/pki/consumer/Splice_identity.key
+    splice_cert_gen_identity.py --cacert /etc/pki/splice/Splice_CA.cert --cakey /etc/pki/splice/Splice_CA.key --outcert /etc/pki/consumer/Splice_identity.cert --outkey /etc/pki/consumer/Splice_identity.key
 fi
 
 # Mongo must be started.  Ideally, this would be done in seperate startup
