@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.138
+Version:    0.139
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -320,6 +320,9 @@ exit 0
 
 
 %changelog
+* Thu Jul 25 2013 John Matthews <jwmatthews@gmail.com> 0.139-1
+- Change name of splice CA to Splice_CA.cert (jwmatthews@gmail.com)
+
 * Mon Jul 22 2013 John Matthews <jwmatthews@gmail.com> 0.138-1
 - Changed name of field "organization_id" to "organization_label" to reflect
   what we are storing (jwmatthews@gmail.com)
