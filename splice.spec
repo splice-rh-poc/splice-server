@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.140
+Version:    0.141
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -320,6 +320,9 @@ exit 0
 
 
 %changelog
+* Tue Jul 30 2013 Chris Duryee (beav) <cduryee@redhat.com>
+- 985417: console logger should be ERROR (cduryee@redhat.com)
+
 * Thu Jul 25 2013 John Matthews <jwmatthews@gmail.com> 0.140-1
 - Splice server 'mod_wsgi' app will now run as 'splice' group
   (jwmatthews@gmail.com)
