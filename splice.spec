@@ -162,6 +162,7 @@ rm -rf %{buildroot}/%{python_sitelib}/*.egg-info
 
 # Remove unit tests
 rm -rf %{buildroot}/%{python_sitelib}/splice/entitlement/tests
+rm %{buildroot}/%{_sysconfdir}/splice/logging/unittests.cfg
 
 # Install SELinux policy modules
 cd selinux
