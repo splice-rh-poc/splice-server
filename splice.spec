@@ -205,8 +205,6 @@ touch %{_var}/log/%{name}/general.log
 touch %{_var}/log/%{name}/splice.log
 touch %{_var}/log/%{name}/spacewalk_splice_tool.log
 
-chown -R apache:splice %{_var}/log/%{name}
-chown -R splice:splice %{_var}/log/%{name}/celery
 chmod -R g+rwX %{_var}/log/%{name}
 #
 # If there is no Splice Server identity certificate, generate a new one for testing
@@ -296,7 +294,8 @@ exit 0
 %{_sysconfdir}/pki/%{name}
 %dir %{_var}/lib/%{name}
 %dir %{_var}/log/%{name}
-%attr(775,root,splice) %{_var}/log/%{name}
+%attr(775,apache,splice) %{_var}/log/%{name}
+%attr(775,splice,splice) %{_var}/log/%{name}/celery
 %attr(775,apache,splice) %{_var}/lib/%{name}
 
 %files common-config
