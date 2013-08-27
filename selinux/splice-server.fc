@@ -1,6 +1,4 @@
 /etc/init.rd/splice_all gen_context(system_u:object_r:httpd_initrc_exec_t,s0)
-/etc/init.rd/splice_celeryd gen_context(system_u:object_r:httpd_initrc_exec_t,s0)
-/etc/init.rd/splice_celerybeat gen_context(system_u:object_r:httpd_initrc_exec_t,s0)
 /etc/pki/splice(/.*)? gen_context(system_u:object_r:splice_cert_t,s0)
 /etc/splice(/.*)? gen_context(system_u:object_r:httpd_sys_content_t,s0)
 
