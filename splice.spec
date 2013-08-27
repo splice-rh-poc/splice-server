@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.142
+Version:    0.143
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -320,6 +320,9 @@ exit 0
 
 
 %changelog
+* Tue Aug 27 2013 Chris Duryee (beav) <cduryee@redhat.com>
+- 1001228: fix files section for splice-common (cduryee@redhat.com)
+
 * Wed Aug 14 2013 John Matthews <jwmatthews@gmail.com> 0.142-1
 - 978432 - tests are packaged in splice (jwmatthews@gmail.com)
 - do not build debug packages for python-mongoengine (cduryee@redhat.com)
