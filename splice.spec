@@ -2,7 +2,7 @@
 %global selinux_policyver %(%{__sed} -e 's,.*selinux-policy-\\([^/]*\\)/.*,\\1,' /usr/share/selinux/devel/policyhelp || echo 0.0.0)
 
 Name:       splice
-Version:    0.144
+Version:    0.145
 Release:    1%{?dist}
 Summary:    Framework for tracking entitlement consumption
 
@@ -322,6 +322,10 @@ exit 0
 
 
 %changelog
+* Tue Sep 03 2013 Chris Duryee (beav) <cduryee@redhat.com>
+- 1003574 - after clean installation spacewalk-splice-checkin complains about
+  /var/log/splice/general.log (jwmatthews@gmail.com)
+
 * Tue Aug 27 2013 Chris Duryee (beav) <cduryee@redhat.com>
 - 1001715: remove celery from selinux config (cduryee@redhat.com)
 
