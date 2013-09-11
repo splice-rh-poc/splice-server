@@ -17,6 +17,7 @@ import logging.config
 import os
 import sys
 
+import log_handlers
 
 CONFIG = None
 
